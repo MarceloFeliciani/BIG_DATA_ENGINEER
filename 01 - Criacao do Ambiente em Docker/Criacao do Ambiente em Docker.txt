@@ -1,0 +1,104 @@
+PS E:\projetos\docker-bigdata> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+PS E:\projetos\docker-bigdata> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+PS E:\projetos\docker-bigdata> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Recreating namenode  ... done
+Recreating database  ... done
+Recreating zookeeper ... done
+Recreating spark     ... done
+Recreating datanode     ... done
+Recreating hbase-master              ... done
+Recreating hive-metastore-postgresql ... done
+Recreating hive_metastore            ... done
+Recreating hive-server               ... done
+PS E:\projetos\docker-bigdata> dir
+
+
+    Diretório: E:\projetos\docker-bigdata
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        14/02/2021     16:20           7025 docker-compose-completo-windows.yml
+-a----        14/02/2021     16:20           6647 docker-compose-completo.yml
+-a----        14/02/2021     16:20           3941 docker-compose.yml
+-a----        14/02/2021     16:20         343678 ecosystem.jpeg
+-a----        04/03/2021     11:08        2796935 parquet-hadoop-bundle-1.6.0.jar
+-a----        14/02/2021     16:19           3586 README.md
+
+
+PS E:\projetos\docker-bigdata> cd data
+
+PS E:\projetos\docker-bigdata\data> dir
+
+
+    Diretório: E:\projetos\docker-bigdata\data
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        14/02/2021     16:24                hadoop
+d-----        14/02/2021     16:24                hbase
+d-----        14/02/2021     18:45                hdfs
+d-----        14/02/2021     16:24                jupyter
+d-----        14/02/2021     16:24                metabase
+d-----        26/03/2021     21:31                notebooks
+da----        20/04/2021     11:30                postgresql
+d-----        14/02/2021     16:24                util
+d-----        14/02/2021     18:22                zookeeper
+-a----        15/02/2021     09:42              0 wsl
+
+
+PS E:\projetos\docker-bigdata\data> cd ..
+
+PS E:\projetos\docker-bigdata> docker ps
+                             NAMES
+61769aa30ed7   fjardim/hive             "entrypoint.sh /bin/…"   3 minutes ago   Up 2 minutes               0.0.0.0:10000->10000/tcp, 10002/tcp                                  hive-server
+08e14bfbbaf5   fjardim/hive             "entrypoint.sh /opt/…"   3 minutes ago   Up 3 minutes               10000/tcp, 0.0.0.0:9083->9083/tcp, 10002/tcp                         hive_metastore
+d23f67a0e511   fjardim/hive-metastore   "/docker-entrypoint.…"   4 minutes ago   Up 4 minutes               5432/tcp                                                             hive-metastore-postgresql
+bd4b789305af   fjardim/hbase-master     "/entrypoint.sh /run…"   5 minutes ago   Up 4 minutes               16000/tcp, 0.0.0.0:16010->16010/tcp                                  hbase-master
+927a45406258   fjardim/datanode         "/entrypoint.sh /run…"   5 minutes ago   Up 4 minutes (unhealthy)   0.0.0.0:50075->50075/tcp                                             datanode
+8eb92cea55e4   fjardim/namenode_sqoop   "/entrypoint.sh /run…"   6 minutes ago   Up 5 minutes (unhealthy)   0.0.0.0:50070->50070/tcp                                             namenode
+e46cbc22810e   fjardim/mysql            "docker-entrypoint.s…"   6 minutes ago   Up 5 minutes               33060/tcp, 0.0.0.0:33061->3306/tcp                                   database
+0d94673f7e87   fjardim/jupyter-spark    "/opt/docker/bin/ent…"   6 minutes ago   Up 5 minutes               0.0.0.0:4040-4043->4040-4043/tcp, 0.0.0.0:8889->8889/tcp, 8899/tcp   spark
+5679c33eb56f   fjardim/zookeeper        "/bin/sh -c '/usr/sb…"   6 minutes ago   Up 5 minutes               22/tcp, 2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp                   zookeeper
+
+PS E:\projetos\docker-bigdata> docker --version
+Docker version 20.10.5, build 55c4c88
+
+PS E:\projetos\docker-bigdata> docker-compose --version
+docker-compose version 1.29.0, build 07737305
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode bash
+root@namenode:/# ls /
+bin   derby.log  employees.java  etc     hadoop-data  input  lib64  metastore_db  opt   root  run.sh  srv  tmp  var
+boot  dev        entrypoint.sh   hadoop  home         lib    media  mnt           proc  run   sbin    sys  usr
+
+root@namenode:/# hdfs dfs -ls /
+Found 3 items
+drwxr-xr-x   - root supergroup          0 2021-04-22 15:16 /hbase
+drwxrwxr-x   - root supergroup          0 2021-02-15 12:31 /tmp
+drwxr-xr-x   - root supergroup          0 2021-03-01 14:30 /user
+
+root@namenode:/# exit
+
+PS E:\projetos\docker-bigdata> docker-compose stop
+Stopping hive-server               ... done
+Stopping hive_metastore            ... done
+Stopping hive-metastore-postgresql ... done
+Stopping hbase-master              ... done
+Stopping datanode                  ... done
+Stopping namenode                  ... done
+Stopping database                  ... done
+Stopping spark                     ... done
+Stopping zookeeper                 ... done
+
+PS E:\projetos\docker-bigdata>
