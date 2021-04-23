@@ -1,0 +1,964 @@
+PS C:\Users\marce> wsl -l -v
+  NAME                   STATE           VERSION
+  docker-desktop-data    Running         2
+  Ubuntu-20.04           Running         2
+  docker-desktop         Running         2
+
+PS C:\Users\marce> e:
+
+PS E:\> cd projetos
+
+PS E:\projetos> cd docker-bigdata
+
+PS E:\projetos\docker-bigdata> docker-compose up -d
+Starting zookeeper ... done
+Starting database     ... done
+Starting namenode  ... done
+Starting spark        ... done
+Starting datanode     ... done
+Starting hbase-master              ... done
+Starting hive-metastore-postgresql ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+
+PS E:\Projetos\docker-bigdata> docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED         STATUS                   PORTS                                                                NAMES
+1930c8bfa77b   fjardim/hive             "entrypoint.sh /bin/…"   2 minutes ago   Up 2 minutes             0.0.0.0:10000->10000/tcp, 10002/tcp                                  hive-server
+baeb17826c71   fjardim/hive             "entrypoint.sh /opt/…"   2 minutes ago   Up 2 minutes             10000/tcp, 0.0.0.0:9083->9083/tcp, 10002/t                           hive-metastore-postgresql
+9c9fab22216a   fjardim/datanode         "/entrypoint.sh /run…"   3 minutes ago   Up 3 minutes (healthy)   0.0.0.0:50075->50075/tcp                                             datanode
+8eae0cc78947   fjardim/hbase-master     "/entrypoint.sh /run…"   3 minutes ago   Up 3 minutes             16000/tcp, 0.0.0.0:16010->16010/tcp                                  hbase-master
+f4bd81bfa3e0   fjardim/jupyter-spark    "/opt/docker/bin/ent…"   3 minutes ago   Up 3 minutes             0.0.0.0:4040-4043->4040-4043/tcp, 0.0.0.0:8889->8889/tcp, 8899/tcp   spark
+a1e45ff8fae4   fjardim/namenode_sqoop   "/entrypoint.sh /run…"   3 minutes ago   Up 3 minutes (healthy)   0.0.0.0:50070->50070/tcp                                             namenode
+fa6665b48cc3   fjardim/mysql            "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes             33060/tcp, 0.0.0.0:33061->3306/tcp        2181/tcp                   zookeeper
+
+PS E:\Projetos\docker-bigdata> docker exec -it namenode bash
+
+root@namenode:/#  ########################################################################## CTRL+D para sair do namenode
+
+PS E:\Projetos\docker-bigdata> dir
+
+
+    Diretório: E:\Projetos\docker-bigdata
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        15/02/2021     09:42                data
+d-----        15/02/2021     13:28                input
+-a----        14/02/2021     16:20           7025 docker-compose-completo-windows.yml
+-a----        14/02/2021     16:20           6647 docker-compose-completo.yml
+-a----        14/02/2021     16:20           3941 docker-compose.yml
+-a----        14/02/2021     16:20         343678 ecosystem.jpeg
+-a----        04/03/2021     11:08        2796935 parquet-hadoop-bundle-1.6.0.jar
+-a----        14/02/2021     16:19           3586 README.md
+
+
+PS E:\Projetos\docker-bigdata> cd input
+
+PS E:\Projetos\docker-bigdata\input> dir
+
+
+    Diretório: E:\Projetos\docker-bigdata\input
+
+
+Mode                 LastWriteTime         Length Name
+d-----        25/03/2021     16:05                exercises-data
+
+
+PS E:\Projetos\docker-bigdata\input> cd exercises-data
+
+PS E:\Projetos\docker-bigdata\input\exercises-data> dir
+
+
+    Diretório: E:\Projetos\docker-bigdata\input\exercises-data
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        06/01/2021     09:02                beneficio
+d-----        06/01/2021     09:02                db-sql
+d-----        25/03/2021     16:05                ecommerce
+d-----        06/01/2021     09:02                economicFitness
+d-----        06/01/2021     09:02                empreendimento
+d-----        06/01/2021     09:02                escola
+d-----        06/01/2021     09:02                hnpStats
+d-----        06/01/2021     09:02                iris
+d-----        06/01/2021     09:02                juros_selic
+d-----        06/01/2021     09:02                names
+d-----        06/01/2021     09:02                namesbystate
+d-----        06/01/2021     09:02                ouvidoria
+d-----        06/01/2021     09:02                populacaoLA
+d-----        05/03/2021     14:47                uber
+------        06/01/2021     09:02             54 entrada1.txt
+------        06/01/2021     09:02             42 entrada2.txt
+------        06/01/2021     09:02            161 map.py
+------        06/01/2021     09:02             46 README.md
+------        06/01/2021     09:02            511 reduce.py
+------        06/01/2021     09:02           2089 WordCount.java
+
+PS E:\Projetos\docker-bigdata\input\exercises-data> cd ..
+
+PS E:\Projetos\docker-bigdata\input>  cd..
+
+PS E:\Projetos\docker-bigdata> docker exec -it namenode bash
+
+root@namenode:/# hdfs dfs -ls -R /    ################################################################################################ MOSTRA O CONTEÚDO DO HDFS
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/.tmp
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/MasterProcWALs
+-rw-r--r--   3 root supergroup          0 2021-04-23 12:06 /hbase/MasterProcWALs/state-00000000000000000081.log
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/WALs
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:15 /hbase/WALs/hbase-master,39157,1619179546285
+-rw-r--r--   3 root supergroup         83 2021-04-23 12:15 /hbase/WALs/hbase-master,39157,1619179546285/hbase-master%2C39157%2C1619179546285..meta.1619180102455.meta
+-rw-r--r--   3 root supergroup         83 2021-04-23 12:06 /hbase/WALs/hbase-master,39157,1619179546285/hbase-master%2C39157%2C1619179546285.default.1619179588806
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:20 /hbase/archive
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /hbase/corrupt
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:31 /hbase/data
+drwxr-xr-x   - root supergroup          0 2021-03-03 17:44 /hbase/data/default
+drwxr-xr-x   - root supergroup          0 2021-03-03 17:44 /hbase/data/default/controle
+drwxr-xr-x   - root supergroup          0 2021-03-03 18:25 /hbase/data/default/controle/.tabledesc
+-rw-r--r--   3 root supergroup        542 2021-03-03 18:25 /hbase/data/default/controle/.tabledesc/.tableinfo.0000000002
+drwxr-xr-x   - root supergroup          0 2021-03-03 18:25 /hbase/data/default/controle/.tmp
+drwxr-xr-x   - root supergroup          0 2021-03-27 00:15 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f
+-rw-r--r--   3 root supergroup         43 2021-03-03 17:44 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/.regioninfo
+drwxr-xr-x   - root supergroup          0 2021-03-25 13:59 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/fornecedor
+-rw-r--r--   3 root supergroup       4924 2021-03-25 13:59 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/fornecedor/2d134c7da5654a50b6af6fb4b5c3f801
+drwxr-xr-x   - root supergroup          0 2021-03-25 13:59 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/produto
+-rw-r--r--   3 root supergroup       5011 2021-03-25 13:59 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/produto/cafb585d7d9543d493ef5c5e5a36ea89
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/recovered.edits
+-rw-r--r--   3 root supergroup          0 2021-04-23 12:06 /hbase/data/default/controle/d4ad04747a804c8a082d25e2bdcc495f/recovered.edits/39.seqid
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /hbase/data/hbase
+drwxr-xr-x   - root supergroup          0 2021-02-14 21:57 /hbase/data/hbase/meta
+drwxr-xr-x   - root supergroup          0 2021-02-14 21:57 /hbase/data/hbase/meta/.tabledesc
+-rw-r--r--   3 root supergroup        398 2021-02-14 21:57 /hbase/data/hbase/meta/.tabledesc/.tableinfo.0000000001
+drwxr-xr-x   - root supergroup          0 2021-02-14 21:57 /hbase/data/hbase/meta/.tmp
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:15 /hbase/data/hbase/meta/1588230740
+-rw-r--r--   3 root supergroup         32 2021-02-14 21:57 /hbase/data/hbase/meta/1588230740/.regioninfo
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:15 /hbase/data/hbase/meta/1588230740/.tmp
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:15 /hbase/data/hbase/meta/1588230740/info
+-rw-r--r--   3 root supergroup      14233 2021-04-23 12:15 /hbase/data/hbase/meta/1588230740/info/0fa3317e1fc447d5869f6291541f57cc
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/data/hbase/meta/1588230740/recovered.edits
+-rw-r--r--   3 root supergroup          0 2021-04-23 12:06 /hbase/data/hbase/meta/1588230740/recovered.edits/160.seqid
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /hbase/data/hbase/namespace
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /hbase/data/hbase/namespace/.tabledesc
+-rw-r--r--   3 root supergroup        312 2021-02-15 12:30 /hbase/data/hbase/namespace/.tabledesc/.tableinfo.0000000001
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /hbase/data/hbase/namespace/.tmp
+drwxr-xr-x   - root supergroup          0 2021-02-15 14:03 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85
+-rw-r--r--   3 root supergroup         42 2021-02-15 12:30 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85/.regioninfo
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:37 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85/info
+-rw-r--r--   3 root supergroup       4963 2021-02-15 12:37 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85/info/92bd2eadbbcd4b0799db842ae29cb068
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:06 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85/recovered.edits
+-rw-r--r--   3 root supergroup          0 2021-04-23 12:06 /hbase/data/hbase/namespace/57131982ff868aa3a0e165cb25bb9b85/recovered.edits/34.seqid
+-rw-r--r--   3 root supergroup         42 2021-02-14 21:57 /hbase/hbase.id
+-rw-r--r--   3 root supergroup          7 2021-02-14 21:57 /hbase/hbase.version
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:25 /hbase/oldWALs
+drwxrwxr-x   - root supergroup          0 2021-02-15 12:31 /tmp
+drwx-wx-wx   - root supergroup          0 2021-02-15 12:31 /tmp/hive
+drwx------   - root supergroup          0 2021-04-23 12:06 /tmp/hive/root
+drwx------   - root supergroup          0 2021-03-09 20:00 /tmp/hive/root/0158a76c-cd14-471f-ace2-f7ff3fb6b912
+drwx------   - root supergroup          0 2021-03-09 20:00 /tmp/hive/root/0158a76c-cd14-471f-ace2-f7ff3fb6b912/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-27 00:15 /tmp/hive/root/128d1c64-13cb-4c6c-89b3-30cbca404a74
+drwx------   - root supergroup          0 2021-03-27 00:15 /tmp/hive/root/128d1c64-13cb-4c6c-89b3-30cbca404a74/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-25 19:22 /tmp/hive/root/20cd690b-62f7-4df6-a90f-d0d185dbbc57
+drwx------   - root supergroup          0 2021-02-25 19:22 /tmp/hive/root/20cd690b-62f7-4df6-a90f-d0d185dbbc57/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-25 14:00 /tmp/hive/root/28fdbc46-45af-4f29-9390-05041a7d8e95
+drwx------   - root supergroup          0 2021-03-25 14:00 /tmp/hive/root/28fdbc46-45af-4f29-9390-05041a7d8e95/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-08 12:39 /tmp/hive/root/32f8508f-11fc-4605-9721-057bcf51cdb2
+drwx------   - root supergroup          0 2021-03-08 12:39 /tmp/hive/root/32f8508f-11fc-4605-9721-057bcf51cdb2/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-19 16:17 /tmp/hive/root/344e0815-99ff-4876-ac74-6d810511b6fa
+drwx------   - root supergroup          0 2021-02-19 16:17 /tmp/hive/root/344e0815-99ff-4876-ac74-6d810511b6fa/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-18 14:21 /tmp/hive/root/35c9582a-7ca8-4b40-b98b-36dd29e38406
+drwx------   - root supergroup          0 2021-02-18 14:21 /tmp/hive/root/35c9582a-7ca8-4b40-b98b-36dd29e38406/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-09 12:54 /tmp/hive/root/36d437fe-3182-4c22-b660-bd7f1240e44d
+drwx------   - root supergroup          0 2021-03-09 12:54 /tmp/hive/root/36d437fe-3182-4c22-b660-bd7f1240e44d/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-21 16:07 /tmp/hive/root/3d4b147f-f205-4ee2-83d7-bb03ea6abff9
+drwx------   - root supergroup          0 2021-02-21 16:07 /tmp/hive/root/3d4b147f-f205-4ee2-83d7-bb03ea6abff9/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-24 12:05 /tmp/hive/root/4674deda-a0ac-4d0a-b2e9-df46309641d5
+drwx------   - root supergroup          0 2021-02-24 12:05 /tmp/hive/root/4674deda-a0ac-4d0a-b2e9-df46309641d5/_tmp_space.db
+drwx------   - root supergroup          0 2021-04-23 12:06 /tmp/hive/root/4e855513-505b-469d-9656-ce859d1211ef
+drwx------   - root supergroup          0 2021-04-23 12:06 /tmp/hive/root/4e855513-505b-469d-9656-ce859d1211ef/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-01 13:53 /tmp/hive/root/51bbcf1a-c7f0-4ebb-b8d8-bc8636e31709
+drwx------   - root supergroup          0 2021-03-01 13:53 /tmp/hive/root/51bbcf1a-c7f0-4ebb-b8d8-bc8636e31709/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-15 12:31 /tmp/hive/root/599249b5-e85b-424e-a183-27a93bdc5830
+drwx------   - root supergroup          0 2021-02-15 12:31 /tmp/hive/root/599249b5-e85b-424e-a183-27a93bdc5830/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-08 18:38 /tmp/hive/root/5dbff8ac-3c2e-4132-b69d-da76f8353ec3
+drwx------   - root supergroup          0 2021-03-08 18:38 /tmp/hive/root/5dbff8ac-3c2e-4132-b69d-da76f8353ec3/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-19 14:04 /tmp/hive/root/700bf404-81f3-4630-bbda-d285f71e7c8b
+drwx------   - root supergroup          0 2021-02-19 14:04 /tmp/hive/root/700bf404-81f3-4630-bbda-d285f71e7c8b/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-02 13:16 /tmp/hive/root/76344341-a870-4889-be79-26cff0f1110b
+drwx------   - root supergroup          0 2021-03-02 13:16 /tmp/hive/root/76344341-a870-4889-be79-26cff0f1110b/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-22 12:47 /tmp/hive/root/7c343a1a-b73c-48e5-bc4a-9868583e20e9
+drwx------   - root supergroup          0 2021-02-22 12:47 /tmp/hive/root/7c343a1a-b73c-48e5-bc4a-9868583e20e9/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-08 14:07 /tmp/hive/root/7d932299-7597-49fa-96ec-c0ca0e8348c4
+drwx------   - root supergroup          0 2021-03-08 14:07 /tmp/hive/root/7d932299-7597-49fa-96ec-c0ca0e8348c4/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-17 12:59 /tmp/hive/root/7f562252-6130-4379-a666-bb1410e8df5a
+drwx------   - root supergroup          0 2021-02-17 12:59 /tmp/hive/root/7f562252-6130-4379-a666-bb1410e8df5a/_tmp_space.db
+drwx------   - root supergroup          0 2021-04-20 14:18 /tmp/hive/root/81d91cdf-d5ec-4dad-a6c1-9a121057ef1c
+drwx------   - root supergroup          0 2021-04-20 14:18 /tmp/hive/root/81d91cdf-d5ec-4dad-a6c1-9a121057ef1c/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-03 17:34 /tmp/hive/root/898eebfa-be6e-4011-aa0b-90de36a9db0a
+drwx------   - root supergroup          0 2021-03-03 17:34 /tmp/hive/root/898eebfa-be6e-4011-aa0b-90de36a9db0a/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-05 12:43 /tmp/hive/root/8caf92f6-e11b-4658-a632-cb6e3e124d17
+drwx------   - root supergroup          0 2021-03-05 12:43 /tmp/hive/root/8caf92f6-e11b-4658-a632-cb6e3e124d17/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-15 14:04 /tmp/hive/root/9a5c12df-8d46-4f3d-a0ac-55294b0bad3b
+drwx------   - root supergroup          0 2021-02-15 14:04 /tmp/hive/root/9a5c12df-8d46-4f3d-a0ac-55294b0bad3b/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-04 14:16 /tmp/hive/root/9d4c513d-e8b7-4f71-a7ee-ccb2e05580c8
+drwx------   - root supergroup          0 2021-03-04 14:16 /tmp/hive/root/9d4c513d-e8b7-4f71-a7ee-ccb2e05580c8/_tmp_space.db
+drwx------   - root supergroup          0 2021-04-22 15:16 /tmp/hive/root/cb3ba3b1-628a-4b4d-ae06-7ca6961264f6
+drwx------   - root supergroup          0 2021-04-22 15:16 /tmp/hive/root/cb3ba3b1-628a-4b4d-ae06-7ca6961264f6/_tmp_space.db
+drwx------   - root supergroup          0 2021-03-03 13:06 /tmp/hive/root/e86c9e28-cf7c-4860-b14a-cc20de650219
+drwx------   - root supergroup          0 2021-03-03 13:06 /tmp/hive/root/e86c9e28-cf7c-4860-b14a-cc20de650219/_tmp_space.db
+drwx------   - root supergroup          0 2021-02-26 12:22 /tmp/hive/root/f83f3a66-0401-402d-b477-4b8ea4c71fc4
+drwx------   - root supergroup          0 2021-02-26 12:22 /tmp/hive/root/f83f3a66-0401-402d-b477-4b8ea4c71fc4/_tmp_space.db
+drwxr-xr-x   - root supergroup          0 2021-03-01 14:30 /user
+drwxr-xr-x   - root supergroup          0 2021-02-15 16:38 /user/aluno
+drwxr-xr-x   - root supergroup          0 2021-02-15 17:18 /user/aluno/feliciani
+drwxr-xr-x   - root supergroup          0 2021-03-25 14:30 /user/aluno/feliciani/data
+drwxr-xr-x   - root supergroup          0 2021-03-02 17:09 /user/aluno/feliciani/data/COVID-19
+drwxr-xr-x   - root supergroup          0 2021-03-02 17:09 /user/aluno/feliciani/data/COVID-19/raw
+drwxr-xr-x   - root supergroup          0 2021-03-25 14:30 /user/aluno/feliciani/data/empreendimento
+-rw-r--r--   3 root supergroup    1778116 2021-03-25 14:30 /user/aluno/feliciani/data/empreendimento/empreendimento.csv
+-rw-r--r--   3 root supergroup    4220629 2021-03-25 14:30 /user/aluno/feliciani/data/empreendimento/empreendimento.json
+drwxr-xr-x   - root supergroup          0 2021-02-15 16:45 /user/aluno/feliciani/data/escola
+-rw-r--r--   3 root supergroup        147 2021-02-15 16:45 /user/aluno/feliciani/data/escola/README.md
+-rw-r--r--   3 root supergroup     546284 2021-02-15 16:45 /user/aluno/feliciani/data/escola/alunos.csv
+-rw-r--r--   3 root supergroup    4891872 2021-02-15 16:45 /user/aluno/feliciani/data/escola/alunos.json
+-rw-r--r--   3 root supergroup      98437 2021-02-15 16:45 /user/aluno/feliciani/data/escola/alunos.png
+-rw-r--r--   3 root supergroup    6044140 2021-02-15 16:45 /user/aluno/feliciani/data/escola/alunos.xml
+-rw-r--r--   3 root supergroup       4667 2021-02-15 16:45 /user/aluno/feliciani/data/escola/bens-imoveis.json
+-rw-r--r--   3 root supergroup      78599 2021-02-15 16:45 /user/aluno/feliciani/data/escola/bens-imoveis.png
+-rw-r--r--   3 root supergroup       5630 2021-02-15 16:45 /user/aluno/feliciani/data/escola/bens-imoveis.xml
+-rw-r--r--   3 root supergroup       1998 2021-02-15 16:45 /user/aluno/feliciani/data/escola/bens_imovel.csv
+-rw-r--r--   3 root supergroup     731195 2021-02-15 16:45 /user/aluno/feliciani/data/escola/componentes-curriculares.csv
+-rw-r--r--   3 root supergroup    9787990 2021-02-15 16:45 /user/aluno/feliciani/data/escola/componentes-curriculares.json
+-rw-r--r--   3 root supergroup     109655 2021-02-15 16:45 /user/aluno/feliciani/data/escola/componentes-curriculares.png
+-rw-r--r--   3 root supergroup      18308 2021-02-15 16:45 /user/aluno/feliciani/data/escola/cursos.csv
+-rw-r--r--   3 root supergroup     253692 2021-02-15 16:45 /user/aluno/feliciani/data/escola/cursos.json
+-rw-r--r--   3 root supergroup      97271 2021-02-15 16:45 /user/aluno/feliciani/data/escola/cursos.png
+-rw-r--r--   3 root supergroup     295196 2021-02-15 16:45 /user/aluno/feliciani/data/escola/cursos.xml
+-rw-r--r--   3 root supergroup      12129 2021-02-15 16:45 /user/aluno/feliciani/data/escola/designacoes.csv
+-rw-r--r--   3 root supergroup     279549 2021-02-15 16:45 /user/aluno/feliciani/data/escola/designacoes.json
+-rw-r--r--   3 root supergroup      96691 2021-02-15 16:45 /user/aluno/feliciani/data/escola/designacoes.png
+-rw-r--r--   3 root supergroup     336640 2021-02-15 16:45 /user/aluno/feliciani/data/escola/designacoes.xml
+-rw-r--r--   3 root supergroup      18694 2021-02-15 16:45 /user/aluno/feliciani/data/escola/prestadoras-servico.csv
+-rw-r--r--   3 root supergroup      33426 2021-02-15 16:45 /user/aluno/feliciani/data/escola/prestadoras-servico.json
+-rw-r--r--   3 root supergroup     169764 2021-02-15 16:45 /user/aluno/feliciani/data/escola/prestadoras-servico.png
+-rw-r--r--   3 root supergroup      41473 2021-02-15 16:45 /user/aluno/feliciani/data/escola/prestadoras-servico.xml
+-rw-r--r--   3 root supergroup     105897 2021-02-15 16:45 /user/aluno/feliciani/data/escola/servidores.csv
+-rw-r--r--   3 root supergroup    2597473 2021-02-15 16:45 /user/aluno/feliciani/data/escola/servidores.json
+-rw-r--r--   3 root supergroup      89028 2021-02-15 16:45 /user/aluno/feliciani/data/escola/servidores.png
+-rw-r--r--   3 root supergroup    3069250 2021-02-15 16:45 /user/aluno/feliciani/data/escola/servidores.xml
+-rw-r--r--   3 root supergroup     314729 2021-02-15 16:45 /user/aluno/feliciani/data/escola/unidades-organizacionais.json
+-rw-r--r--   3 root supergroup     102433 2021-02-15 16:45 /user/aluno/feliciani/data/escola/unidades-organizacionais.png
+-rw-r--r--   3 root supergroup     382416 2021-02-15 16:45 /user/aluno/feliciani/data/escola/unidades-organizacionais.xml
+-rw-r--r--   3 root supergroup      40235 2021-02-15 16:45 /user/aluno/feliciani/data/escola/unidades.csv
+drwxr-xr-x   - root supergroup          0 2021-03-05 12:56 /user/aluno/feliciani/data/juros_selic
+-rw-r--r--   3 root supergroup       7954 2021-03-05 12:56 /user/aluno/feliciani/data/juros_selic/juros_selic
+-rw-r--r--   3 root supergroup      14621 2021-03-05 12:56 /user/aluno/feliciani/data/juros_selic/juros_selic.json
+-rw-r--r--   3 root supergroup      12900 2021-03-05 12:56 /user/aluno/feliciani/data/juros_selic/juros_selic.wsdl
+drwxr-xr-x   - root supergroup          0 2021-02-21 17:25 /user/aluno/feliciani/data/nascimento
+drwxr-xr-x   - root supergroup          0 2021-02-21 17:17 /user/aluno/feliciani/data/nascimento/ano=2015
+-rw-r--r--   3 root supergroup     392735 2021-02-21 17:17 /user/aluno/feliciani/data/nascimento/ano=2015/yob2015.txt
+drwxr-xr-x   - root supergroup          0 2021-02-21 17:28 /user/aluno/feliciani/data/nascimento/ano=2016
+-rw-r--r--   3 root supergroup     391060 2021-02-21 17:28 /user/aluno/feliciani/data/nascimento/ano=2016/yob2016.txt
+drwxr-xr-x   - root supergroup          0 2021-02-21 17:28 /user/aluno/feliciani/data/nascimento/ano=2017
+-rw-r--r--   3 root supergroup     384568 2021-02-21 17:28 /user/aluno/feliciani/data/nascimento/ano=2017/yob2017.txt
+drwxr-xr-x   - root supergroup          0 2021-03-05 14:02 /user/aluno/feliciani/data/save_juros
+-rw-r--r--   2 root supergroup          0 2021-03-05 14:02 /user/aluno/feliciani/data/save_juros/_SUCCESS
+-rw-r--r--   2 root supergroup       1419 2021-03-05 14:02 /user/aluno/feliciani/data/save_juros/part-00000-af42ddc5-c2e5-43f9-8a0c-8bddab339d00-c000.snappy.parquet
+-rw-r--r--   2 root supergroup          0 2021-02-15 17:36 /user/aluno/feliciani/data/test
+drwxr-xr-x   - root supergroup          0 2021-03-01 16:59 /user/aluno/feliciani/data/titles
+-rw-r--r--   3 root supergroup          0 2021-03-01 16:59 /user/aluno/feliciani/data/titles/_SUCCESS
+-rw-r--r--   3 root supergroup   17718376 2021-03-01 16:59 /user/aluno/feliciani/data/titles/part-m-00000
+drwxr-xr-x   - root supergroup          0 2021-03-05 18:00 /user/aluno/feliciani/data/uber
+-rw-r--r--   3 root supergroup       9866 2021-03-05 18:00 /user/aluno/feliciani/data/uber/uber.csv
+drwxr-xr-x   - root supergroup          0 2021-02-15 12:30 /user/hive
+drwxrwxr-x   - root supergroup          0 2021-02-26 13:22 /user/hive/warehouse
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:46 /user/hive/warehouse/db_test2_4
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:41 /user/hive/warehouse/db_test2_4/titles/.metadata
+-rw-r--r--   3 root supergroup        179 2021-02-25 19:41 /user/hive/warehouse/db_test2_4/titles/.metadata/descriptor.properties
+-rw-r--r--   3 root supergroup        669 2021-02-25 19:41 /user/hive/warehouse/db_test2_4/titles/.metadata/schema.avsc
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:41 /user/hive/warehouse/db_test2_4/titles/.metadata/schemas
+-rw-r--r--   3 root supergroup        669 2021-02-25 19:41 /user/hive/warehouse/db_test2_4/titles/.metadata/schemas/1.avsc
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/.signals
+-rw-r--r--   3 root supergroup          0 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/.signals/unbounded
+-rw-r--r--   3 root supergroup     595705 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/29f70da2-03b6-40b5-ac1b-b2483fc46d23.parquet
+-rw-r--r--   3 root supergroup     656312 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/4b81ad1d-4fc5-4700-b82d-9acd7b46f467.parquet
+-rw-r--r--   3 root supergroup     439602 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/66229502-1435-4946-b1b3-6bededa66e35.parquet
+-rw-r--r--   3 root supergroup     657647 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/800ab943-ee9c-4938-8026-633b15d869b2.parquet
+-rw-r--r--   3 root supergroup     502763 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/d36286d8-f3ab-4c89-8ef6-7edde7bf7756.parquet
+-rw-r--r--   3 root supergroup     443506 2021-02-25 19:46 /user/hive/warehouse/db_test2_4/titles/e58558f8-7a61-4608-856f-28daab2bf999.parquet
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:06 /user/hive/warehouse/db_test2_5
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:06 /user/hive/warehouse/db_test2_5/titles
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:57 /user/hive/warehouse/db_test2_5/titles/.metadata
+-rw-r--r--   3 root supergroup        179 2021-02-25 19:57 /user/hive/warehouse/db_test2_5/titles/.metadata/descriptor.properties
+-rw-r--r--   3 root supergroup        669 2021-02-25 19:57 /user/hive/warehouse/db_test2_5/titles/.metadata/schema.avsc
+drwxr-xr-x   - root supergroup          0 2021-02-25 19:57 /user/hive/warehouse/db_test2_5/titles/.metadata/schemas
+-rw-r--r--   3 root supergroup        669 2021-02-25 19:57 /user/hive/warehouse/db_test2_5/titles/.metadata/schemas/1.avsc
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:06 /user/hive/warehouse/db_test2_5/titles/.signals
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:06 /user/hive/warehouse/db_test2_5/titles/.signals/unbounded
+-rw-r--r--   3 root supergroup     443506 2021-02-25 20:02 /user/hive/warehouse/db_test2_5/titles/39942346-ec73-457a-86d0-d10ecde5671e.parquet
+-rw-r--r--   3 root supergroup     657647 2021-02-25 20:02 /user/hive/warehouse/db_test2_5/titles/494be877-aaa0-4e26-9d10-56c030756377.parquet
+-rw-r--r--   3 root supergroup     502763 2021-02-25 20:05 /user/hive/warehouse/db_test2_5/titles/504698c4-393c-4260-90db-78ffa4d68d4a.parquet
+-rw-r--r--   3 root supergroup     656312 2021-02-25 20:06 /user/hive/warehouse/db_test2_5/titles/8a8621ab-134e-4c93-9893-f1e5d98c9e89.parquet
+-rw-r--r--   3 root supergroup     595705 2021-02-25 20:03 /user/hive/warehouse/db_test2_5/titles/b51a7d06-032d-4d90-b286-f4c34ec6c3fd.parquet
+-rw-r--r--   3 root supergroup     439602 2021-02-25 20:05 /user/hive/warehouse/db_test2_5/titles/f920a858-d6a1-42a3-815b-3f0e8a79238e.parquet
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:46 /user/hive/warehouse/db_test2_date
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:47 /user/hive/warehouse/db_test2_date/cp_titles_date
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:47 /user/hive/warehouse/db_test2_date/cp_titles_date/_SUCCESS
+-rw-r--r--   3 root supergroup    2692590 2021-02-25 20:46 /user/hive/warehouse/db_test2_date/cp_titles_date/part-m-00000
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:46 /user/hive/warehouse/db_test2_date/cp_titles_date/part-m-00001
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:47 /user/hive/warehouse/db_test2_date/cp_titles_date/part-m-00002
+-rw-r--r--   3 root supergroup    5353940 2021-02-25 20:47 /user/hive/warehouse/db_test2_date/cp_titles_date/part-m-00003
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:39 /user/hive/warehouse/db_test2_title
+drwxr-xr-x   - root supergroup          0 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/_SUCCESS
+-rw-r--r--   3 root supergroup          0 2021-02-25 20:39 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00000
+-rw-r--r--   3 root supergroup     453840 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00001
+-rw-r--r--   3 root supergroup    2300060 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00002
+-rw-r--r--   3 root supergroup        456 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00003
+-rw-r--r--   3 root supergroup    6049023 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00004
+-rw-r--r--   3 root supergroup     424452 2021-02-25 20:40 /user/hive/warehouse/db_test2_title/cp_titles_date/part-m-00005
+drwxr-xr-x   - root supergroup          0 2021-03-01 15:37 /user/hive/warehouse/db_test3
+drwxr-xr-x   - root supergroup          0 2021-03-01 14:30 /user/hive/warehouse/db_test3/cp_rental_append
+-rw-r--r--   3 root supergroup          0 2021-02-26 13:22 /user/hive/warehouse/db_test3/cp_rental_append/_SUCCESS
+-rw-r--r--   3 root supergroup     438131 2021-02-26 13:22 /user/hive/warehouse/db_test3/cp_rental_append/part-m-00000
+-rw-r--r--   3 root supergroup     438131 2021-03-01 14:30 /user/hive/warehouse/db_test3/cp_rental_append/part-m-00001
+drwxr-xr-x   - root supergroup          0 2021-03-01 15:36 /user/hive/warehouse/db_test3/cp_rental_date
+-rw-r--r--   3 root supergroup          0 2021-03-01 15:36 /user/hive/warehouse/db_test3/cp_rental_date/_SUCCESS
+-rw-r--r--   3 root supergroup     438299 2021-03-01 15:36 /user/hive/warehouse/db_test3/cp_rental_date/part-r-00000
+drwxr-xr-x   - root supergroup          0 2021-03-01 15:07 /user/hive/warehouse/db_test3/cp_rental_id
+-rw-r--r--   3 root supergroup          0 2021-02-26 13:31 /user/hive/warehouse/db_test3/cp_rental_id/_SUCCESS
+-rw-r--r--   3 root supergroup     438131 2021-02-26 13:31 /user/hive/warehouse/db_test3/cp_rental_id/part-m-00000
+-rw-r--r--   3 root supergroup        168 2021-03-01 15:07 /user/hive/warehouse/db_test3/cp_rental_id/part-m-00001
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:14 /user/hive/warehouse/db_test_a
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees
+-rw-r--r--   3 root supergroup          0 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees/_SUCCESS
+-rw-r--r--   3 root supergroup    4548041 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees/part-m-00000
+-rw-r--r--   3 root supergroup    2550561 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees/part-m-00001
+-rw-r--r--   3 root supergroup    2086360 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees/part-m-00002
+-rw-r--r--   3 root supergroup    4637031 2021-02-24 14:14 /user/hive/warehouse/db_test_a/employees/part-m-00003
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:30 /user/hive/warehouse/db_test_b
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees
+-rw-r--r--   3 root supergroup          0 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees/_SUCCESS
+-rw-r--r--   3 root supergroup    2724200 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees/part-m-00000
+-rw-r--r--   3 root supergroup    1532324 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees/part-m-00001
+-rw-r--r--   3 root supergroup    1247873 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees/part-m-00002
+-rw-r--r--   3 root supergroup    2788075 2021-02-24 14:30 /user/hive/warehouse/db_test_b/employees/part-m-00003
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:49 /user/hive/warehouse/db_test_c
+drwxr-xr-x   - root supergroup          0 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees
+-rw-r--r--   3 root supergroup          0 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees/_SUCCESS
+-rw-r--r--   3 root supergroup    1537296 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees/part-m-00000
+-rw-r--r--   3 root supergroup     845530 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees/part-m-00001
+-rw-r--r--   3 root supergroup     691391 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees/part-m-00002
+-rw-r--r--   3 root supergroup    1537031 2021-02-24 14:49 /user/hive/warehouse/db_test_c/employees/part-m-00003
+drwxrwxr-x   - root supergroup          0 2021-03-08 14:07 /user/hive/warehouse/feliciani.db
+drwxrwxr-x   - root supergroup          0 2021-02-18 14:58 /user/hive/warehouse/feliciani.db/pop
+-rwxrwxr-x   3 root supergroup      12183 2021-02-18 14:58 /user/hive/warehouse/feliciani.db/pop/populacaoLA.csv
+drwxrwxr-x   - root supergroup          0 2021-02-22 13:18 /user/hive/warehouse/feliciani.db/pop_parquet
+-rwxrwxr-x   3 root supergroup       9479 2021-02-22 13:17 /user/hive/warehouse/feliciani.db/pop_parquet/000000_0
+drwxrwxr-x   - root supergroup          0 2021-02-22 14:00 /user/hive/warehouse/feliciani.db/pop_parquet_snappy
+-rwxrwxr-x   3 root supergroup       9479 2021-02-22 13:59 /user/hive/warehouse/feliciani.db/pop_parquet_snappy/000000_0
+drwxr-xr-x   - root supergroup          0 2021-03-08 14:08 /user/hive/warehouse/feliciani.db/tab_alunos
+-rw-r--r--   2 root supergroup          0 2021-03-08 14:08 /user/hive/warehouse/feliciani.db/tab_alunos/_SUCCESS
+-rw-r--r--   2 root supergroup     214334 2021-03-08 14:08 /user/hive/warehouse/feliciani.db/tab_alunos/part-00000-ed487b12-91f3-43fb-8ff0-354a0e919681-c000.snappy.parquet
+drwxr-xr-x   - root supergroup          0 2021-03-05 13:41 /user/hive/warehouse/feliciani.db/tab_juros_selic
+-rw-r--r--   2 root supergroup          0 2021-03-05 13:41 /user/hive/warehouse/feliciani.db/tab_juros_selic/_SUCCESS
+-rw-r--r--   2 root supergroup       1419 2021-03-05 13:41 /user/hive/warehouse/feliciani.db/tab_juros_selic/part-00000-cabddc78-bf7d-4c34-804e-6a1a2f1ee3b9-c000.snappy.parquet
+drwxrwxr-x   - root supergroup          0 2021-03-01 17:13 /user/hive/warehouse/feliciani.db/titles
+-rwxrwxr-x   3 root supergroup   17718376 2021-03-01 17:11 /user/hive/warehouse/feliciani.db/titles/part-m-00000
+drwxrwxr-x   - root supergroup          0 2021-02-18 15:45 /user/hive/warehouse/pop
+drwxr-xr-x   - root supergroup          0 2021-03-01 17:13 /user/root
+drwxr-xr-x   - root supergroup          0 2021-03-01 15:37 /user/root/_sqoop
+drwxr-xr-x   - root supergroup          0 2021-03-01 15:29 /user/root/_sqoop/7de82184b21d45508a922cbdfb5bf8e1_cp_rental_date
+-rw-r--r--   3 root supergroup          0 2021-03-01 15:29 /user/root/_sqoop/7de82184b21d45508a922cbdfb5bf8e1_cp_rental_date/_SUCCESS
+-rw-r--r--   3 root supergroup       5292 2021-03-01 15:29 /user/root/_sqoop/7de82184b21d45508a922cbdfb5bf8e1_cp_rental_date/part-m-00000
+
+root@namenode:/# hdfs dfs -help
+Usage: hadoop fs [generic options]
+        [-appendToFile <localsrc> ... <dst>]
+        [-cat [-ignoreCrc] <src> ...]
+        [-checksum <src> ...]
+        [-chgrp [-R] GROUP PATH...]
+        [-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+        [-chown [-R] [OWNER][:[GROUP]] PATH...]
+        [-copyFromLocal [-f] [-p] [-l] <localsrc> ... <dst>]
+        [-copyToLocal [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+        [-count [-q] [-h] <path> ...]
+        [-cp [-f] [-p | -p[topax]] <src> ... <dst>]
+        [-createSnapshot <snapshotDir> [<snapshotName>]]
+        [-deleteSnapshot <snapshotDir> <snapshotName>]
+        [-df [-h] [<path> ...]]
+        [-du [-s] [-h] <path> ...]
+        [-expunge]
+        [-find <path> ... <expression> ...]
+        [-get [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+        [-getfacl [-R] <path>]
+        [-getfattr [-R] {-n name | -d} [-e en] <path>]
+        [-getmerge [-nl] <src> <localdst>]
+        [-help [cmd ...]]
+        [-ls [-d] [-h] [-R] [<path> ...]]
+        [-mkdir [-p] <path> ...]
+        [-moveFromLocal <localsrc> ... <dst>]
+        [-moveToLocal <src> <localdst>]
+        [-mv <src> ... <dst>]
+        [-put [-f] [-p] [-l] <localsrc> ... <dst>]
+        [-renameSnapshot <snapshotDir> <oldName> <newName>]
+        [-rm [-f] [-r|-R] [-skipTrash] <src> ...]
+        [-rmdir [--ignore-fail-on-non-empty] <dir> ...]
+        [-setfacl [-R] [{-b|-k} {-m|-x <acl_spec>} <path>]|[--set <acl_spec> <path>]]
+        [-setfattr {-n name [-v value] | -x name} <path>]
+        [-setrep [-R] [-w] <rep> <path> ...]
+        [-stat [format] <path> ...]
+        [-tail [-f] <file>]
+        [-test -[defsz] <path>]
+        [-text [-ignoreCrc] <src> ...]
+        [-touchz <path> ...]
+        [-truncate [-w] <length> <path> ...]
+        [-usage [cmd ...]]
+
+-appendToFile <localsrc> ... <dst> :
+  Appends the contents of all the given local files to the given dst file. The dst
+  file will be created if it does not exist. If <localSrc> is -, then the input is
+  read from stdin.
+
+-cat [-ignoreCrc] <src> ... :
+  Fetch all files that match the file pattern <src> and display their content on
+  stdout.
+
+-checksum <src> ... :
+  Dump checksum information for files that match the file pattern <src> to stdout.
+  Note that this requires a round-trip to a datanode storing each block of the
+  file, and thus is not efficient to run on a large number of files. The checksum
+  of a file depends on its content, block size and the checksum algorithm and
+  parameters used for creating the file.
+
+-chgrp [-R] GROUP PATH... :
+  This is equivalent to -chown ... :GROUP ...
+
+-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH... :
+  Changes permissions of a file. This works similar to the shell's chmod command
+  with a few exceptions.
+
+  -R           modifies the files recursively. This is the only option currently
+               supported.
+  <MODE>       Mode is the same as mode used for the shell's command. The only
+               letters recognized are 'rwxXt', e.g. +t,a+r,g-w,+rwx,o=r.
+  <OCTALMODE>  Mode specifed in 3 or 4 digits. If 4 digits, the first may be 1 or
+               0 to turn the sticky bit on or off, respectively.  Unlike the
+               shell command, it is not possible to specify only part of the
+               mode, e.g. 754 is same as u=rwx,g=rx,o=r.
+
+  If none of 'augo' is specified, 'a' is assumed and unlike the shell command, no
+  umask is applied.
+
+-chown [-R] [OWNER][:[GROUP]] PATH... :
+  Changes owner and group of a file. This is similar to the shell's chown command
+  with a few exceptions.
+
+  -R  modifies the files recursively. This is the only option currently
+      supported.
+
+  If only the owner or group is specified, then only the owner or group is
+  modified. The owner and group names may only consist of digits, alphabet, and
+  any of [-_./@a-zA-Z0-9]. The names are case sensitive.
+
+  WARNING: Avoid using '.' to separate user name and group though Linux allows it.
+  If user names have dots in them and you are using local file system, you might
+  see surprising results since the shell command 'chown' is used for local files.
+
+-copyFromLocal [-f] [-p] [-l] <localsrc> ... <dst> :
+  Identical to the -put command.
+
+-copyToLocal [-p] [-ignoreCrc] [-crc] <src> ... <localdst> :
+  Identical to the -get command.
+
+-count [-q] [-h] <path> ... :
+  Count the number of directories, files and bytes under the paths
+  that match the specified file pattern.  The output columns are:
+  DIR_COUNT FILE_COUNT CONTENT_SIZE FILE_NAME or
+  QUOTA REMAINING_QUOTA SPACE_QUOTA REMAINING_SPACE_QUOTA
+        DIR_COUNT FILE_COUNT CONTENT_SIZE FILE_NAME
+  The -h option shows file sizes in human readable format.
+
+-cp [-f] [-p | -p[topax]] <src> ... <dst> :
+  Copy files that match the file pattern <src> to a destination.  When copying
+  multiple files, the destination must be a directory. Passing -p preserves status
+  [topax] (timestamps, ownership, permission, ACLs, XAttr). If -p is specified
+  with no <arg>, then preserves timestamps, ownership, permission. If -pa is
+  specified, then preserves permission also because ACL is a super-set of
+  permission. Passing -f overwrites the destination if it already exists. raw
+  namespace extended attributes are preserved if (1) they are supported (HDFS
+  only) and, (2) all of the source and target pathnames are in the /.reserved/raw
+  hierarchy. raw namespace xattr preservation is determined solely by the presence
+  (or absence) of the /.reserved/raw prefix and not by the -p option.
+
+-createSnapshot <snapshotDir> [<snapshotName>] :
+  Create a snapshot on a directory
+
+-deleteSnapshot <snapshotDir> <snapshotName> :
+  Delete a snapshot from a directory
+
+-df [-h] [<path> ...] :
+  Shows the capacity, free and used space of the filesystem. If the filesystem has
+  multiple partitions, and no path to a particular partition is specified, then
+  the status of the root partitions will be shown.
+
+  -h  Formats the sizes of files in a human-readable fashion rather than a number
+      of bytes.
+
+-du [-s] [-h] <path> ... :
+  Show the amount of space, in bytes, used by the files that match the specified
+  file pattern. The following flags are optional:
+
+  -s  Rather than showing the size of each individual file that matches the
+      pattern, shows the total (summary) size.
+  -h  Formats the sizes of files in a human-readable fashion rather than a number
+      of bytes.
+
+  Note that, even without the -s option, this only shows size summaries one level
+  deep into a directory.
+
+  The output is in the form
+        size    name(full path)
+
+-expunge :
+  Delete files from the trash that are older than the retention threshold
+
+-find <path> ... <expression> ... :
+  Finds all files that match the specified expression and
+  applies selected actions to them. If no <path> is specified
+  then defaults to the current working directory. If no
+  expression is specified then defaults to -print.
+
+  The following primary expressions are recognised:
+    -name pattern
+    -iname pattern
+      Evaluates as true if the basename of the file matches the
+      pattern using standard file system globbing.
+      If -iname is used then the match is case insensitive.
+
+    -print
+    -print0
+      Always evaluates to true. Causes the current pathname to be
+      written to standard output followed by a newline. If the -print0
+      expression is used then an ASCII NULL character is appended rather
+      than a newline.
+
+  The following operators are recognised:
+    expression -a expression
+    expression -and expression
+    expression expression
+      Logical AND operator for joining two expressions. Returns
+      true if both child expressions return true. Implied by the
+      juxtaposition of two expressions and so does not need to be
+      explicitly specified. The second expression will not be
+      applied if the first fails.
+
+-get [-p] [-ignoreCrc] [-crc] <src> ... <localdst> :
+  Copy files that match the file pattern <src> to the local name.  <src> is kept.
+  When copying multiple files, the destination must be a directory. Passing -p
+  preserves access and modification times, ownership and the mode.
+
+-getfacl [-R] <path> :
+  Displays the Access Control Lists (ACLs) of files and directories. If a
+  directory has a default ACL, then getfacl also displays the default ACL.
+
+  -R      List the ACLs of all files and directories recursively.
+  <path>  File or directory to list.
+
+-getfattr [-R] {-n name | -d} [-e en] <path> :
+  Displays the extended attribute names and values (if any) for a file or
+  directory.
+
+  -R             Recursively list the attributes for all files and directories.
+  -n name        Dump the named extended attribute value.
+  -d             Dump all extended attribute values associated with pathname.
+  -e <encoding>  Encode values after retrieving them.Valid encodings are "text",
+                 "hex", and "base64". Values encoded as text strings are enclosed
+                 in double quotes ("), and values encoded as hexadecimal and
+                 base64 are prefixed with 0x and 0s, respectively.
+  <path>         The file or directory.
+
+-getmerge [-nl] <src> <localdst> :
+  Get all the files in the directories that match the source file pattern and
+  merge and sort them to only one file on local fs. <src> is kept.
+
+  -nl  Add a newline character at the end of each file.
+
+-help [cmd ...] :
+  Displays help for given command or all commands if none is specified.
+
+-ls [-d] [-h] [-R] [<path> ...] :
+  List the contents that match the specified file pattern. If path is not
+  specified, the contents of /user/<currentUser> will be listed. Directory entries
+  are of the form:
+        permissions - userId groupId sizeOfDirectory(in bytes)
+  modificationDate(yyyy-MM-dd HH:mm) directoryName
+
+  and file entries are of the form:
+        permissions numberOfReplicas userId groupId sizeOfFile(in bytes)
+  modificationDate(yyyy-MM-dd HH:mm) fileName
+
+  -d  Directories are listed as plain files.
+  -h  Formats the sizes of files in a human-readable fashion rather than a number
+      of bytes.
+  -R  Recursively list the contents of directories.
+
+-mkdir [-p] <path> ... :
+  Create a directory in specified location.
+
+  -p  Do not fail if the directory already exists
+
+-moveFromLocal <localsrc> ... <dst> :
+  Same as -put, except that the source is deleted after it's copied.
+
+-moveToLocal <src> <localdst> :
+  Not implemented yet
+
+-mv <src> ... <dst> :
+  Move files that match the specified file pattern <src> to a destination <dst>.
+  When moving multiple files, the destination must be a directory.
+
+-put [-f] [-p] [-l] <localsrc> ... <dst> :
+  Copy files from the local file system into fs. Copying fails if the file already
+  exists, unless the -f flag is given.
+  Flags:
+
+  -p  Preserves access and modification times, ownership and the mode.
+  -f  Overwrites the destination if it already exists.
+  -l  Allow DataNode to lazily persist the file to disk. Forces
+         replication factor of 1. This flag will result in reduced
+         durability. Use with care.
+
+-renameSnapshot <snapshotDir> <oldName> <newName> :
+  Rename a snapshot from oldName to newName
+
+-rm [-f] [-r|-R] [-skipTrash] <src> ... :
+  Delete all files that match the specified file pattern. Equivalent to the Unix
+  command "rm <src>"
+
+  -skipTrash  option bypasses trash, if enabled, and immediately deletes <src>
+  -f          If the file does not exist, do not display a diagnostic message or
+              modify the exit status to reflect an error.
+  -[rR]       Recursively deletes directories
+
+-rmdir [--ignore-fail-on-non-empty] <dir> ... :
+  Removes the directory entry specified by each directory argument, provided it is
+  empty.
+
+-setfacl [-R] [{-b|-k} {-m|-x <acl_spec>} <path>]|[--set <acl_spec> <path>] :
+  Sets Access Control Lists (ACLs) of files and directories.
+  Options:
+
+  -b          Remove all but the base ACL entries. The entries for user, group
+              and others are retained for compatibility with permission bits.
+  -k          Remove the default ACL.
+  -R          Apply operations to all files and directories recursively.
+  -m          Modify ACL. New entries are added to the ACL, and existing entries
+              are retained.
+  -x          Remove specified ACL entries. Other ACL entries are retained.
+  --set       Fully replace the ACL, discarding all existing entries. The
+              <acl_spec> must include entries for user, group, and others for
+              compatibility with permission bits.
+  <acl_spec>  Comma separated list of ACL entries.
+  <path>      File or directory to modify.
+
+-setfattr {-n name [-v value] | -x name} <path> :
+  Sets an extended attribute name and value for a file or directory.
+
+  -n name   The extended attribute name.
+  -v value  The extended attribute value. There are three different encoding
+            methods for the value. If the argument is enclosed in double quotes,
+            then the value is the string inside the quotes. If the argument is
+            prefixed with 0x or 0X, then it is taken as a hexadecimal number. If
+            the argument begins with 0s or 0S, then it is taken as a base64
+            encoding.
+  -x name   Remove the extended attribute.
+  <path>    The file or directory.
+
+-setrep [-R] [-w] <rep> <path> ... :
+  Set the replication level of a file. If <path> is a directory then the command
+  recursively changes the replication factor of all files under the directory tree
+  rooted at <path>.
+
+  -w  It requests that the command waits for the replication to complete. This
+      can potentially take a very long time.
+  -R  It is accepted for backwards compatibility. It has no effect.
+
+-stat [format] <path> ... :
+  Print statistics about the file/directory at <path>
+  in the specified format. Format accepts filesize in
+  blocks (%b), type (%F), group name of owner (%g),
+  name (%n), block size (%o), replication (%r), user name
+  of owner (%u), modification date (%y, %Y).
+  %y shows UTC date as "yyyy-MM-dd HH:mm:ss" and
+  %Y shows milliseconds since January 1, 1970 UTC.
+  If the format is not specified, %y is used by default.
+
+-tail [-f] <file> :
+  Show the last 1KB of the file.
+
+  -f  Shows appended data as the file grows.
+
+-test -[defsz] <path> :
+  Answer various questions about <path>, with result via exit status.
+    -d  return 0 if <path> is a directory.
+    -e  return 0 if <path> exists.
+    -f  return 0 if <path> is a file.
+    -s  return 0 if file <path> is greater than zero bytes in size.
+    -z  return 0 if file <path> is zero bytes in size, else return 1.
+
+-text [-ignoreCrc] <src> ... :
+  Takes a source file and outputs the file in text format.
+  The allowed formats are zip and TextRecordInputStream and Avro.
+
+-touchz <path> ... :
+  Creates a file of zero length at <path> with current time as the timestamp of
+  that <path>. An error is returned if the file exists with non-zero length
+
+-truncate [-w] <length> <path> ... :
+  Truncate all files that match the specified file pattern to the specified
+  length.
+
+  -w  Requests that the command wait for block recovery to complete, if
+      necessary.
+
+-usage [cmd ...] :
+  Displays the usage for given command or all commands if none is specified.
+
+Generic options supported are
+-conf <configuration file>     specify an application configuration file
+-D <property=value>            use value for given property
+-fs <local|namenode:port>      specify a namenode
+-jt <local|resourcemanager:port>    specify a ResourceManager
+-files <comma separated list of files>    specify comma separated files to be copied to the map reduce cluster
+-libjars <comma separated list of jars>    specify comma separated jar files to include in the classpath.
+-archives <comma separated list of archives>    specify comma separated archives to be unarchived on the compute machines.
+
+The general command line syntax is
+bin/hadoop command [genericOptions] [commandOptions]
+
+
+root@namenode:/# hdfs dfs -mkdir -p /user/aluno2/feliciani2/data2   ######################################## usar o -p para criar as subpastas
+
+root@namenode:/# hdfs dfs -ls -R /user/aluno2    ########################################################### usar o -R de recursivo e visualizar tudo
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:59 /user/aluno2/feliciani2
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:59 /user/aluno2/feliciani2/data2
+
+root@namenode:/# hdfs dfs -mkdir -p /user/aluno2/feliciani2/recover
+
+root@namenode:/# hdfs dfs -mkdir -p /user/aluno2/feliciani2/delete
+
+root@namenode:/# hdfs dfs -ls -R /user/aluno2
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:25 /user/aluno2/feliciani2
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:59 /user/aluno2/feliciani2/data2
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:25 /user/aluno2/feliciani2/delete
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:25 /user/aluno2/feliciani2/recover
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/escola/ /user/aluno2/feliciani2/data  ############################ copiei arquivos do local para o HDFS
+
+root@namenode:/# hdfs dfs -ls -R /user/aluno2/feliciani2/data
+-rw-r--r--   3 root supergroup        147 2021-04-23 13:32 /user/aluno2/feliciani2/data/README.md
+-rw-r--r--   3 root supergroup     546284 2021-04-23 13:32 /user/aluno2/feliciani2/data/alunos.csv
+-rw-r--r--   3 root supergroup    4891872 2021-04-23 13:32 /user/aluno2/feliciani2/data/alunos.json
+-rw-r--r--   3 root supergroup      98437 2021-04-23 13:32 /user/aluno2/feliciani2/data/alunos.png
+-rw-r--r--   3 root supergroup    6044140 2021-04-23 13:32 /user/aluno2/feliciani2/data/alunos.xml
+-rw-r--r--   3 root supergroup       4667 2021-04-23 13:32 /user/aluno2/feliciani2/data/bens-imoveis.json
+-rw-r--r--   3 root supergroup      78599 2021-04-23 13:32 /user/aluno2/feliciani2/data/bens-imoveis.png
+-rw-r--r--   3 root supergroup       5630 2021-04-23 13:32 /user/aluno2/feliciani2/data/bens-imoveis.xml
+-rw-r--r--   3 root supergroup       1998 2021-04-23 13:32 /user/aluno2/feliciani2/data/bens_imovel.csv
+-rw-r--r--   3 root supergroup     731195 2021-04-23 13:32 /user/aluno2/feliciani2/data/componentes-curriculares.csv
+-rw-r--r--   3 root supergroup    9787990 2021-04-23 13:33 /user/aluno2/feliciani2/data/componentes-curriculares.json
+-rw-r--r--   3 root supergroup     109655 2021-04-23 13:33 /user/aluno2/feliciani2/data/componentes-curriculares.png
+-rw-r--r--   3 root supergroup      18308 2021-04-23 13:33 /user/aluno2/feliciani2/data/cursos.csv
+-rw-r--r--   3 root supergroup     253692 2021-04-23 13:33 /user/aluno2/feliciani2/data/cursos.json
+-rw-r--r--   3 root supergroup      97271 2021-04-23 13:33 /user/aluno2/feliciani2/data/cursos.png
+-rw-r--r--   3 root supergroup     295196 2021-04-23 13:33 /user/aluno2/feliciani2/data/cursos.xml
+-rw-r--r--   3 root supergroup      12129 2021-04-23 13:33 /user/aluno2/feliciani2/data/designacoes.csv
+-rw-r--r--   3 root supergroup     279549 2021-04-23 13:33 /user/aluno2/feliciani2/data/designacoes.json
+-rw-r--r--   3 root supergroup      96691 2021-04-23 13:33 /user/aluno2/feliciani2/data/designacoes.png
+-rw-r--r--   3 root supergroup     336640 2021-04-23 13:33 /user/aluno2/feliciani2/data/designacoes.xml
+-rw-r--r--   3 root supergroup      18694 2021-04-23 13:33 /user/aluno2/feliciani2/data/prestadoras-servico.csv
+-rw-r--r--   3 root supergroup      33426 2021-04-23 13:33 /user/aluno2/feliciani2/data/prestadoras-servico.json
+-rw-r--r--   3 root supergroup     169764 2021-04-23 13:33 /user/aluno2/feliciani2/data/prestadoras-servico.png
+-rw-r--r--   3 root supergroup      41473 2021-04-23 13:33 /user/aluno2/feliciani2/data/prestadoras-servico.xml
+-rw-r--r--   3 root supergroup     105897 2021-04-23 13:33 /user/aluno2/feliciani2/data/servidores.csv
+-rw-r--r--   3 root supergroup    2597473 2021-04-23 13:33 /user/aluno2/feliciani2/data/servidores.json
+-rw-r--r--   3 root supergroup      89028 2021-04-23 13:33 /user/aluno2/feliciani2/data/servidores.png
+-rw-r--r--   3 root supergroup    3069250 2021-04-23 13:33 /user/aluno2/feliciani2/data/servidores.xml
+-rw-r--r--   3 root supergroup     314729 2021-04-23 13:33 /user/aluno2/feliciani2/data/unidades-organizacionais.json
+-rw-r--r--   3 root supergroup     102433 2021-04-23 13:33 /user/aluno2/feliciani2/data/unidades-organizacionais.png
+-rw-r--r--   3 root supergroup     382416 2021-04-23 13:33 /user/aluno2/feliciani2/data/unidades-organizacionais.xml
+-rw-r--r--   3 root supergroup      40235 2021-04-23 13:33 /user/aluno2/feliciani2/data/unidades.csv
+
+root@namenode:/# hdfs dfs -rm -r /user/aluno2/feliciani2/data  ################################################################################# Deletei
+21/04/23 13:40:09 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted /user/aluno2/feliciani2/data
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/escola/ /user/aluno2/feliciani2/data2  ############################ copiei uma pasta do local para o HDFS
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/entrada1.txt /user/aluno2/feliciani2/data2 ########################copiei um arquivo do local para o HDFS
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2  ######################## listando o que tem na data2
+Found 2 items
+-rw-r--r--   3 root supergroup         54 2021-04-23 13:38 /user/aluno2/feliciani2/data2/entrada1.txt
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+
+root@namenode:/# hdfs dfs -ls -R /user/aluno2/feliciani2/data2 ######################## listando com o -R para ver tudo na data2
+-rw-r--r--   3 root supergroup         54 2021-04-23 13:38 /user/aluno2/feliciani2/data2/entrada1.txt
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+-rw-r--r--   3 root supergroup        147 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/README.md
+-rw-r--r--   3 root supergroup     546284 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/alunos.csv
+-rw-r--r--   3 root supergroup    4891872 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/alunos.json
+-rw-r--r--   3 root supergroup      98437 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/alunos.png
+-rw-r--r--   3 root supergroup    6044140 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/alunos.xml
+-rw-r--r--   3 root supergroup       4667 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/bens-imoveis.json
+-rw-r--r--   3 root supergroup      78599 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/bens-imoveis.png
+-rw-r--r--   3 root supergroup       5630 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/bens-imoveis.xml
+-rw-r--r--   3 root supergroup       1998 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/bens_imovel.csv
+-rw-r--r--   3 root supergroup     731195 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/componentes-curriculares.csv
+-rw-r--r--   3 root supergroup    9787990 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/componentes-curriculares.json
+-rw-r--r--   3 root supergroup     109655 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/componentes-curriculares.png
+-rw-r--r--   3 root supergroup      18308 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/cursos.csv
+-rw-r--r--   3 root supergroup     253692 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/cursos.json
+-rw-r--r--   3 root supergroup      97271 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/cursos.png
+-rw-r--r--   3 root supergroup     295196 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/cursos.xml
+-rw-r--r--   3 root supergroup      12129 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/designacoes.csv
+-rw-r--r--   3 root supergroup     279549 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/designacoes.json
+-rw-r--r--   3 root supergroup      96691 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/designacoes.png
+-rw-r--r--   3 root supergroup     336640 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/designacoes.xml
+-rw-r--r--   3 root supergroup      18694 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/prestadoras-servico.csv
+-rw-r--r--   3 root supergroup      33426 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/prestadoras-servico.json
+-rw-r--r--   3 root supergroup     169764 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/prestadoras-servico.png
+-rw-r--r--   3 root supergroup      41473 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/prestadoras-servico.xml
+-rw-r--r--   3 root supergroup     105897 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/servidores.csv
+-rw-r--r--   3 root supergroup    2597473 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/servidores.json
+-rw-r--r--   3 root supergroup      89028 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/servidores.png
+-rw-r--r--   3 root supergroup    3069250 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/servidores.xml
+-rw-r--r--   3 root supergroup     314729 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/unidades-organizacionais.json
+-rw-r--r--   3 root supergroup     102433 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/unidades-organizacionais.png
+-rw-r--r--   3 root supergroup     382416 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/unidades-organizacionais.xml
+-rw-r--r--   3 root supergroup      40235 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola/unidades.csv
+
+root@namenode:/# hdfs dfs -mv /user/aluno2/feliciani2/data2/entrada1.txt /user/aluno2/feliciani2/recover  ################################ movendo o arquivo
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/recover
+Found 1 items
+-rw-r--r--   3 root supergroup         54 2021-04-23 13:38 /user/aluno2/feliciani2/recover/entrada1.txt
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2
+Found 1 items
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+
+
+root@namenode:/# hdfs dfs -rm -r /user/aluno2/feliciani2/recover ################################ Apagando o diretório
+21/04/23 13:52:56 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted /user/aluno2/feliciani2/recover
+############
+############ No print mostra que NÃO TEM LIXEIRA CONFIGURADA para reter o arquivo por um período determinado.
+############
+
+root@namenode:/# hdfs dfs -rm -skipTrash -r /user/aluno2/feliciani2/delete ############################# Apagando o diretório SEM OPÇÃO DE ENVIAR PARA LIXEIRA
+Deleted /user/aluno2/feliciani2/delete
+
+root@namenode:/# hdfs dfs -find /user -name alunos.csv   ############################################### Procurando um arquivo no cluster com nome exato
+/user/aluno2/feliciani2/data2/escola/alunos.csv
+
+
+root@namenode:/# hdfs dfs -find /user -name Alunos.csv  ############################################### Não encontrou por que tem A maiúsculo na busca
+
+root@namenode:/# hdfs dfs -find /user -iname Alunos.csv ############################################### ENCONTROU mesmo tendo A maiúsculo na busca
+/user/aluno2/feliciani2/data2/escola/alunos.csv
+
+
+root@namenode:/# hdfs dfs -tail /user/aluno2/feliciani2/data2/escola/alunos.csv ############ Mostra o último 1K do arquivo
+NHO KANAREK",2018,0,N,2081113,2399342
+26660,"PIETRA DE SOUZA MATANA",2019,0,N,2081113,2399351
+11693,"PIETRA MARINÉE ZAMIN",2016,1,G,62151,62474
+573,"PIETRA PERES SCHLUMPF",2015,,M,2081113,3402
+23268,"PIETRA SOUTO LEMBERCK",2018,0,N,2081113,2399362
+17350,"PIETRO ANTUNES MACHADO",2017,,M,37350,511414
+27185,"PIETRO BORGES TIECHER",2019,0,N,2081113,2399346
+486,"PIETRO CORADINI FOLETTO",2015,,M,2081113,3402
+26272,"PIETRO EGLON DOLMAZE DE MEDEIROS",2019,0,N,2081113,2399335
+24473,"PIETRO HENRIQUE SILVA DOS SANTOS",2018,0,N,2081113,2399355
+4364,"PLINIO BITENCURT FINAMOR",2014,1,T,37350,39
+2084,"POLIANA GRAUPE DE ALMEIDA",2012,0,M,37350,1117
+21855,"POLIANA WAHLBRINCK VOLZ",2018,0,N,2081113,2399327
+1528,"POLYANA FOLETTO PRAUCHNER",2014,0,M,37350,1212
+21162,"POLYANA FOLETTO PRAUCHNER",2018,1,G,5997,712452
+21672,"POLYANA FUCILINI",2018,0,N,2081113,2399116
+20089,"PRAXEDES RODRIGUES DE RODRIGUES",2017,,M,37350,3763
+27509,"PRECILA FRANCESCKI TURRA",2019,1,T,2081111,34236
+1345,"PREDON DE SOUZA DA SILVA",2015,,M,37350,11442
+
+
+root@namenode:/# hdfs dfs -cat /user/aluno2/feliciani2/data2/escola/alunos.csv | head -n 5 ################## Mostra as 5 primeiras linhas do arquivo
+id_discente,nome,ano_ingresso,periodo_ingresso,nivel,id_forma_ingresso,id_curso
+18957,"ABELARDO DA SILVA COELHO",2017,1,G,62151,76995
+553,"ABIEL GODOY MARIANO",2015,,M,2081113,3402
+17977,"ABIGAIL ANTUNES SALERNO FAN",2017,1,T,2081111,759711
+16613,"ABIGAIL FERNANDA MALHEIROS BRASIL",2017,,M,37350,1222
+cat: Unable to write to output stream.
+
+
+root@namenode:/# hdfs dfs -checksum /user/aluno2/feliciani2/data2/escola/alunos.csv
+/user/aluno2/feliciani2/data2/escola/alunos.csv MD5-of-0MD5-of-512CRC32C        000002000000000000000000164b9235a4d65a1e8ebfe12eb97ac471
+############
+############ checksum cria um codigo para comparar esse arquivo, no vaso de fazermos uma cópia dele para outro lugar.
+############ o checksum do arquivo de origem e da cópia deve ter o mesmo código indicando que está integro
+############
+
+root@namenode:/# hdfs dfs -touchz /user/aluno2/feliciani2/data2/test.txt ################################# Criei o arquivo
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2
+Found 2 items
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+-rw-r--r--   3 root supergroup          0 2021-04-23 14:42 /user/aluno2/feliciani2/data2/test.txt 
+######################### Posso conferir o horário do sistema no momento da criação do arquivo
+
+root@namenode:/# hdfs dfs -setrep 2 /user/aluno2/feliciani2/data2/test.txt  #################### Alterei o FATOR DE REPLICAÇÃO para 2. Setado default é 3
+Replication 2 set: /user/aluno2/feliciani2/data2/test.txt
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2
+Found 2 items
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+-rw-r--r--   2 root supergroup          0 2021-04-23 14:42 /user/aluno2/feliciani2/data2/test.txt ################## Alterei o FATOR DE REPLICAÇÃO para 2
+
+
+root@namenode:/# hdfs dfs -help stat ##################################### possibilidades de ver as estatísticas
+-stat [format] <path> ... :
+  Print statistics about the file/directory at <path>
+  in the specified format. Format accepts filesize in
+  blocks (%b), type (%F), group name of owner (%g),
+  name (%n), block size (%o), replication (%r), user name
+  of owner (%u), modification date (%y, %Y).
+  %y shows UTC date as "yyyy-MM-dd HH:mm:ss" and
+  %Y shows milliseconds since January 1, 1970 UTC.
+  If the format is not specified, %y is used by default.
+
+root@namenode:/# hdfs dfs -stat %r /user/aluno2/feliciani2/data2/escola/alunos.csv  ############# ver o fator de replicação
+3
+
+root@namenode:/# hdfs dfs -stat %o /user/aluno2/feliciani2/data2/escola/alunos.csv  ############# ver o tamanho do bloco  134214728 / 1024 = 128MB
+134217728
+
+
+root@namenode:/# hdfs dfs -df /user/aluno2/feliciani2/data2/escola/alunos.csv
+Filesystem                    Size       Used     Available  Use%
+hdfs://namenode:8020  524286947328  158253056  166334574758    0%
+
+root@namenode:/# hdfs dfs -df -h /user/aluno2/feliciani2/data2/escola/alunos.csv  ############ armazenamento do cluster
+Filesystem               Size     Used  Available  Use%
+hdfs://namenode:8020  488.3 G  150.9 M    154.9 G    0%
+
+root@namenode:/# hdfs dfs -du -h /user/aluno2/feliciani2/data2  ############ armazenamento por pasta
+29.2 M  /user/aluno2/feliciani2/data2/escola
+0       /user/aluno2/feliciani2/data2/test.txt
+
+root@namenode:/# hdfs dfs -du -h /
+30.0 K   /hbase
+0        /tmp
+149.3 M  /user
+
