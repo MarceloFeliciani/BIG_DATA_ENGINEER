@@ -1,0 +1,179 @@
+PS E:\projetos\docker-bigdata> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Recreating database  ... done
+Recreating namenode  ... done
+Recreating zookeeper ... done
+Recreating spark     ... done
+Recreating hbase-master              ... done
+Recreating datanode     ... done
+Recreating hive-metastore-postgresql ... done
+Recreating hive_metastore            ... done
+Recreating hive-server               ... done
+
+
+##########################################################################################################################################
+#
+# VOU ENVIAR UM ARQUIVO DO ARQUIVAMENTO LOCAL DO COMPUTADOR PARA HIVE COMO TABELA RAW QUE SERÁ POSTERIORMENTE USADA PARA FAZER ANÁLISES
+#
+##########################################################################################################################################
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode bash
+
+root@namenode:/# ls input/exercises-data/populacaoLA/
+README.md  populacaoLA.csv  populacaoLA.json
+
+root@namenode:/# hdfs dfs -mkdir /user/aluno2/feliciani2/data2/populacao2
+
+root@namenode:/# hdfs dfs -put input/exercises-data/populacaoLA/populacaoLA.csv /user/aluno2/feliciani2/data2/populacao2  ######## Enviei para o HDFS
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2/populacao2
+Found 1 items
+-rw-r--r--   3 root supergroup      12183 2021-04-26 13:11 /user/aluno2/feliciani2/data2/populacao2/populacaoLA.csv  ############## Fator de replicacao 3
+
+root@namenode:/# hdfs dfs -cat /user/aluno2/feliciani2/data2/populacao2/populacaoLA.csv | head -n 5   ############# As 5 primeiras linhas do conteudo do arquivo
+Zip Code,Total Population,Median Age,Total Males,Total Females,Total Households,Average Household Size
+91371,1,73.5,0,1,1,1
+90001,57110,26.6,28468,28642,12971,4.4
+90002,51223,25.5,24876,26347,11731,4.36
+90003,66266,26.3,32631,33635,15642,4.22
+
+root@namenode:/# exit
+
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> show databases;
++----------------+
+| database_name  |
++----------------+
+| default        |
+| feliciani      |
++----------------+
+2 rows selected (0.213 seconds)
+
+0: jdbc:hive2://localhost:10000> create database feliciani2;  ######################### Criando nova Base de Dados
+No rows affected (3.29 seconds)
+
+0: jdbc:hive2://localhost:10000> show databases;
++----------------+
+| database_name  |
++----------------+
+| default        |
+| feliciani      |
+| feliciani2     |
++----------------+
+3 rows selected (0.04 seconds)
+
+0: jdbc:hive2://localhost:10000> use feliciani2;
+No rows affected (0.058 seconds)
+
+0: jdbc:hive2://localhost:10000> create table populacao(                  ######################### Criando A TABELA RAW
+. . . . . . . . . . . . . . . .> zip_code int,
+. . . . . . . . . . . . . . . .> total_population int,
+. . . . . . . . . . . . . . . .> median_age float,
+. . . . . . . . . . . . . . . .> total_males int,
+. . . . . . . . . . . . . . . .> total_females int,
+. . . . . . . . . . . . . . . .> total_households int,
+. . . . . . . . . . . . . . . .> average_households_size float
+. . . . . . . . . . . . . . . .> )
+. . . . . . . . . . . . . . . .> row format delimited                               ######################### INFORMANDO OS DELIMITADORES
+. . . . . . . . . . . . . . . .> fields terminated by ','                           ######################### CAMPOS COM VIRGULA
+. . . . . . . . . . . . . . . .> lines terminated by '\n'                           ######################### NOVAS LINHAS 
+. . . . . . . . . . . . . . . .> stored as textfile                                 ######################### FORMATO DO ARMAZENAMENTO
+. . . . . . . . . . . . . . . .> tblproperties("skip.header.line.count"="1");       ######################### PULANDO O CABECALHO
+No rows affected (2.626 seconds)
+
+
+0: jdbc:hive2://localhost:10000> desc populacao;
++--------------------------+------------+----------+
+|         col_name         | data_type  | comment  |
++--------------------------+------------+----------+
+| zip_code                 | int        |          |
+| total_population         | int        |          |
+| median_age               | float      |          |
+| total_males              | int        |          |
+| total_females            | int        |          |
+| total_households         | int        |          |
+| average_households_size  | float      |          |
++--------------------------+------------+----------+
+7 rows selected (0.822 seconds)
+
+0: jdbc:hive2://localhost:10000> desc formatted populacao;
++-------------------------------+----------------------------------------------------+-----------------------------+
+|           col_name            |                     data_type                      |           comment           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+| # col_name                    | data_type                                          | comment                     |
+|                               | NULL                                               | NULL                        |
+| zip_code                      | int                                                |                             |
+| total_population              | int                                                |                             |
+| median_age                    | float                                              |                             |
+| total_males                   | int                                                |                             |
+| total_females                 | int                                                |                             |
+| total_households              | int                                                |                             |
+| average_households_size       | float                                              |                             |
+|                               | NULL                                               | NULL                        |
+| # Detailed Table Information  | NULL                                               | NULL                        |
+| Database:                     | feliciani2                                         | NULL                        |
+| Owner:                        | root                                               | NULL                        |
+| CreateTime:                   | Mon Apr 26 13:32:34 UTC 2021                       | NULL                        |
+| LastAccessTime:               | UNKNOWN                                            | NULL                        |
+| Retention:                    | 0                                                  | NULL                        |
+| Location:                     | hdfs://namenode:8020/user/hive/warehouse/feliciani2.db/populacao | NULL                 ############## LOCAL DO ARMAZENAMENTO
+| Table Type:                   | MANAGED_TABLE                                      | NULL                        |
+| Table Parameters:             | NULL                                               | NULL                        |
+|                               | COLUMN_STATS_ACCURATE                              | {\"BASIC_STATS\":\"true\"}  |
+|                               | numFiles                                           | 0                           |
+|                               | numRows                                            | 0                           |
+|                               | rawDataSize                                        | 0                           |
+|                               | skip.header.line.count                             | 1                           |
+|                               | totalSize                                          | 0                           |
+|                               | transient_lastDdlTime                              | 1619443954                  |
+|                               | NULL                                               | NULL                        |
+| # Storage Information         | NULL                                               | NULL                        |
+| SerDe Library:                | org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe | NULL                        |
+| InputFormat:                  | org.apache.hadoop.mapred.TextInputFormat           | NULL                        |
+| OutputFormat:                 | org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat | NULL                        |
+| Compressed:                   | No                                                 | NULL                        |
+| Num Buckets:                  | -1                                                 | NULL                        |
+| Bucket Columns:               | []                                                 | NULL                        |
+| Sort Columns:                 | []                                                 | NULL                        |
+| Storage Desc Params:          | NULL                                               | NULL                        |
+|                               | field.delim                                        | ,                           |
+|                               | line.delim                                         | \n                          |
+|                               | serialization.format                               | ,                           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+39 rows selected (0.909 seconds)
+
+0: jdbc:hive2://localhost:10000> Closing: 0: jdbc:hive2://localhost:10000  ###################### CTRL + D para sair do conector
+
+root@hive_server:/opt# exit   ############################################################ CTRL + D para sair
+
+PS E:\projetos\docker-bigdata> docker-compose stop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
