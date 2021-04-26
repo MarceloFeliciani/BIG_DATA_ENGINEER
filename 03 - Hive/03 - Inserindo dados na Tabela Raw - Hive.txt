@@ -1,0 +1,150 @@
+
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> show databases;
++----------------+
+| database_name  |
++----------------+
+| default        |
+| feliciani      |
+| feliciani2     |
++----------------+
+3 rows selected (0.246 seconds)
+
+0: jdbc:hive2://localhost:10000> use feliciani2;
+No rows affected (0.044 seconds)
+
+0: jdbc:hive2://localhost:10000> show tables;
++------------+
+|  tab_name  |
++------------+
+| populacao  |
++------------+
+1 row selected (0.239 seconds)
+0: jdbc:hive2://localhost:10000> desc populacao;
++--------------------------+------------+----------+
+|         col_name         | data_type  | comment  |
++--------------------------+------------+----------+
+| zip_code                 | int        |          |
+| total_population         | int        |          |
+| median_age               | float      |          |
+| total_males              | int        |          |
+| total_females            | int        |          |
+| total_households         | int        |          |
+| average_households_size  | float      |          |
++--------------------------+------------+----------+
+7 rows selected (1.129 seconds)
+
+0: jdbc:hive2://localhost:10000> desc formatted populacao;
++-------------------------------+----------------------------------------------------+-----------------------------+
+|           col_name            |                     data_type                      |           comment           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+| # col_name                    | data_type                                          | comment                     |
+|                               | NULL                                               | NULL                        |
+| zip_code                      | int                                                |                             |
+| total_population              | int                                                |                             |
+| median_age                    | float                                              |                             |
+| total_males                   | int                                                |                             |
+| total_females                 | int                                                |                             |
+| total_households              | int                                                |                             |
+| average_households_size       | float                                              |                             |
+|                               | NULL                                               | NULL                        |
+| # Detailed Table Information  | NULL                                               | NULL                        |
+| Database:                     | feliciani2                                         | NULL                        |
+| Owner:                        | root                                               | NULL                        |
+| CreateTime:                   | Mon Apr 26 13:32:34 UTC 2021                       | NULL                        |
+| LastAccessTime:               | UNKNOWN                                            | NULL                        |
+| Retention:                    | 0                                                  | NULL                        |
+| Location:                     | hdfs://namenode:8020/user/hive/warehouse/feliciani2.db/populacao | NULL                        |
+| Table Type:                   | MANAGED_TABLE                                      | NULL                        |
+| Table Parameters:             | NULL                                               | NULL                        |
+|                               | COLUMN_STATS_ACCURATE                              | {\"BASIC_STATS\":\"true\"}  |
+|                               | numFiles                                           | 0                           |
+|                               | numRows                                            | 0                           |
+|                               | rawDataSize                                        | 0                           |
+|                               | skip.header.line.count                             | 1                           |
+|                               | totalSize                                          | 0                           |
+|                               | transient_lastDdlTime                              | 1619443954                  |
+|                               | NULL                                               | NULL                        |
+| # Storage Information         | NULL                                               | NULL                        |
+| SerDe Library:                | org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe | NULL                        |
+| InputFormat:                  | org.apache.hadoop.mapred.TextInputFormat           | NULL                        |
+| OutputFormat:                 | org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat | NULL                        |
+| Compressed:                   | No                                                 | NULL                        |
+| Num Buckets:                  | -1                                                 | NULL                        |
+| Bucket Columns:               | []                                                 | NULL                        |
+| Sort Columns:                 | []                                                 | NULL                        |
+| Storage Desc Params:          | NULL                                               | NULL                        |
+|                               | field.delim                                        | ,                           |
+|                               | line.delim                                         | \n                          |
+|                               | serialization.format                               | ,                           |
++-------------------------------+----------------------------------------------------+-----------------------------+
+39 rows selected (0.128 seconds)
+
+0: jdbc:hive2://localhost:10000> select * from populacao limit 10; ############################# SEMPRE LIMITAR A QUANTIDADE DE VALORES DA QUERY
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
+| populacao.zip_code  | populacao.total_population  | populacao.median_age  | populacao.total_males  | populacao.total_females  | populacao.total_households  | populacao.average_households_size  |
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
+No rows selected (4.809 seconds)
+
+
+0: jdbc:hive2://localhost:10000> load data inpath '/user/aluno2/feliciani2/data2/populacao2' overwrite into table populacao; ########## INSERI DADOS DO HDFS NA TABELA
+No rows affected (2.283 seconds)
+
+
+0: jdbc:hive2://localhost:10000> select * from populacao limit 10;
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
+| populacao.zip_code  | populacao.total_population  | populacao.median_age  | populacao.total_males  | populacao.total_females  | populacao.total_households  | populacao.average_households_size  |
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
+| 91371               | 1                           | 73.5                  | 0                      | 1                        | 1
+          | 1.0                                |
+| 90001               | 57110                       | 26.6                  | 28468                  | 28642                    | 12971
+          | 4.4                                |
+| 90002               | 51223                       | 25.5                  | 24876                  | 26347                    | 11731
+          | 4.36                               |
+| 90003               | 66266                       | 26.3                  | 32631                  | 33635                    | 15642
+          | 4.22                               |
+| 90004               | 62180                       | 34.8                  | 31302                  | 30878                    | 22547
+          | 2.73                               |
+| 90005               | 37681                       | 33.9                  | 19299                  | 18382                    | 15044
+          | 2.5                                |
+| 90006               | 59185                       | 32.4                  | 30254                  | 28931                    | 18617
+          | 3.13                               |
+| 90007               | 40920                       | 24.0                  | 20915                  | 20005                    | 11944
+          | 3.0                                |
+| 90008               | 32327                       | 39.7                  | 14477                  | 17850                    | 13841
+          | 2.33                               |
+| 90010               | 3800                        | 37.8                  | 1874                   | 1926                     | 2014
+          | 1.87                               |
++---------------------+-----------------------------+-----------------------+------------------------+--------------------------+-----------------------------+------------------------------------+
+10 rows selected (0.406 seconds)
+
+
+0: jdbc:hive2://localhost:10000> select count(*) from populacao; #################### 319 REGISTROS INSERIDOS DO ARQUIVO CSV QUE ESTA NO HDFS
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++------+
+| _c0  |
++------+
+| 319  |
++------+
+1 row selected (38.337 seconds)
+
+0: jdbc:hive2://localhost:10000> Closing: 0: jdbc:hive2://localhost:10000 ############################# CTRL + D
+
+root@hive_server:/opt# exit  ####################################################### CTRL + D
+
+PS E:\projetos\docker-bigdata>
+
