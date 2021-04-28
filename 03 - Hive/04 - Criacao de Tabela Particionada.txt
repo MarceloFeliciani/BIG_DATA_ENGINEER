@@ -1,0 +1,293 @@
+PS C:\Users\marce> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+PS C:\Users\marce> e:
+
+PS E:\> cd projetos\docker-bigdata
+
+PS E:\projetos\docker-bigdata> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting database  ... done
+Starting namenode  ... done
+Starting zookeeper ... done
+Starting spark        ... done
+Starting datanode     ... done
+Starting hbase-master              ... done
+Starting hive-metastore-postgresql ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+PS E:\projetos\docker-bigdata> docker exec -it namenode ls /   ############################### listei o conteúdo local
+bin        employees.java  hadoop-data  lib64         opt   run.sh  tmp
+boot       entrypoint.sh   home         media         proc  sbin    usr
+derby.log  etc             input        metastore_db  root  srv     var
+dev        hadoop          lib          mnt           run   sys
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode hdfs dfs -ls / ############################### listei o conteúdo do HDFS
+Found 3 items
+drwxr-xr-x   - root supergroup          0 2021-04-28 16:56 /hbase
+drwxrwxr-x   - root supergroup          0 2021-02-15 12:31 /tmp
+drwxr-xr-x   - root supergroup          0 2021-04-23 12:59 /user
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode hdfs dfs -mkdir /user/aluno2/feliciani2/data2/nascimento
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode hdfs dfs -ls /user/aluno2/feliciani2/data2/
+Found 3 items
+drwxr-xr-x   - root supergroup          0 2021-04-23 13:38 /user/aluno2/feliciani2/data2/escola
+drwxr-xr-x   - root supergroup          0 2021-04-28 17:01 /user/aluno2/feliciani2/data2/nascimento
+-rw-r--r--   2 root supergroup          0 2021-04-23 14:42 /user/aluno2/feliciani2/data2/test.txt
+
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> create external table nascimento(       ################# Criando uma tabela externa
+. . . . . . . . . . . . . . . .> nome string,
+. . . . . . . . . . . . . . . .> sexo string,
+. . . . . . . . . . . . . . . .> frequencia int
+. . . . . . . . . . . . . . . .> )
+. . . . . . . . . . . . . . . .> partitioned by (ano int)        ################# Particionado por ano. Terao diretorios com os dados por ano
+. . . . . . . . . . . . . . . .> row format delimited
+. . . . . . . . . . . . . . . .> fields terminated by ','     ################# Campo delimitado por virgula
+. . . . . . . . . . . . . . . .> lines terminated by '\n'     ################# quebra de linha
+. . . . . . . . . . . . . . . .> stored as textfile
+. . . . . . . . . . . . . . . .> location 'hdfs://namenode:8020/user/aluno2/feliciani2/data2/nascimento';  ################# local para armazenar a tabela externa
+No rows affected (2.358 seconds)   
+
+
+########### poderia ter usado acima ####### location '/user/aluno2/feliciani2/data2/nascimento';
+
+
+0: jdbc:hive2://localhost:10000> show tables;
++-------------+
+|  tab_name   |
++-------------+
+| nascimento  |
+| populacao   |
++-------------+
+2 rows selected (0.112 seconds)
+
+
+0: jdbc:hive2://localhost:10000> alter table nascimento add partition(ano=2015); ################### Criei a particao com o ano 2015
+No rows affected (6.881 seconds)
+
+0: jdbc:hive2://localhost:10000> select * from nascimento;  ################################# ainda Não temos dados na tabela
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
++------------------+------------------+------------------------+-----------------+
+No rows selected (4.618 seconds)
+
+
+0: jdbc:hive2://localhost:10000> Closing: 0: jdbc:hive2://localhost:10000  ############## CTRL + D
+
+root@hive_server:/opt# exit ############################################# CTRL + D
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode bash
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2/nascimento
+Found 1 items
+drwxr-xr-x   - root supergroup          0 2021-04-28 17:24 /user/aluno2/feliciani2/data2/nascimento/ano=2015  ############ Particao criada para o ano 2015
+
+root@namenode:/# ls /input/exercises-data/names
+NationalReadMe.pdf  yob1893.txt  yob1907.txt  yob1921.txt  yob1935.txt  yob1949.txt  yob1963.txt  yob1977.txt  yob1991.txt  yob2005.txt
+yob1880.txt         yob1894.txt  yob1908.txt  yob1922.txt  yob1936.txt  yob1950.txt  yob1964.txt  yob1978.txt  yob1992.txt  yob2006.txt
+yob1881.txt         yob1895.txt  yob1909.txt  yob1923.txt  yob1937.txt  yob1951.txt  yob1965.txt  yob1979.txt  yob1993.txt  yob2007.txt
+yob1882.txt         yob1896.txt  yob1910.txt  yob1924.txt  yob1938.txt  yob1952.txt  yob1966.txt  yob1980.txt  yob1994.txt  yob2008.txt
+yob1883.txt         yob1897.txt  yob1911.txt  yob1925.txt  yob1939.txt  yob1953.txt  yob1967.txt  yob1981.txt  yob1995.txt  yob2009.txt
+yob1884.txt         yob1898.txt  yob1912.txt  yob1926.txt  yob1940.txt  yob1954.txt  yob1968.txt  yob1982.txt  yob1996.txt  yob2010.txt
+yob1885.txt         yob1899.txt  yob1913.txt  yob1927.txt  yob1941.txt  yob1955.txt  yob1969.txt  yob1983.txt  yob1997.txt  yob2011.txt
+yob1886.txt         yob1900.txt  yob1914.txt  yob1928.txt  yob1942.txt  yob1956.txt  yob1970.txt  yob1984.txt  yob1998.txt  yob2012.txt
+yob1887.txt         yob1901.txt  yob1915.txt  yob1929.txt  yob1943.txt  yob1957.txt  yob1971.txt  yob1985.txt  yob1999.txt  yob2013.txt
+yob1888.txt         yob1902.txt  yob1916.txt  yob1930.txt  yob1944.txt  yob1958.txt  yob1972.txt  yob1986.txt  yob2000.txt  yob2014.txt
+yob1889.txt         yob1903.txt  yob1917.txt  yob1931.txt  yob1945.txt  yob1959.txt  yob1973.txt  yob1987.txt  yob2001.txt  yob2015.txt
+yob1890.txt         yob1904.txt  yob1918.txt  yob1932.txt  yob1946.txt  yob1960.txt  yob1974.txt  yob1988.txt  yob2002.txt  yob2016.txt
+yob1891.txt         yob1905.txt  yob1919.txt  yob1933.txt  yob1947.txt  yob1961.txt  yob1975.txt  yob1989.txt  yob2003.txt  yob2017.txt
+yob1892.txt         yob1906.txt  yob1920.txt  yob1934.txt  yob1948.txt  yob1962.txt  yob1976.txt  yob1990.txt  yob2004.txt
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/names/yob2015.txt /user/aluno2/feliciani2/data2/nascimento/ano=2015
+############### TRANSFERI O ARQUIVO DE 2015 PARA A PARTICAO CORRESPONDENTE AO ANO 2015
+
+root@namenode:/# exit
+
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> select * from feliciani2.nascimento limit 20;   ############################ Lendo os dados pelo Hive da tabela externa
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
+| Emma             | F                | 20435                  | 2015            |
+| Olivia           | F                | 19669                  | 2015            |
+| Sophia           | F                | 17402                  | 2015            |
+| Ava              | F                | 16361                  | 2015            |
+| Isabella         | F                | 15594                  | 2015            |
+| Mia              | F                | 14892                  | 2015            |
+| Abigail          | F                | 12390                  | 2015            |
+| Emily            | F                | 11780                  | 2015            |
+| Charlotte        | F                | 11390                  | 2015            |
+| Harper           | F                | 10291                  | 2015            |
+| Madison          | F                | 10087                  | 2015            |
+| Amelia           | F                | 9852                   | 2015            |
+| Elizabeth        | F                | 9724                   | 2015            |
+| Sofia            | F                | 9684                   | 2015            |
+| Evelyn           | F                | 9358                   | 2015            |
+| Avery            | F                | 9339                   | 2015            |
+| Chloe            | F                | 7919                   | 2015            |
+| Ella             | F                | 7896                   | 2015            |
+| Grace            | F                | 7646                   | 2015            |
+| Victoria         | F                | 7606                   | 2015            |
++------------------+------------------+------------------------+-----------------+
+20 rows selected (1.206 seconds)
+
+0: jdbc:hive2://localhost:10000> use feliciani2;
+No rows affected (0.036 seconds)
+
+0: jdbc:hive2://localhost:10000> alter table nascimento add partition(ano=2016);  ################ Particao para o ano 2016
+No rows affected (0.641 seconds)
+
+0: jdbc:hive2://localhost:10000> alter table nascimento add partition(ano=2017);  ################ Particao para o ano 2017
+No rows affected (1.453 seconds)
+
+0: jdbc:hive2://localhost:10000> Closing: 0: jdbc:hive2://localhost:10000  ########### CTRL + D
+
+root@hive_server:/opt# exit ####################################################### CTRL + D
+
+PS E:\projetos\docker-bigdata> docker exec -it namenode bash
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/names/yob2016.txt /user/aluno2/feliciani2/data2/nascimento/ano=2016 ########## Copiando para particao 2016
+
+root@namenode:/# hdfs dfs -put /input/exercises-data/names/yob2017.txt /user/aluno2/feliciani2/data2/nascimento/ano=2017 ########## Copiando para particao 2017
+
+root@namenode:/# hdfs dfs -ls /user/aluno2/feliciani2/data2/nascimento ################################################# Particionamento Criado por ANO
+Found 3 items
+drwxr-xr-x   - root supergroup          0 2021-04-28 17:35 /user/aluno2/feliciani2/data2/nascimento/ano=2015
+drwxr-xr-x   - root supergroup          0 2021-04-28 17:43 /user/aluno2/feliciani2/data2/nascimento/ano=2016
+drwxr-xr-x   - root supergroup          0 2021-04-28 17:44 /user/aluno2/feliciani2/data2/nascimento/ano=2017
+
+root@namenode:/# exit
+
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> select * from feliciani2.nascimento where ano=2015 limit 20;  ######  USAR O WHERE INDICANDO O ANO DESEJADO PARA PESQUISA
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
+| Emma             | F                | 20435                  | 2015            |
+| Olivia           | F                | 19669                  | 2015            |
+| Sophia           | F                | 17402                  | 2015            |
+| Ava              | F                | 16361                  | 2015            |
+| Isabella         | F                | 15594                  | 2015            |
+| Mia              | F                | 14892                  | 2015            |
+| Abigail          | F                | 12390                  | 2015            |
+| Emily            | F                | 11780                  | 2015            |
+| Charlotte        | F                | 11390                  | 2015            |
+| Harper           | F                | 10291                  | 2015            |
+| Madison          | F                | 10087                  | 2015            |
+| Amelia           | F                | 9852                   | 2015            |
+| Elizabeth        | F                | 9724                   | 2015            |
+| Sofia            | F                | 9684                   | 2015            |
+| Evelyn           | F                | 9358                   | 2015            |
+| Avery            | F                | 9339                   | 2015            |
+| Chloe            | F                | 7919                   | 2015            |
+| Ella             | F                | 7896                   | 2015            |
+| Grace            | F                | 7646                   | 2015            |
+| Victoria         | F                | 7606                   | 2015            |
++------------------+------------------+------------------------+-----------------+
+20 rows selected (5.666 seconds)
+0: jdbc:hive2://localhost:10000> select * from feliciani2.nascimento where ano=2016 limit 20;
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
+| Emma             | F                | 19471                  | 2016            |
+| Olivia           | F                | 19327                  | 2016            |
+| Ava              | F                | 16283                  | 2016            |
+| Sophia           | F                | 16112                  | 2016            |
+| Isabella         | F                | 14772                  | 2016            |
+| Mia              | F                | 14415                  | 2016            |
+| Charlotte        | F                | 13080                  | 2016            |
+| Abigail          | F                | 11747                  | 2016            |
+| Emily            | F                | 10957                  | 2016            |
+| Harper           | F                | 10773                  | 2016            |
+| Amelia           | F                | 10753                  | 2016            |
+| Evelyn           | F                | 10096                  | 2016            |
+| Elizabeth        | F                | 9542                   | 2016            |
+| Sofia            | F                | 9161                   | 2016            |
+| Madison          | F                | 9014                   | 2016            |
+| Avery            | F                | 8759                   | 2016            |
+| Ella             | F                | 7898                   | 2016            |
+| Scarlett         | F                | 7698                   | 2016            |
+| Grace            | F                | 7582                   | 2016            |
+| Chloe            | F                | 7453                   | 2016            |
++------------------+------------------+------------------------+-----------------+
+20 rows selected (0.614 seconds)
+0: jdbc:hive2://localhost:10000> select * from feliciani2.nascimento where ano=2017 limit 20;
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
+| Emma             | F                | 19738                  | 2017            |
+| Olivia           | F                | 18632                  | 2017            |
+| Ava              | F                | 15902                  | 2017            |
+| Isabella         | F                | 15100                  | 2017            |
+| Sophia           | F                | 14831                  | 2017            |
+| Mia              | F                | 13437                  | 2017            |
+| Charlotte        | F                | 12893                  | 2017            |
+| Amelia           | F                | 11800                  | 2017            |
+| Evelyn           | F                | 10675                  | 2017            |
+| Abigail          | F                | 10551                  | 2017            |
+| Harper           | F                | 10451                  | 2017            |
+| Emily            | F                | 9746                   | 2017            |
+| Elizabeth        | F                | 8915                   | 2017            |
+| Avery            | F                | 8186                   | 2017            |
+| Sofia            | F                | 8134                   | 2017            |
+| Ella             | F                | 8014                   | 2017            |
+| Madison          | F                | 7847                   | 2017            |
+| Scarlett         | F                | 7679                   | 2017            |
+| Victoria         | F                | 7267                   | 2017            |
+| Aria             | F                | 7132                   | 2017            |
++------------------+------------------+------------------------+-----------------+
+20 rows selected (0.411 seconds)
+
+##############################################################################
+#
+# POR EXEMPLO, SE USARMOS where sexo='F' TRARÍAMOS OS DADOS DE TODOS OS ANOS
+#
+##############################################################################
+
+
