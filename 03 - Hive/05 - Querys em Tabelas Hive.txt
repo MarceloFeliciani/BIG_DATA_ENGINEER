@@ -1,0 +1,146 @@
+PS E:\projetos\docker-bigdata> docker exec -it hive-server bash
+
+root@hive_server:/opt# beeline -u jdbc:hive2://localhost:10000
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop-2.7.4/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://localhost:10000
+Connected to: Apache Hive (version 2.3.2)
+Driver: Hive JDBC (version 2.3.2)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Beeline version 2.3.2 by Apache Hive
+
+0: jdbc:hive2://localhost:10000> use feliciani2;
+No rows affected (0.631 seconds)
+
+0: jdbc:hive2://localhost:10000> show tables;
++-------------+
+|  tab_name   |
++-------------+
+| nascimento  |
+| populacao   |
++-------------+
+2 rows selected (0.503 seconds)
+
+0: jdbc:hive2://localhost:10000> select * from nascimento where ano=2016 limit 10;
++------------------+------------------+------------------------+-----------------+
+| nascimento.nome  | nascimento.sexo  | nascimento.frequencia  | nascimento.ano  |
++------------------+------------------+------------------------+-----------------+
+| Emma             | F                | 19471                  | 2016            |
+| Olivia           | F                | 19327                  | 2016            |
+| Ava              | F                | 16283                  | 2016            |
+| Sophia           | F                | 16112                  | 2016            |
+| Isabella         | F                | 14772                  | 2016            |
+| Mia              | F                | 14415                  | 2016            |
+| Charlotte        | F                | 13080                  | 2016            |
+| Abigail          | F                | 11747                  | 2016            |
+| Emily            | F                | 10957                  | 2016            |
+| Harper           | F                | 10773                  | 2016            |
++------------------+------------------+------------------------+-----------------+
+10 rows selected (0.697 seconds)
+
+0: jdbc:hive2://localhost:10000> select count(nome) as qtd from nascimento where ano=2017;  ############ CONTEI A QUANTIDADE DE NOMES DE CRIANCAS NASCIDAS EM 2017
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++--------+
+|  qtd   |
++--------+
+| 32469  |
++--------+
+1 row selected (17.43 seconds)
+
+0: jdbc:hive2://localhost:10000> select sum(frequencia) as qtd from nascimento where ano=2017; ############ SOMEI A QUANTIDADE DE CRIANCAS NASCIDAS EM 2017
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++----------+
+|   qtd    |
++----------+
+| 3546301  |
++----------+
+1 row selected (24.037 seconds)
+
+0: jdbc:hive2://localhost:10000> select sexo, sum(frequencia) as qtd from nascimento where ano=2015 group by sexo;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++-------+----------+
+| sexo  |   qtd    |
++-------+----------+
+| F     | 1778883  |  ########################################### QUANTIDADE DE CRIANÇAS NASCIDAS POR SEXO EM 2015
+| M     | 1909804  |
++-------+----------+
+2 rows selected (5.587 seconds)
+
+0: jdbc:hive2://localhost:10000> select ano, sexo, sum(frequencia) as qtd from nascimento group by ano, sexo order by ano desc;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++-------+-------+----------+
+|  ano  | sexo  |   qtd    |
++-------+-------+----------+
+| 2017  | M     | 1834490  |
+| 2017  | F     | 1711811  |  ######################### ORDENEI DE FORMA DESCRESCENTE POR ANO, MOSTRANDO A QUANTIDADE DE CRIANÇAS NASCIDAS POR ANO E SEXO
+| 2016  | M     | 1889052  |
+| 2016  | F     | 1763916  |
+| 2015  | M     | 1909804  |
+| 2015  | F     | 1778883  |
++-------+-------+----------+
+6 rows selected (6.966 seconds)
+
+0: jdbc:hive2://localhost:10000> select ano, sexo, sum(frequencia) as qtd from nascimento where nome like 'A%' group by ano, sexo order by ano desc;
+
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++-------+-------+---------+
+|  ano  | sexo  |   qtd   |
++-------+-------+---------+
+| 2017  | M     | 185566  |
+| 2017  | F     | 308551  |
+| 2016  | M     | 191854  |   ######################### ORDENEI DE FORMA DESCRESCENTE POR ANO, MOSTRANDO A QUANTIDADE DE CRIANÇAS NASCIDAS POR ANO E SEXO
+| 2016  | F     | 324185  |   ######################### ONDE O NOME INICIE PELA LETRA 'A'
+| 2015  | M     | 194722  |
+| 2015  | F     | 329690  |
++-------+-------+---------+
+6 rows selected (5.832 seconds)
+
+0: jdbc:hive2://localhost:10000> select nome, max(frequencia) as qtd from nascimento where ano=2016 group by nome order by qtd desc limit 5;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++---------+--------+
+|  nome   |  qtd   |
++---------+--------+
+| Emma    | 19471  | 
+| Olivia  | 19327  | 
+| Noah    | 19082  |        ######################### LISTANDO OS 5 NOMES MAIS FREQUENTES EM ORDEM DESCRESCENTE NO ANO DE 2016
+| Liam    | 18198  |
+| Ava     | 16283  |
++---------+--------+
+5 rows selected (7.054 seconds)
+
+0: jdbc:hive2://localhost:10000> select nome, max(frequencia) as qtd, sexo from nascimento where ano=2016 group by nome, sexo order by qtd desc limi
+t 5;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++---------+--------+-------+
+|  nome   |  qtd   | sexo  |
++---------+--------+-------+
+| Emma    | 19471  | F     |
+| Olivia  | 19327  | F     |
+| Noah    | 19082  | M     | ######################### LISTANDO OS 5 NOMES MAIS FREQUENTES EM ORDEM DESCRESCENTE NO ANO DE 2016, INDICANDO M ou F
+| Liam    | 18198  | M     |
+| Ava     | 16283  | F     |
++---------+--------+-------+
+5 rows selected (4.795 seconds)
+
+
+0: jdbc:hive2://localhost:10000> select nome, max(frequencia) as qtd, sexo from nascimento where ano=2016 group by nome, sexo order by qtd desc limit 10;
+WARNING: Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
++-----------+--------+-------+
+|   nome    |  qtd   | sexo  |
++-----------+--------+-------+
+| Emma      | 19471  | F     |
+| Olivia    | 19327  | F     |
+| Noah      | 19082  | M     |
+| Liam      | 18198  | M     |
+| Ava       | 16283  | F     |######################### LISTANDO OS 5 NOMES MASCULINO E FEMININO MAIS FREQUENTES EM ORDEM DESCRESCENTE NO ANO DE 2016
+| Sophia    | 16112  | F     |
+| William   | 15739  | M     |
+| Mason     | 15230  | M     |
+| James     | 14842  | M     |
+| Isabella  | 14772  | F     |
++-----------+--------+-------+
+10 rows selected (5.163 seconds)
+
