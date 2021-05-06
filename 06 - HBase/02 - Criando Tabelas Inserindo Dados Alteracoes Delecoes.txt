@@ -1,0 +1,456 @@
+
+######## CRIANDO A TABELA controle2 
+######## COM FAMILIA DE COLUNAS produto2 e fornecedor2
+
+hbase(main):003:0> create 'controle2',{NAME=>'produto2'},{NAME=>'fornecedor2'}
+0 row(s) in 4.3680 seconds
+
+=> Hbase::Table - controle2
+
+
+####################################### INSERINDO REGISTROS NA FAMILIA DE COLUNA produto2 NA TABELA controle2
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 1
+######### Familia: produto2
+######### Coluna: nome
+######### Valor: ram
+
+hbase(main):004:0> put 'controle2','1','produto2:nome','ram'
+0 row(s) in 1.1650 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 2
+######### Familia: produto2
+######### Coluna: nome
+######### Valor: hd
+
+hbase(main):005:0> put 'controle2','2','produto2:nome','hd'
+0 row(s) in 0.0160 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 3
+######### Familia: produto2
+######### Coluna: nome
+######### Valor: mouse
+
+hbase(main):006:0> put 'controle2','3','produto2:nome','mouse'
+0 row(s) in 0.0150 seconds
+
+
+################ DADOS INSERIDOS COM SUCESSO
+
+hbase(main):008:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+3 row(s) in 0.0250 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 1
+######### Familia: produto2
+######### Coluna: qtd
+######### Valor: 100
+
+hbase(main):009:0> put 'controle2','1','produto2:qtd','100'
+0 row(s) in 0.0230 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 2
+######### Familia: produto2
+######### Coluna: qtd
+######### Valor: 50
+
+hbase(main):010:0> put 'controle2','2','produto2:qtd','50'
+0 row(s) in 0.0080 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 3
+######### Familia: produto2
+######### Coluna: qtd
+######### Valor: 150
+
+hbase(main):011:0> put 'controle2','3','produto2:qtd','150'
+0 row(s) in 0.0360 seconds
+
+
+
+############ MAIS DADOS ADICIONADOS NA TABELA controle2
+
+hbase(main):012:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620318979159, value=50
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.0320 seconds
+
+
+####################################### INSERINDO REGISTROS NA FAMILIA DE COLUNA fornecedor2 NA TABELA controle2
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 1
+######### Familia: fornecedor2
+######### Coluna: nome
+######### Valor: TI Comp
+
+hbase(main):013:0> put 'controle2','1','fornecedor2:nome','TI Comp'
+0 row(s) in 0.0250 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 2
+######### Familia: fornecedor2
+######### Coluna: nome
+######### Valor: Pecas PC
+
+hbase(main):014:0> put 'controle2','2','fornecedor2:nome','Pecas PC'
+0 row(s) in 0.0150 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 3
+######### Familia: fornecedor2
+######### Coluna: nome
+######### Valor: Inf Tec
+
+hbase(main):015:0> put 'controle2','3','fornecedor2:nome','Inf Tec'
+0 row(s) in 0.0070 seconds
+
+
+
+hbase(main):016:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:nome, timestamp=1620319269581, value=TI Comp
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620318979159, value=50
+ 3                              column=fornecedor2:nome, timestamp=1620319416588, value=Inf Tec
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.7130 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 1
+######### Familia: fornecedor2
+######### Coluna: estado
+######### Valor: SP
+
+hbase(main):017:0> put 'controle2','1','fornecedor2:estado','SP'
+0 row(s) in 0.1090 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 2
+######### Familia: fornecedor2
+######### Coluna: estado
+######### Valor: MG
+
+hbase(main):018:0> put 'controle2','2','fornecedor2:estado','MG'
+0 row(s) in 0.0960 seconds
+
+
+
+######### INSERINDO REGISTROS
+######### TABELA: controle2
+######### Chave: 3
+######### Familia: fornecedor2
+######### Coluna: estado
+######### Valor: SP
+
+hbase(main):019:0> put 'controle2','3','fornecedor2:estado','SP'
+0 row(s) in 0.0560 seconds
+
+
+
+hbase(main):020:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 1                              column=fornecedor2:nome, timestamp=1620319269581, value=TI Comp
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620318979159, value=50
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+ 3                              column=fornecedor2:nome, timestamp=1620319416588, value=Inf Tec
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.3680 seconds
+
+
+hbase(main):021:0> list  ################# TABELAS QUE CONTIDAS NO HBASE
+TABLE
+controle
+controle2
+2 row(s) in 0.7530 seconds
+
+=> ["controle", "controle2"]
+
+
+hbase(main):022:0> describe 'controle2'  ####################### INFORMAÇÕES IMPORTANTES DA TABELA controle2
+Table controle2 is ENABLED
+controle2
+COLUMN FAMILIES DESCRIPTION
+{NAME => 'fornecedor2', BLOOMFILTER => 'ROW', VERSIONS => '1', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FALSE', DATA
+_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOCKCACHE => 'true', BLOCKSIZE
+ => '65536', REPLICATION_SCOPE => '0'}
+{NAME => 'produto2', BLOOMFILTER => 'ROW', VERSIONS => '1', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FALSE', DATA_BL
+OCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOCKCACHE => 'true', BLOCKSIZE =>
+ '65536', REPLICATION_SCOPE => '0'}
+2 row(s) in 0.6060 seconds
+
+
+hbase(main):023:0> count 'controle2' ################## QUANTIDADE DE LINHAS DA TABELA controle2 ##### count É EM RELAÇÃO A QTD DE CHAVES
+3 row(s) in 0.3080 seconds
+
+=> 3
+
+
+################# TEM 3 CHAVES(1, 2, 3). E ELAS TEM VÁRIAS FAMILIAS DE COLUNAS COM VÁRIOS REGISTROS
+
+hbase(main):024:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 1                              column=fornecedor2:nome, timestamp=1620319269581, value=TI Comp
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620318979159, value=50
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+ 3                              column=fornecedor2:nome, timestamp=1620319416588, value=Inf Tec
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.1850 seconds
+
+
+
+####### ALTERANDO A FAMILIA DE COLUNA PRODUTO PARA 3 VERSOES. ACEITARÁ ATÉ 3 VERSOES
+
+hbase(main):026:0> alter 'controle2',{NAME=>'produto2',VERSIONS=>3}
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 4.6970 seconds
+
+
+hbase(main):027:0> describe 'controle2'
+Table controle2 is ENABLED
+controle2
+COLUMN FAMILIES DESCRIPTION
+{NAME => 'fornecedor2', BLOOMFILTER => 'ROW', VERSIONS => '1', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FALSE', DATA_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOCKCACHE => 'true', BLOCKSIZE => '65536', REPLICATION_SCOPE => '0'}
+{NAME => 'produto', BLOOMFILTER => 'ROW', VERSIONS => '3', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FALSE', DATA_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOCKCACHE => 'true', BLOCKSIZE =>
+'65536', REPLICATION_SCOPE => '0'}
+{NAME => 'produto2', BLOOMFILTER => 'ROW', VERSIONS => '3', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FALSE', DATA_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOCKCACHE => 'true', BLOCKSIZE => '65536', REPLICATION_SCOPE => '0'}
+3 row(s) in 0.0840 seconds
+
+############# fornecedor2 TEM VERSIONS=> 1
+############# produto2 TEM VERSIONS=> 3
+
+
+################# ALTERANDO A QUANTIDADE PARA 200 DO id 2
+
+hbase(main):028:0> put 'controle2','2','produto:qtd','200'
+0 row(s) in 0.0350 seconds
+
+
+
+hbase(main):031:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 1                              column=fornecedor2:nome, timestamp=1620319269581, value=TI Comp
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620321299262, value=200
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+ 3                              column=fornecedor2:nome, timestamp=1620319416588, value=Inf Tec
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.0720 seconds
+
+
+
+
+################# PESQUISANDO AS VERSOES DO id 2 DA COLUNA QUANTIDADE
+
+GET pesquisa em cima de uma chave
+SCAN pesquisa em cima de toda tabela
+
+hbase(main):032:0> get 'controle2','2',{COLUMNS=>'produto2',VERSIONS=>2}
+COLUMN                          CELL
+ produto2:nome                  timestamp=1620318675804, value=hd
+ produto2:qtd                   timestamp=1620321299262, value=200
+ produto2:qtd                   timestamp=1620318979159, value=50
+3 row(s) in 0.9420 seconds
+
+
+hbase(main):034:0> get 'controle2','2',{COLUMNS=>'produto2:qtd',VERSIONS=>2}
+COLUMN                          CELL
+ produto2:qtd                   timestamp=1620321299262, value=200
+ produto2:qtd                   timestamp=1620318979159, value=50
+2 row(s) in 0.0700 seconds
+
+
+hbase(main):036:0> get 'controle2','2',{COLUMNS=>['produto2:qtd','fornecedor2:nome'], VERSIONS=>2}
+COLUMN                          CELL
+ fornecedor2:nome               timestamp=1620319343660, value=Pecas PC
+ produto2:qtd                   timestamp=1620321299262, value=200
+ produto2:qtd                   timestamp=1620318979159, value=50
+3 row(s) in 0.2050 seconds
+
+
+hbase(main):037:0> get 'controle2','2',{COLUMNS=>['produto2','fornecedor2'], VERSIONS=>2}
+COLUMN                          CELL
+ fornecedor2:estado             timestamp=1620319816169, value=MG
+ fornecedor2:nome               timestamp=1620319343660, value=Pecas PC
+ produto2:nome                  timestamp=1620318675804, value=hd
+ produto2:qtd                   timestamp=1620321299262, value=200
+ produto2:qtd                   timestamp=1620318979159, value=50
+5 row(s) in 0.0110 seconds
+
+
+hbase(main):040:0> get 'controle2','2',{COLUMNS=>'produto2:qtd',VERSIONS=>3} ########### MOSTRA 2 POR QUE INSERI 2 REGISTROS APENAS
+COLUMN                          CELL
+ produto2:qtd                   timestamp=1620321299262, value=200
+ produto2:qtd                   timestamp=1620318979159, value=50
+2 row(s) in 0.0060 seconds
+
+
+
+########## EXCLUINDO OS id DO ESTADO DE SP
+
+hbase(main):041:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 1                              column=fornecedor2:nome, timestamp=1620319269581, value=TI Comp
+ 1                              column=produto2:nome, timestamp=1620318606607, value=ram
+ 1                              column=produto2:qtd, timestamp=1620318913375, value=100
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620321299262, value=200
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+ 3                              column=fornecedor2:nome, timestamp=1620319416588, value=Inf Tec
+ 3                              column=produto2:nome, timestamp=1620318726474, value=mouse
+ 3                              column=produto2:qtd, timestamp=1620319052594, value=150
+3 row(s) in 0.1180 seconds
+
+
+hbase(main):042:0> scan 'controle2',{COLUMNS=>'fornecedor2:estado'}
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+3 row(s) in 0.1690 seconds
+
+
+hbase(main):044:0> scan 'controle2',{COLUMNS=>'fornecedor2:estado', LIMIT => 5}  ############ MOSTRA OS 5 PRIMEIROS
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+3 row(s) in 0.1010 seconds
+
+
+
+hbase(main):001:0> scan 'controle2',{COLUMNS=>'fornecedor2:estado', LIMIT => 2}  ############ MOSTRA OS 2 PRIMEIROS
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+2 row(s) in 1.3910 seconds
+
+
+
+hbase(main):003:0> scan 'controle2',{COLUMNS=>'fornecedor2:estado', LIMIT => 5, FILTER => "ValueFilter(=, 'binary:SP')"}
+ROW                             COLUMN+CELL
+ 1                              column=fornecedor2:estado, timestamp=1620319737143, value=SP
+ 3                              column=fornecedor2:estado, timestamp=1620319859302, value=SP
+2 row(s) in 0.4070 seconds
+
+
+######### DELETANDO TODA CHAVE DE 'SP'
+
+hbase(main):004:0> deleteall 'controle2','1'
+0 row(s) in 0.4540 seconds
+
+hbase(main):005:0> deleteall 'controle2','3'
+0 row(s) in 0.0060 seconds
+
+
+####### CHAVES 1 e 3 FORAM EXCLUIDAS
+
+hbase(main):006:0> count 'controle2'
+1 row(s) in 0.1940 seconds
+
+=> 1
+
+
+hbase(main):001:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 2                              column=fornecedor2:estado, timestamp=1620319816169, value=MG
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620321299262, value=200
+1 row(s) in 5.2050 seconds
+
+
+
+############# DELETANDO A COLUNA ESTADO NA CHAVE 2
+
+hbase(main):002:0> delete 'controle2', '2', 'fornecedor2:estado'
+0 row(s) in 4.2740 seconds
+
+
+hbase(main):003:0> scan 'controle2'
+ROW                             COLUMN+CELL
+ 2                              column=fornecedor2:nome, timestamp=1620319343660, value=Pecas PC
+ 2                              column=produto2:nome, timestamp=1620318675804, value=hd
+ 2                              column=produto2:qtd, timestamp=1620321299262, value=200
+1 row(s) in 0.3580 seconds
+
+
+
+hbase(main):004:0> ################ CTRL + D
+
+hbase(main):004:0> root@hbase-master:/# exit    ################ CTRL + D
+
+PS E:\projetos\docker-bigdata>docker-compose stop
