@@ -1,0 +1,209 @@
+
+##############################################################################
+
+O ARQUIVO É NECESSÁRIO PARA INTERFACE ENTRE O SPARK E O HIVE
+
+parquet-hadoop-bundle-1.6.0.jar
+
+##############################################################################
+
+
+PS E:\projetos\docker-bigdata> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting spark        ... done
+Starting database  ... done
+Starting namenode  ... done
+Starting zookeeper    ... done
+Starting hbase-master              ... done
+Starting datanode     ... done
+Starting hive-metastore-postgresql ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+PS E:\projetos\docker-bigdata> ls
+
+
+    Diretório: E:\projetos\docker-bigdata
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        15/02/2021     09:42                data
+d-----        15/02/2021     13:28                input
+-a----        14/02/2021     16:20           7025 docker-compose-completo-windows.yml
+-a----        14/02/2021     16:20           6647 docker-compose-completo.yml
+-a----        14/02/2021     16:20           3941 docker-compose.yml
+-a----        14/02/2021     16:20         343678 ecosystem.jpeg
+-a----        14/02/2021     16:19           3586 README.md
+
+
+PS E:\projetos\docker-bigdata> docker exec -it spark bash
+
+root@spark:/# ls /opt/spark
+LICENSE  NOTICE  R  README.md  RELEASE  bin  conf  data  examples  jars  kubernetes  licenses  logs  python  sbin  yarn
+
+root@spark:/# ls /opt/spark/conf
+docker.properties.template  hive-site.xml              metrics.properties.template  spark-defaults.conf.template
+fairscheduler.xml.template  log4j.properties.template  slaves.template              spark-env.sh.template
+
+root@spark:/# ls /opt/spark/jars
+RoaringBitmap-0.5.11.jar                   jcl-over-slf4j-1.7.16.jar                 parquet-common-1.10.1.jar
+aircompressor-0.10.jar                     jersey-client-2.22.2.jar                  parquet-encoding-1.10.1.jar
+antlr4-runtime-4.7.jar                     jersey-common-2.22.2.jar                  parquet-format-2.4.0.jar
+aopalliance-repackaged-2.4.0-b34.jar       jersey-container-servlet-2.22.2.jar       parquet-hadoop-1.10.1.jar
+arpack_combined_all-0.1.jar                jersey-container-servlet-core-2.22.2.jar  parquet-jackson-1.10.1.jar
+arrow-format-0.10.0.jar                    jersey-guava-2.22.2.jar                   presto-jdbc-331.jar
+arrow-memory-0.10.0.jar                    jersey-media-jaxb-2.22.2.jar              py4j-0.10.7.jar
+arrow-vector-0.10.0.jar                    jersey-server-2.22.2.jar                  pyrolite-4.13.jar
+automaton-1.11-8.jar                       joda-time-2.9.3.jar                       scala-compiler-2.11.12.jar
+avro-mapred-1.8.2-hadoop2.jar              json4s-ast_2.11-3.5.3.jar                 scala-library-2.11.12.jar
+breeze-macros_2.11-0.13.2.jar              json4s-core_2.11-3.5.3.jar                scala-parser-combinators_2.11-1.1.0.jar
+breeze_2.11-0.13.2.jar                     json4s-jackson_2.11-3.5.3.jar             scala-reflect-2.11.12.jar
+chill-java-0.9.3.jar                       json4s-scalap_2.11-3.5.3.jar              scala-xml_2.11-1.0.5.jar
+chill_2.11-0.9.3.jar                       jsr305-1.3.9.jar                          shapeless_2.11-2.3.2.jar
+commons-compiler-3.0.9.jar                 jul-to-slf4j-1.7.16.jar                   snappy-java-1.1.7.1.jar
+commons-crypto-1.0.0.jar                   kafka-clients-2.3.0.jar                   spark-catalyst_2.11-2.4.1.jar
+commons-lang-2.6.jar                       kryo-shaded-4.0.2.jar                     spark-core_2.11-2.4.1.jar
+commons-lang3-3.5.jar                      kubernetes-client-4.1.2.jar               spark-graphx_2.11-2.4.1.jar
+commons-math3-3.4.1.jar                    kubernetes-model-4.1.2.jar                spark-hive-thriftserver_2.11-2.4.1.jar
+commons-net-3.1.jar                        kubernetes-model-common-4.1.2.jar         spark-kubernetes_2.11-2.4.1.jar
+compress-lzf-1.0.3.jar                     leveldbjni-all-1.8.jar                    spark-kvstore_2.11-2.4.1.jar
+core-1.1.2.jar                             libfb303-0.9.3.jar                        spark-launcher_2.11-2.4.1.jar
+flatbuffers-1.2.0-3f79e055.jar             libthrift-0.9.3.jar                       spark-mesos_2.11-2.4.1.jar
+generex-1.0.1.jar                          logging-interceptor-3.12.0.jar            spark-mllib-local_2.11-2.4.1.jar
+hive-beeline-1.2.1.spark2.jar              lz4-java-1.4.0.jar                        spark-mllib_2.11-2.4.1.jar
+hive-cli-1.2.1.spark2.jar                  machinist_2.11-0.6.1.jar                  spark-network-common_2.11-2.4.1.jar
+hive-exec-1.2.1.spark2.jar                 macro-compat_2.11-1.1.1.jar               spark-network-shuffle_2.11-2.4.1.jar
+hive-jdbc-1.2.1.spark2.jar                 mesos-1.4.0-shaded-protobuf.jar           spark-repl_2.11-2.4.1.jar
+hive-metastore-1.2.1.spark2.jar            metrics-core-3.1.5.jar                    spark-sketch_2.11-2.4.1.jar
+hk2-api-2.4.0-b34.jar                      metrics-graphite-3.1.5.jar                spark-sql-kafka-0-10_2.11-2.4.1.jar
+hk2-locator-2.4.0-b34.jar                  metrics-json-3.1.5.jar                    spark-sql_2.11-2.4.1.jar
+hppc-0.7.2.jar                             minlog-1.3.0.jar                          spark-streaming_2.11-2.4.1.jar
+ivy-2.4.0.jar                              mysql-connector-java-5.1.47.jar           spark-tags_2.11-2.4.1-tests.jar
+jackson-annotations-2.6.7.jar              netty-3.9.9.Final.jar                     spark-tags_2.11-2.4.1.jar
+jackson-core-2.6.7.jar                     netty-all-4.1.17.Final.jar                spark-unsafe_2.11-2.4.1.jar
+jackson-databind-2.6.7.1.jar               objenesis-2.5.1.jar                       spark-warehouse
+jackson-dataformat-yaml-2.6.7.jar          okhttp-3.8.1.jar                          spark-yarn_2.11-2.4.1.jar
+jackson-module-jaxb-annotations-2.6.7.jar  okio-1.13.0.jar                           spire-macros_2.11-0.13.0.jar
+jackson-module-paranamer-2.7.9.jar         opencsv-2.3.jar                           spire_2.11-0.13.0.jar
+jackson-module-scala_2.11-2.6.7.1.jar      orc-core-1.5.5-nohive.jar                 stream-2.7.0.jar
+janino-3.0.9.jar                           orc-mapreduce-1.5.5-nohive.jar            univocity-parsers-2.7.3.jar
+javassist-3.18.1-GA.jar                    orc-shims-1.5.5.jar                       validation-api-1.1.0.Final.jar
+javax.annotation-api-1.2.jar               oro-2.0.8.jar                             xbean-asm6-shaded-4.8.jar
+javax.inject-2.4.0-b34.jar                 osgi-resource-locator-1.0.1.jar           zjsonpatch-0.3.0.jar
+javax.servlet-api-3.1.0.jar                paranamer-2.8.jar                         zstd-jni-1.3.2-2.jar
+javax.ws.rs-api-2.0.1.jar                  parquet-column-1.10.1.jar
+
+root@spark:/# exit
+
+
+################## BAIXANDO O ARQUIVO
+
+PS E:\projetos\docker-bigdata> curl -O https://repo1.maven.org/maven2/com/twitter/parquet-hadoop-bundle/1.6.0/parquet-hadoop-bundle-1.6.0.jar
+
+PS E:\projetos\docker-bigdata> ls
+
+
+    Diretório: E:\projetos\docker-bigdata
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        15/02/2021     09:42                data
+d-----        15/02/2021     13:28                input
+-a----        14/02/2021     16:20           7025 docker-compose-completo-windows.yml
+-a----        14/02/2021     16:20           6647 docker-compose-completo.yml
+-a----        14/02/2021     16:20           3941 docker-compose.yml
+-a----        14/02/2021     16:20         343678 ecosystem.jpeg
+-a----        04/03/2021     11:08        2796935 parquet-hadoop-bundle-1.6.0.jar  ################## FALTA ESSE ARQUIVO NO /OPT/SPARK/JARS
+-a----        14/02/2021     16:19           3586 README.md
+
+
+################## ENVIANDO O ARQUIVO 
+
+PS E:\projetos\docker-bigdata> docker cp .\parquet-hadoop-bundle-1.6.0.jar spark:/opt/spark/jars
+
+PS E:\projetos\docker-bigdata> docker exec -it spark bash
+
+root@spark:/# ls /opt/spark/jars
+RoaringBitmap-0.5.11.jar                   jcl-over-slf4j-1.7.16.jar                 parquet-common-1.10.1.jar
+aircompressor-0.10.jar                     jersey-client-2.22.2.jar                  parquet-encoding-1.10.1.jar
+antlr4-runtime-4.7.jar                     jersey-common-2.22.2.jar                  parquet-format-2.4.0.jar
+aopalliance-repackaged-2.4.0-b34.jar       jersey-container-servlet-2.22.2.jar       parquet-hadoop-1.10.1.jar
+arpack_combined_all-0.1.jar                jersey-container-servlet-core-2.22.2.jar  parquet-hadoop-bundle-1.6.0.jar ##################### ARQUIVO COPIADO COM SUCESSO
+arrow-format-0.10.0.jar                    jersey-guava-2.22.2.jar                   parquet-jackson-1.10.1.jar
+arrow-memory-0.10.0.jar                    jersey-media-jaxb-2.22.2.jar              presto-jdbc-331.jar
+arrow-vector-0.10.0.jar                    jersey-server-2.22.2.jar                  py4j-0.10.7.jar
+automaton-1.11-8.jar                       joda-time-2.9.3.jar                       pyrolite-4.13.jar
+avro-mapred-1.8.2-hadoop2.jar              json4s-ast_2.11-3.5.3.jar                 scala-compiler-2.11.12.jar
+breeze-macros_2.11-0.13.2.jar              json4s-core_2.11-3.5.3.jar                scala-library-2.11.12.jar
+breeze_2.11-0.13.2.jar                     json4s-jackson_2.11-3.5.3.jar             scala-parser-combinators_2.11-1.1.0.jar
+chill-java-0.9.3.jar                       json4s-scalap_2.11-3.5.3.jar              scala-reflect-2.11.12.jar
+chill_2.11-0.9.3.jar                       jsr305-1.3.9.jar                          scala-xml_2.11-1.0.5.jar
+commons-codec-1.10.jar                     jtransforms-2.4.0.jar                     shapeless_2.11-2.3.2.jar
+commons-compiler-3.0.9.jar                 jul-to-slf4j-1.7.16.jar                   snakeyaml-1.15.jar
+commons-crypto-1.0.0.jar                   kafka-clients-2.3.0.jar                   snappy-java-1.1.7.1.jar
+commons-lang-2.6.jar                       kryo-shaded-4.0.2.jar                     spark-catalyst_2.11-2.4.1.jar
+commons-lang3-3.5.jar                      kubernetes-client-4.1.2.jar               spark-core_2.11-2.4.1.jar
+commons-math3-3.4.1.jar                    kubernetes-model-4.1.2.jar                spark-graphx_2.11-2.4.1.jar
+commons-net-3.1.jar                        kubernetes-model-common-4.1.2.jar         spark-hive-thriftserver_2.11-2.4.1.jar
+compress-lzf-1.0.3.jar                     leveldbjni-all-1.8.jar                    spark-kubernetes_2.11-2.4.1.jar
+core-1.1.2.jar                             libfb303-0.9.3.jar                        spark-kvstore_2.11-2.4.1.jar
+flatbuffers-1.2.0-3f79e055.jar             libthrift-0.9.3.jar                       spark-launcher_2.11-2.4.1.jar
+generex-1.0.1.jar                          logging-interceptor-3.12.0.jar            spark-mesos_2.11-2.4.1.jar
+hive-beeline-1.2.1.spark2.jar              lz4-java-1.4.0.jar                        spark-mllib-local_2.11-2.4.1.jar
+hive-cli-1.2.1.spark2.jar                  machinist_2.11-0.6.1.jar                  spark-mllib_2.11-2.4.1.jar
+hive-exec-1.2.1.spark2.jar                 macro-compat_2.11-1.1.1.jar               spark-network-common_2.11-2.4.1.jar
+hive-jdbc-1.2.1.spark2.jar                 mesos-1.4.0-shaded-protobuf.jar           spark-network-shuffle_2.11-2.4.1.jar
+hive-metastore-1.2.1.spark2.jar            metrics-core-3.1.5.jar                    spark-repl_2.11-2.4.1.jar
+hk2-api-2.4.0-b34.jar                      metrics-graphite-3.1.5.jar                spark-sketch_2.11-2.4.1.jar
+hk2-locator-2.4.0-b34.jar                  metrics-json-3.1.5.jar                    spark-sql-kafka-0-10_2.11-2.4.1.jar
+hk2-utils-2.4.0-b34.jar                    metrics-jvm-3.1.5.jar                     spark-sql_2.11-2.4.1.jar
+hppc-0.7.2.jar                             minlog-1.3.0.jar                          spark-streaming-kafka-0-8-assembly_2.11-2.3.0.jar
+ivy-2.4.0.jar                              mysql-connector-java-5.1.47.jar           spark-streaming_2.11-2.4.1.jar
+jackson-annotations-2.6.7.jar              netty-3.9.9.Final.jar                     spark-tags_2.11-2.4.1-tests.jar
+jackson-core-2.6.7.jar                     netty-all-4.1.17.Final.jar                spark-tags_2.11-2.4.1.jar
+jackson-databind-2.6.7.1.jar               objenesis-2.5.1.jar                       spark-unsafe_2.11-2.4.1.jar
+jackson-dataformat-yaml-2.6.7.jar          okhttp-3.8.1.jar                          spark-warehouse
+jackson-module-jaxb-annotations-2.6.7.jar  okio-1.13.0.jar                           spark-yarn_2.11-2.4.1.jar
+jackson-module-paranamer-2.7.9.jar         opencsv-2.3.jar                           spire-macros_2.11-0.13.0.jar
+jackson-module-scala_2.11-2.6.7.1.jar      orc-core-1.5.5-nohive.jar                 spire_2.11-0.13.0.jar
+janino-3.0.9.jar                           orc-mapreduce-1.5.5-nohive.jar            stream-2.7.0.jar
+javassist-3.18.1-GA.jar                    orc-shims-1.5.5.jar                       univocity-parsers-2.7.3.jar
+javax.annotation-api-1.2.jar               oro-2.0.8.jar                             validation-api-1.1.0.Final.jar
+javax.inject-2.4.0-b34.jar                 osgi-resource-locator-1.0.1.jar           xbean-asm6-shaded-4.8.jar
+javax.servlet-api-3.1.0.jar                paranamer-2.8.jar                         zjsonpatch-0.3.0.jar
+javax.ws.rs-api-2.0.1.jar                  parquet-column-1.10.1.jar                 zstd-jni-1.3.2-2.jar
+
+
+
+################################### ACESSANDO O SPARK
+
+root@spark:/# spark-shell
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/05/07 19:10:03 WARN spark.SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Spark context Web UI available at http://spark:4040
+Spark context available as 'sc' (master = local[*], app id = local-1620414605888).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.1
+      /_/
+
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_201)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> sc
+res0: org.apache.spark.SparkContext = org.apache.spark.SparkContext@18f1a81a
+
+scala> spark
+res1: org.apache.spark.sql.SparkSession = org.apache.spark.sql.SparkSession@73a5cc47
+
+scala> :quit  ######################### CTRL + D
+root@spark:/# exit  ######################### CTRL + D
+
+PS E:\projetos\docker-bigdata> docker-compose stop
