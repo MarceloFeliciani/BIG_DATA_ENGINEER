@@ -1,0 +1,356 @@
+
+Spark - SQL Queries vs Operações de DataFrame
+#############################################
+
+PS E:\projetos\docker-bigdata> docker exec -it spark bash
+
+root@spark:/# spark-shell
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/05/10 15:53:04 WARN spark.SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Spark context Web UI available at http://spark:4040
+Spark context available as 'sc' (master = local[*], app id = local-1620661987287).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.1
+      /_/
+
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_201)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> spark.catalog.setCurrentDatabase("feliciani2") ############################ SETEI O BANCO DE DADOS PRINCIPAL
+
+scala> spark.catalog.listColumns("tab_alunos").show
++-----------------+-----------+--------+--------+-----------+--------+
+|             name|description|dataType|nullable|isPartition|isBucket|
++-----------------+-----------+--------+--------+-----------+--------+
+|      id_discente|       null|     int|    true|      false|   false|
+|             nome|       null|  string|    true|      false|   false|
+|     ano_ingresso|       null|     int|    true|      false|   false|
+| periodo_ingresso|       null|     int|    true|      false|   false|
+|            nivel|       null|  string|    true|      false|   false|
+|id_forma_ingresso|       null|     int|    true|      false|   false|
+|         id_curso|       null|     int|    true|      false|   false|
++-----------------+-----------+--------+--------+-----------+--------+
+
+
+##############################################################################################################################
+# 
+#                                  Visualizar o id e nome dos 5 primeiros registros
+#
+##############################################################################################################################
+
+
+################### USANDO O SQL QUERYs
+
+scala> spark.sql("select * from tab_alunos").show
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|id_discente|                nome|ano_ingresso|periodo_ingresso|nivel|id_forma_ingresso|id_curso|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|      18957|ABELARDO DA SILVA...|        2017|               1|    G|            62151|   76995|
+|        553| ABIEL GODOY MARIANO|        2015|            null|    M|          2081113|    3402|
+|      17977|ABIGAIL ANTUNES S...|        2017|               1|    T|          2081111|  759711|
+|      16613|ABIGAIL FERNANDA ...|        2017|            null|    M|            37350|    1222|
+|      17398|ABIGAIL JOSIANE R...|        2017|            null|    M|            37350|    5041|
+|      26880|ABIMAEL CHRISTOPF...|        2019|               1|    T|          2081115| 1913420|
+|      28508|   ABNER NUNES PERES|        2019|               1|    G|            37350|  181097|
+|      18693|ACSA PEREIRA RODR...|        2017|               1|    G|            62151|   77498|
+|      28071|ACSA ROBALO DOS S...|        2019|               1|    T|          2081115| 3996007|
+|      21968|AÇUCENA CARVALHO ...|        2018|               0|    N|          2081113| 2399357|
+|      22374|ADALBERTO LUFT LU...|        2018|               0|    N|          2081113| 2399354|
+|      26367|ADALBERTO SEIDEL ...|        2019|               1|    G|            34132|   79131|
+|       4392|ADALGIZA OLIVEIRA...|        2013|               1|    T|            37350|      34|
+|       4573|ADANA BIANCA DOS ...|        2012|               2|    T|            37350|      39|
+|      16219|ADÃO ANTÔNIO PILL...|        2016|               2|    L|            34112| 1444206|
+|      25120|ADÃO VAGNER DOS S...|        2018|               1|    G|            62151|  283646|
+|      19638|     ADELAR DE MELLO|        2017|               1|    G|            37350|   65489|
+|      13232|ADELAR SANTOS DAS...|        2016|               1|    T|            37350|    2057|
+|      10071|ADELI CRISTIANO W...|        2012|               2|    G|            62151|  182354|
+|      24787|ADELITA ALVES SIL...|        2018|               1|    T|          2081111|      31|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+only showing top 20 rows
+
+
+scala> spark.sql("select id_discente, nome from tab_alunos limit 5").show
++-----------+--------------------+
+|id_discente|                nome|
++-----------+--------------------+
+|      18957|ABELARDO DA SILVA...|
+|        553| ABIEL GODOY MARIANO|
+|      17977|ABIGAIL ANTUNES S...|
+|      16613|ABIGAIL FERNANDA ...|
+|      17398|ABIGAIL JOSIANE R...|
++-----------+--------------------+
+
+
+
+######################### USANDO O DATAFRAME
+
+scala> spark.read.table("tab_alunos").show
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|id_discente|                nome|ano_ingresso|periodo_ingresso|nivel|id_forma_ingresso|id_curso|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|      18957|ABELARDO DA SILVA...|        2017|               1|    G|            62151|   76995|
+|        553| ABIEL GODOY MARIANO|        2015|            null|    M|          2081113|    3402|
+|      17977|ABIGAIL ANTUNES S...|        2017|               1|    T|          2081111|  759711|
+|      16613|ABIGAIL FERNANDA ...|        2017|            null|    M|            37350|    1222|
+|      17398|ABIGAIL JOSIANE R...|        2017|            null|    M|            37350|    5041|
+|      26880|ABIMAEL CHRISTOPF...|        2019|               1|    T|          2081115| 1913420|
+|      28508|   ABNER NUNES PERES|        2019|               1|    G|            37350|  181097|
+|      18693|ACSA PEREIRA RODR...|        2017|               1|    G|            62151|   77498|
+|      28071|ACSA ROBALO DOS S...|        2019|               1|    T|          2081115| 3996007|
+|      21968|AÇUCENA CARVALHO ...|        2018|               0|    N|          2081113| 2399357|
+|      22374|ADALBERTO LUFT LU...|        2018|               0|    N|          2081113| 2399354|
+|      26367|ADALBERTO SEIDEL ...|        2019|               1|    G|            34132|   79131|
+|       4392|ADALGIZA OLIVEIRA...|        2013|               1|    T|            37350|      34|
+|       4573|ADANA BIANCA DOS ...|        2012|               2|    T|            37350|      39|
+|      16219|ADÃO ANTÔNIO PILL...|        2016|               2|    L|            34112| 1444206|
+|      25120|ADÃO VAGNER DOS S...|        2018|               1|    G|            62151|  283646|
+|      19638|     ADELAR DE MELLO|        2017|               1|    G|            37350|   65489|
+|      13232|ADELAR SANTOS DAS...|        2016|               1|    T|            37350|    2057|
+|      10071|ADELI CRISTIANO W...|        2012|               2|    G|            62151|  182354|
+|      24787|ADELITA ALVES SIL...|        2018|               1|    T|          2081111|      31|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+only showing top 20 rows
+
+
+scala> val alunosHiveDF = spark.read.table("tab_alunos")
+alunosHiveDF: org.apache.spark.sql.DataFrame = [id_discente: int, nome: string ... 5 more fields]
+
+scala> val alunosHiveDF = spark.read.table("tab_alunos")
+alunosHiveDF: org.apache.spark.sql.DataFrame = [id_discente: int, nome: string ... 5 more fields]
+
+scala> alunosHiveDF.select("id_discente","nome").limit(5).show
++-----------+--------------------+
+|id_discente|                nome|
++-----------+--------------------+
+|      18957|ABELARDO DA SILVA...|
+|        553| ABIEL GODOY MARIANO|
+|      17977|ABIGAIL ANTUNES S...|
+|      16613|ABIGAIL FERNANDA ...|
+|      17398|ABIGAIL JOSIANE R...|
++-----------+--------------------+
+
+
+
+##############################################################################################################################
+# 
+#                                  Visualizar o id, nome e ano quando o ano de ingresso for maior ou igual a 2018
+#
+##############################################################################################################################
+
+
+###################### USANDO SQL QUERYs
+
+scala> spark.catalog.listColumns("tab_alunos").show
++-----------------+-----------+--------+--------+-----------+--------+
+|             name|description|dataType|nullable|isPartition|isBucket|
++-----------------+-----------+--------+--------+-----------+--------+
+|      id_discente|       null|     int|    true|      false|   false|
+|             nome|       null|  string|    true|      false|   false|
+|     ano_ingresso|       null|     int|    true|      false|   false|
+| periodo_ingresso|       null|     int|    true|      false|   false|
+|            nivel|       null|  string|    true|      false|   false|
+|id_forma_ingresso|       null|     int|    true|      false|   false|
+|         id_curso|       null|     int|    true|      false|   false|
++-----------------+-----------+--------+--------+-----------+--------+
+
+
+scala> spark.sql("select id_discente,nome,ano_ingresso from tab_alunos where ano_ingresso >= 2018").show
++-----------+--------------------+------------+
+|id_discente|                nome|ano_ingresso|
++-----------+--------------------+------------+
+|      26880|ABIMAEL CHRISTOPF...|        2019|
+|      28508|   ABNER NUNES PERES|        2019|
+|      28071|ACSA ROBALO DOS S...|        2019|
+|      21968|AÇUCENA CARVALHO ...|        2018|
+|      22374|ADALBERTO LUFT LU...|        2018|
+|      26367|ADALBERTO SEIDEL ...|        2019|
+|      25120|ADÃO VAGNER DOS S...|        2018|
+|      24787|ADELITA ALVES SIL...|        2018|
+|      28001|ADEMIR LUIZ SCHEN...|        2019|
+|      21618|    ADENIR CALLEGARO|        2018|
+|      27346|        ADILSON HAAS|        2019|
+|      21569|ADILSON LOPES DA ...|        2018|
+|      24456|ADILSON MARTINS D...|        2018|
+|      24958|  ADIR JOSÉ HECHMANN|        2018|
+|      25805|ADRIANA CLARICE H...|        2018|
+|      27021|ADRIANA GÖTENS AN...|        2019|
+|      25968|ADRIANA MAGALHÃES...|        2018|
+|      27232|ADRIANA PAIVA GÜL...|        2019|
+|      21247|ADRIANA PERES FER...|        2018|
+|      27223|       ADRIANA PIRAN|        2019|
++-----------+--------------------+------------+
+only showing top 20 rows
+
+
+
+############################## USANDO DATAFRAME
+
+scala> alunosHiveDF.select("id_discente","nome","ano_ingresso").where("ano_ingresso >= 2018").show
++-----------+--------------------+------------+
+|id_discente|                nome|ano_ingresso|
++-----------+--------------------+------------+
+|      26880|ABIMAEL CHRISTOPF...|        2019|
+|      28508|   ABNER NUNES PERES|        2019|
+|      28071|ACSA ROBALO DOS S...|        2019|
+|      21968|AÇUCENA CARVALHO ...|        2018|
+|      22374|ADALBERTO LUFT LU...|        2018|
+|      26367|ADALBERTO SEIDEL ...|        2019|
+|      25120|ADÃO VAGNER DOS S...|        2018|
+|      24787|ADELITA ALVES SIL...|        2018|
+|      28001|ADEMIR LUIZ SCHEN...|        2019|
+|      21618|    ADENIR CALLEGARO|        2018|
+|      27346|        ADILSON HAAS|        2019|
+|      21569|ADILSON LOPES DA ...|        2018|
+|      24456|ADILSON MARTINS D...|        2018|
+|      24958|  ADIR JOSÉ HECHMANN|        2018|
+|      25805|ADRIANA CLARICE H...|        2018|
+|      27021|ADRIANA GÖTENS AN...|        2019|
+|      25968|ADRIANA MAGALHÃES...|        2018|
+|      27232|ADRIANA PAIVA GÜL...|        2019|
+|      21247|ADRIANA PERES FER...|        2018|
+|      27223|       ADRIANA PIRAN|        2019|
++-----------+--------------------+------------+
+only showing top 20 rows
+
+
+###################################################################################################################################################
+# 
+#                  Visualizar por ordem alfabética descendente do nome o id, nome e ano quando o ano de ingresso for maior ou igual a 2018
+#
+###################################################################################################################################################
+
+####################### USANDO SQL QUERYs
+
+scala> spark.sql("select id_discente,nome,ano_ingresso from tab_alunos where ano_ingresso >= 2018 order by nome desc").show
++-----------+--------------------+------------+
+|id_discente|                nome|ano_ingresso|
++-----------+--------------------+------------+
+|      24161|ÍTALO CARPES DA C...|        2018|
+|      23789|  ÍGOR ANTONINI HORN|        2018|
+|      25323|ÊNDREO SANTOS SEE...|        2018|
+|      22611|ÊNDREO DE CARVALH...|        2018|
+|      22759|ÊMILY MANUELA DE ...|        2018|
+|      26310|ÉVELYN SOLENE DE ...|        2019|
+|      26921|ÉVELYN PAZ GONÇALVES|        2019|
+|      26576|ÉVELIN LUÍZA MION...|        2019|
+|      22341|      ÉVELIN DA ROSA|        2018|
+|      23718|ÉRICSSON LIMA DA ...|        2018|
+|      26262|   ÉRICA SILVA VEIGA|        2019|
+|      27781|ÉRICA PRADO DE AL...|        2019|
+|      24923|ÉRICA MELLO DOS S...|        2018|
+|      26266| ÉRICA DA ROSA PINTO|        2019|
+|      28255|ÉRICA BERTOLDO DA...|        2019|
+|      27927|ÉRIC SCHUSTER PAR...|        2019|
+|      25189|ÉRIC RANIE CONTES...|        2018|
+|      23031|  ÉRIC BARBOSA ROCHA|        2018|
+|      26430|ÉMERSON SILVA DOS...|        2019|
+|      23223|ÉMERSON SAMUEL DA...|        2018|
++-----------+--------------------+------------+
+only showing top 20 rows
+
+
+
+####################### USANDO DATAFRAMES
+
+scala> alunosHiveDF.select("id_discente","nome","ano_ingresso").where("ano_ingresso >= 2018").orderBy($"nome".desc).show
++-----------+--------------------+------------+
+|id_discente|                nome|ano_ingresso|
++-----------+--------------------+------------+
+|      24161|ÍTALO CARPES DA C...|        2018|
+|      23789|  ÍGOR ANTONINI HORN|        2018|
+|      25323|ÊNDREO SANTOS SEE...|        2018|
+|      22611|ÊNDREO DE CARVALH...|        2018|
+|      22759|ÊMILY MANUELA DE ...|        2018|
+|      26310|ÉVELYN SOLENE DE ...|        2019|
+|      26921|ÉVELYN PAZ GONÇALVES|        2019|
+|      26576|ÉVELIN LUÍZA MION...|        2019|
+|      22341|      ÉVELIN DA ROSA|        2018|
+|      23718|ÉRICSSON LIMA DA ...|        2018|
+|      26262|   ÉRICA SILVA VEIGA|        2019|
+|      27781|ÉRICA PRADO DE AL...|        2019|
+|      24923|ÉRICA MELLO DOS S...|        2018|
+|      26266| ÉRICA DA ROSA PINTO|        2019|
+|      28255|ÉRICA BERTOLDO DA...|        2019|
+|      27927|ÉRIC SCHUSTER PAR...|        2019|
+|      25189|ÉRIC RANIE CONTES...|        2018|
+|      23031|  ÉRIC BARBOSA ROCHA|        2018|
+|      26430|ÉMERSON SILVA DOS...|        2019|
+|      23223|ÉMERSON SAMUEL DA...|        2018|
++-----------+--------------------+------------+
+only showing top 20 rows
+
+########### OU
+
+scala> alunosHiveDF.select("id_discente","nome","ano_ingresso").where("ano_ingresso >= 2018").orderBy(alunosHiveDF("nome").desc).show
++-----------+--------------------+------------+
+|id_discente|                nome|ano_ingresso|
++-----------+--------------------+------------+
+|      24161|ÍTALO CARPES DA C...|        2018|
+|      23789|  ÍGOR ANTONINI HORN|        2018|
+|      25323|ÊNDREO SANTOS SEE...|        2018|
+|      22611|ÊNDREO DE CARVALH...|        2018|
+|      22759|ÊMILY MANUELA DE ...|        2018|
+|      26310|ÉVELYN SOLENE DE ...|        2019|
+|      26921|ÉVELYN PAZ GONÇALVES|        2019|
+|      26576|ÉVELIN LUÍZA MION...|        2019|
+|      22341|      ÉVELIN DA ROSA|        2018|
+|      23718|ÉRICSSON LIMA DA ...|        2018|
+|      26262|   ÉRICA SILVA VEIGA|        2019|
+|      27781|ÉRICA PRADO DE AL...|        2019|
+|      24923|ÉRICA MELLO DOS S...|        2018|
+|      26266| ÉRICA DA ROSA PINTO|        2019|
+|      28255|ÉRICA BERTOLDO DA...|        2019|
+|      27927|ÉRIC SCHUSTER PAR...|        2019|
+|      25189|ÉRIC RANIE CONTES...|        2018|
+|      23031|  ÉRIC BARBOSA ROCHA|        2018|
+|      26430|ÉMERSON SILVA DOS...|        2019|
+|      23223|ÉMERSON SAMUEL DA...|        2018|
++-----------+--------------------+------------+
+only showing top 20 rows
+
+
+###################################################################################################################################################
+# 
+#                  Contar a quantidade de registros do item anterior
+#
+###################################################################################################################################################
+
+############ USANDO SQL QUERYs
+
+scala> spark.sql("select count(id_discente) from tab_alunos where ano_ingresso >= 2018").show
++------------------+
+|count(id_discente)|
++------------------+
+|              4266|
++------------------+
+
+
+############ USANDO DATAFRAME
+
+scala> alunosHiveDF.select("id_discente","nome","ano_ingresso").where("ano_ingresso >= 2018").orderBy(alunosHiveDF("nome").desc).count
+res18: Long = 4266
+
+scala> :quit
+
+root@spark:/# exit
+
+PS E:\projetos\docker-bigdata> docker-compose stop
+Stopping hive-server               ... done
+Stopping hive_metastore            ... done
+Stopping hive-metastore-postgresql ... done
+Stopping datanode                  ... done
+Stopping hbase-master              ... done
+Stopping namenode                  ... done
+Stopping database                  ... done
+Stopping spark                     ... done
+Stopping zookeeper                 ... done
+
+PS E:\projetos\docker-bigdata>
+
+
