@@ -1,0 +1,154 @@
+
+########### PARA SABER QUAIS BANCOS TENHO ACESSO E QUAL ESTÁ SETADO COMO PRINCIPAL
+
+
+
+PS E:\projetos\docker-bigdata> docker exec -it spark bash
+
+root@spark:/# spark-shell
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/05/10 15:19:47 WARN spark.SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Spark context Web UI available at http://spark:4040
+Spark context available as 'sc' (master = local[*], app id = local-1620659989024).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.1
+      /_/
+
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_201)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> spark.
+baseRelationToDataFrame   conf              emptyDataFrame   implicits         range        sessionState   sql          streams   udf
+catalog                   createDataFrame   emptyDataset     listenerManager   read         sharedState    sqlContext   table     version
+close                     createDataset     experimental     newSession        readStream   sparkContext   stop         time
+
+scala> spark.catalog.
+cacheTable            createTable       dropGlobalTempView   getDatabase   isCached        listFunctions       refreshByPath        tableExists
+clearCache            currentDatabase   dropTempView         getFunction   listColumns     listTables          refreshTable         uncacheTable
+createExternalTable   databaseExists    functionExists       getTable      listDatabases   recoverPartitions   setCurrentDatabase
+
+scala> spark.catalog.listDatabases
+res0: org.apache.spark.sql.Dataset[org.apache.spark.sql.catalog.Database] = [name: string, description: string ... 1 more field]
+############## CRIA UMA VARIÁVEL res0 caso eu dê um ENTER
+
+scala> spark.catalog.listDatabases.show
++----------+--------------------+--------------------+
+|      name|         description|         locationUri|
++----------+--------------------+--------------------+
+|   default|Default Hive data...|hdfs://namenode:8...|
+| feliciani|                    |hdfs://namenode:8...|
+|feliciani2|                    |hdfs://namenode:8...|
++----------+--------------------+--------------------+
+
+
+scala> spark.catalog.listDatabases.show(false) ################################################## FALSE MOSTRA MAIS INFORMAÇÕES
++----------+---------------------+------------------------------------------------------+
+|name      |description          |locationUri                                           |
++----------+---------------------+------------------------------------------------------+
+|default   |Default Hive database|hdfs://namenode:8020/user/hive/warehouse              |  ########## PADRÃO DO HIVE
+|feliciani |                     |hdfs://namenode:8020/user/hive/warehouse/feliciani.db |  ########## MEUS BANCOS DE ESTUDOS
+|feliciani2|                     |hdfs://namenode:8020/user/hive/warehouse/feliciani2.db|  ########## MEUS BANCOS DE ESTUDOS
++----------+---------------------+------------------------------------------------------+
+
+
+
+############# Definir o banco de dados “seu-nome” como principal
+
+scala> spark.catalog.setCurrentDatabase("feliciani2")  ################## SETOU COMO BANCO PADRÃO
+
+
+########################## Visualizar todas as tabelas do banco de dados “seu-nome”
+
+scala> spark.catalog.listTables.show
++------------------+----------+--------------------+---------+-----------+
+|              name|  database|         description|tableType|isTemporary|
++------------------+----------+--------------------+---------+-----------+
+|        nascimento|feliciani2|                null| EXTERNAL|      false|
+|       pop_parquet|feliciani2|                null|  MANAGED|      false|
+|pop_parquet_snappy|feliciani2|                null|  MANAGED|      false|
+|         populacao|feliciani2|                null|  MANAGED|      false|
+|        tab_alunos|feliciani2|                null|  MANAGED|      false|
+|   tab_juros_selic|feliciani2|                null|  MANAGED|      false|
+|            titles|feliciani2|Imported by sqoop...|  MANAGED|      false|
++------------------+----------+--------------------+---------+-----------+
+
+
+scala> spark.catalog.listTables.show(false)
++------------------+----------+----------------------------------------+---------+-----------+
+|name              |database  |description                             |tableType|isTemporary|
++------------------+----------+----------------------------------------+---------+-----------+
+|nascimento        |feliciani2|null                                    |EXTERNAL |false      | ############ TABELA EXTERNA
+|pop_parquet       |feliciani2|null                                    |MANAGED  |false      |
+|pop_parquet_snappy|feliciani2|null                                    |MANAGED  |false      |
+|populacao         |feliciani2|null                                    |MANAGED  |false      |
+|tab_alunos        |feliciani2|null                                    |MANAGED  |false      |
+|tab_juros_selic   |feliciani2|null                                    |MANAGED  |false      |
+|titles            |feliciani2|Imported by sqoop on 2021/05/05 19:25:09|MANAGED  |false      |
++------------------+----------+----------------------------------------+---------+-----------+
+
+
+
+####################################### Visualizar as colunas da tabela tab_alunos
+
+scala> spark.catalog.listColumns("tab_alunos").show
++-----------------+-----------+--------+--------+-----------+--------+
+|             name|description|dataType|nullable|isPartition|isBucket|
++-----------------+-----------+--------+--------+-----------+--------+
+|      id_discente|       null|     int|    true|      false|   false|
+|             nome|       null|  string|    true|      false|   false|
+|     ano_ingresso|       null|     int|    true|      false|   false|
+| periodo_ingresso|       null|     int|    true|      false|   false|
+|            nivel|       null|  string|    true|      false|   false|
+|id_forma_ingresso|       null|     int|    true|      false|   false|
+|         id_curso|       null|     int|    true|      false|   false|
++-----------------+-----------+--------+--------+-----------+--------+
+
+
+########################### Visualizar os 10 primeiros registos da tabela "tab_alunos" com uso do spark.sql
+
+scala> spark.sql("select * from tab_alunos limit 10").show()
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|id_discente|                nome|ano_ingresso|periodo_ingresso|nivel|id_forma_ingresso|id_curso|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|      18957|ABELARDO DA SILVA...|        2017|               1|    G|            62151|   76995|
+|        553| ABIEL GODOY MARIANO|        2015|            null|    M|          2081113|    3402|
+|      17977|ABIGAIL ANTUNES S...|        2017|               1|    T|          2081111|  759711|
+|      16613|ABIGAIL FERNANDA ...|        2017|            null|    M|            37350|    1222|
+|      17398|ABIGAIL JOSIANE R...|        2017|            null|    M|            37350|    5041|
+|      26880|ABIMAEL CHRISTOPF...|        2019|               1|    T|          2081115| 1913420|
+|      28508|   ABNER NUNES PERES|        2019|               1|    G|            37350|  181097|
+|      18693|ACSA PEREIRA RODR...|        2017|               1|    G|            62151|   77498|
+|      28071|ACSA ROBALO DOS S...|        2019|               1|    T|          2081115| 3996007|
+|      21968|AÇUCENA CARVALHO ...|        2018|               0|    N|          2081113| 2399357|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+
+############# PRINT ACIMA SERÁ MAIS RÁPIDO
+
+
+scala> spark.read.table("tab_alunos").show(10)
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|id_discente|                nome|ano_ingresso|periodo_ingresso|nivel|id_forma_ingresso|id_curso|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+|      18957|ABELARDO DA SILVA...|        2017|               1|    G|            62151|   76995|
+|        553| ABIEL GODOY MARIANO|        2015|            null|    M|          2081113|    3402|
+|      17977|ABIGAIL ANTUNES S...|        2017|               1|    T|          2081111|  759711|
+|      16613|ABIGAIL FERNANDA ...|        2017|            null|    M|            37350|    1222|
+|      17398|ABIGAIL JOSIANE R...|        2017|            null|    M|            37350|    5041|
+|      26880|ABIMAEL CHRISTOPF...|        2019|               1|    T|          2081115| 1913420|
+|      28508|   ABNER NUNES PERES|        2019|               1|    G|            37350|  181097|
+|      18693|ACSA PEREIRA RODR...|        2017|               1|    G|            62151|   77498|
+|      28071|ACSA ROBALO DOS S...|        2019|               1|    T|          2081115| 3996007|
+|      21968|AÇUCENA CARVALHO ...|        2018|               0|    N|          2081113| 2399357|
++-----------+--------------------+------------+----------------+-----+-----------------+--------+
+only showing top 10 rows
+
+scala>
+
+
+
