@@ -1,0 +1,275 @@
+
+############# INSTALAÇÃO MONGO NO DOCKER DESKTOP WINDOWS
+
+PS C:\Users\marce> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+PS C:\Users\marce> e:
+
+PS E:\> cd projetos
+
+PS E:\projetos> cd docker-mongodb
+
+PS E:\projetos\docker-mongodb> docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+phpmessages                                     latest    e82455945d20   3 weeks ago     417MB
+confluentinc/cp-kafka                           latest    24aaec098df4   7 weeks ago     748MB
+confluentinc/cp-zookeeper                       latest    3ae87a8bfa8d   7 weeks ago     748MB
+docker.elastic.co/elasticsearch/elasticsearch   7.11.2    a6cbb6bace0e   2 months ago    824MB
+docker.elastic.co/kibana/kibana                 7.11.2    59ddc19818fe   2 months ago    1.01GB
+confluentinc/cp-kafka-connect-base              6.0.0     2662f88d7543   7 months ago    1.17GB
+fjardim/jupyter-spark                           latest    31051dea1e70   9 months ago    5.03GB
+fjardim/datanode                                latest    24fb187ebd91   13 months ago   874MB
+fjardim/namenode_sqoop                          latest    40dc59117765   13 months ago   1.54GB
+fjardim/mysql                                   latest    84164b03fa2e   14 months ago   456MB
+fjardim/nifi                                    latest    bb6705c7125b   14 months ago   1.78GB
+fjardim/hive-metastore                          latest    7ab9e8f93813   14 months ago   275MB
+fjardim/hive                                    latest    87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest    ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest    6fe5551964f5   5 years ago     451MB
+
+PS E:\projetos\docker-mongodb> docker pull mongo
+Using default tag: latest
+latest: Pulling from library/mongo
+01bf7da0a88c: Pull complete
+f3b4a5f15c7a: Pull complete
+57ffbe87baa1: Pull complete
+77d5e5c7eab9: Pull complete
+43798cf18b45: Pull complete
+590845b1f17c: Pull complete
+1f2ff17242ce: Pull complete
+6f11b2ce0594: Pull complete
+91532386f4ec: Pull complete
+705ef0ab262e: Pull complete
+e6238126b609: Pull complete
+Digest: sha256:4e80da85d20b2893d480fd3c9f5b56fe24cd15ed0a80cda248574b2bf5489c8d
+Status: Downloaded newer image for mongo:latest
+docker.io/library/mongo:latest
+
+PS E:\projetos\docker-mongodb> docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+mongo                                           latest    07630e791de3   12 hours ago    449MB
+phpmessages                                     latest    e82455945d20   3 weeks ago     417MB
+confluentinc/cp-zookeeper                       latest    3ae87a8bfa8d   7 weeks ago     748MB
+docker.elastic.co/elasticsearch/elasticsearch   7.11.2    a6cbb6bace0e   2 months ago    824MB
+docker.elastic.co/kibana/kibana                 7.11.2    59ddc19818fe   2 months ago    1.01GB
+confluentinc/cp-enterprise-control-center       6.0.1     a594d1370904   5 months ago    973MB
+confluentinc/cp-kafka-connect-base              6.0.0     2662f88d7543   7 months ago    1.17GB
+fjardim/jupyter-spark                           latest    31051dea1e70   9 months ago    5.03GB
+fjardim/datanode                                latest    24fb187ebd91   13 months ago   874MB
+fjardim/namenode_sqoop                          latest    40dc59117765   13 months ago   1.54GB
+fjardim/mysql                                   latest    84164b03fa2e   14 months ago   456MB
+fjardim/nifi                                    latest    bb6705c7125b   14 months ago   1.78GB
+fjardim/hive-metastore                          latest    7ab9e8f93813   14 months ago   275MB
+fjardim/hive                                    latest    87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest    ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest    6fe5551964f5   5 years ago     451MB
+
+PS E:\projetos\docker-mongodb> docker pull mongo-express
+Using default tag: latest
+latest: Pulling from library/mongo-express
+ddad3d7c1e96: Pull complete
+3a8370f05d5d: Pull complete
+71a8563b7fea: Pull complete
+119c7e14957d: Pull complete
+c06612553eef: Pull complete
+931f05f69fde: Pull complete
+2766ec5ce375: Pull complete
+a60269e588ca: Pull complete
+Digest: sha256:df245e8376f3412c3e508a36ffa5f87b9d79ce5df868b82e6169cda53e8b3030
+Status: Downloaded newer image for mongo-express:latest
+docker.io/library/mongo-express:latest
+
+PS E:\projetos\docker-mongodb> docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+mongo                                           latest    07630e791de3   13 hours ago    449MB
+mongo-express                                   latest    51fc3f2af7a1   3 weeks ago     128MB
+phpmessages                                     latest    e82455945d20   3 weeks ago     417MB
+confluentinc/cp-kafka                           latest    24aaec098df4   7 weeks ago     748MB
+confluentinc/cp-zookeeper                       latest    3ae87a8bfa8d   7 weeks ago     748MB
+docker.elastic.co/elasticsearch/elasticsearch   7.11.2    a6cbb6bace0e   2 months ago    824MB
+docker.elastic.co/kibana/kibana                 7.11.2    59ddc19818fe   2 months ago    1.01GB
+confluentinc/cp-enterprise-control-center       6.0.1     a594d1370904   5 months ago    973MB
+confluentinc/cp-kafka-connect-base              6.0.0     2662f88d7543   7 months ago    1.17GB
+fjardim/jupyter-spark                           latest    31051dea1e70   9 months ago    5.03GB
+fjardim/datanode                                latest    24fb187ebd91   13 months ago   874MB
+fjardim/namenode_sqoop                          latest    40dc59117765   13 months ago   1.54GB
+fjardim/mysql                                   latest    84164b03fa2e   14 months ago   456MB
+fjardim/nifi                                    latest    bb6705c7125b   14 months ago   1.78GB
+fjardim/hive-metastore                          latest    7ab9e8f93813   14 months ago   275MB
+fjardim/hive                                    latest    87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest    ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest    6fe5551964f5   5 years ago     451MB
+
+PS E:\projetos\docker-mongodb> ls
+
+
+    Diretório: E:\projetos\docker-mongodb
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/05/2021     09:54            606 docker-compose-completo.yml
+-a----        11/05/2021     09:54            399 docker-compose.yml
+-a----        11/05/2021     09:54           1006 PassosInstalacaoDockerLinux.txt
+
+
+PS E:\projetos\docker-mongodb> cat docker-compose.yml
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+
+volumes:
+  db:
+
+
+PS E:\projetos\docker-mongodb> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Creating network "docker-mongodb_default" with the default driver
+Creating volume "docker-mongodb_db" with default driver
+Creating mongo         ... done
+Creating mongo-express ... done
+
+
+
+PS E:\projetos\docker-mongodb> docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED              STATUS          PORTS                      NAMES
+401b772af116   mongo-express   "tini -- /docker-ent…"   About a minute ago   Up 32 seconds   0.0.0.0:8081->8081/tcp     mongo-express
+df666aea22cf   mongo           "docker-entrypoint.s…"   About a minute ago   Up 32 seconds   0.0.0.0:27017->27017/tcp   mongo
+
+
+
+PS E:\projetos\docker-mongodb> docker ps -a
+CONTAINER ID   IMAGE                                                  COMMAND                   CREATED         STATUS                      PORTS                      NAMES
+401b772af116   mongo-express                                          "tini -- /docker-ent…"    2 minutes ago   Up About a minute           0.0.0.0:8081->8081/tcp     mongo-express
+df666aea22cf   mongo                                                  "docker-entrypoint.s…"    2 minutes ago   Up About a minute           0.0.0.0:27017->27017/tcp   mongo
+55c8f53a53fe   fjardim/hive                                           "entrypoint.sh /bin/…"    2 weeks ago     Exited (137) 21 hours ago
+                   hive-server
+eb174de255ac   fjardim/hive                                           "entrypoint.sh /opt/…"    2 weeks ago     Exited (137) 21 hours ago
+                   hive_metastore
+57c0c1d26f45   fjardim/hive-metastore                                 "/docker-entrypoint.…"    2 weeks ago     Exited (0) 21 hours ago
+                   hive-metastore-postgresql
+4820f250bc3f   fjardim/datanode                                       "/entrypoint.sh /run…"    2 weeks ago     Exited (137) 21 hours ago
+                   datanode
+9292cb351724   fjardim/hbase-master                                   "/entrypoint.sh /run…"    2 weeks ago     Exited (137) 21 hours ago
+                   hbase-master
+7733e1ee357e   fjardim/namenode_sqoop                                 "/entrypoint.sh /run…"    2 weeks ago     Exited (137) 21 hours ago
+                   namenode
+0902c04b6407   fjardim/mysql                                          "docker-entrypoint.s…"    2 weeks ago     Exited (137) 21 hours ago
+                   database
+16e81b79a174   fjardim/jupyter-spark                                  "/opt/docker/bin/ent…"    2 weeks ago     Exited (137) 21 hours ago
+                   spark
+e4b52f9b7f9a   fjardim/zookeeper                                      "/bin/sh -c '/usr/sb…"    2 weeks ago     Exited (137) 21 hours ago
+                   zookeeper
+9c5775299516   phpmessages                                            "docker-php-entrypoi…"    3 weeks ago     Exited (0) 3 weeks ago
+                   phpmessages_container
+7e70b1eeb576   b5174e76c6a9                                           "tail -f /dev/null"       4 weeks ago     Exited (137) 4 weeks ago
+                   7e70b1eeb576_simulator
+45997cdd0d7e   confluentinc/cp-kafka:latest                           "bash -c 'sleep 5s &…"    4 weeks ago     Exited (1) 4 weeks ago
+                   apache-kafka_kafka-topics-generator_1
+6f36eac5648c   docker.elastic.co/elasticsearch/elasticsearch:7.11.2   "/bin/tini -- /usr/l…"    4 weeks ago     Exited (78) 4 weeks ago
+                   es01
+97eacc58d9aa   confluentinc/cp-enterprise-control-center:6.0.1        "/etc/confluent/dock…"    4 weeks ago     Exited (143) 4 weeks ago
+                   apache-kafka_control-center_1
+86d2e069419e   confluentinc/cp-kafka:latest                           "bash -c 'sleep 5s &…"    4 weeks ago     Exited (1) 4 weeks ago
+                   apache-kafka_kafka-topics-generetor_1
+06e92d6687dd   confluentinc/cp-kafka-connect-base:6.0.0               "bash -c 'echo \"Inst…"   4 weeks ago     Exited (137) 4 weeks ago
+                   kafka-connect
+c7430f4cabbd   confluentinc/cp-kafka:latest                           "/etc/confluent/dock…"    4 weeks ago     Exited (137) 4 weeks ago
+                   apache-kafka_kafka_1
+51067ebabd05   confluentinc/cp-zookeeper:latest                       "/etc/confluent/dock…"    4 weeks ago     Exited (143) 4 weeks ago
+                   apache-kafka_zookeeper_1
+6331ea5ad7b7   docker.elastic.co/kibana/kibana:7.11.2                 "/bin/tini -- /usr/l…"    4 weeks ago     Exited (137) 4 weeks ago
+                   kib01
+dd1171f190d0   7ce4f91ef623                                           "/docker-entrypoint.…"    5 weeks ago     Exited (0) 5 weeks ago
+                   nginx_app
+
+
+#######################################################################################################################################
+#
+# Para Acessar o Mongo por linha de comando:   docker exec -it mongo bash     (porta 27017)
+#
+# Para Acessar WEB Mongo Express  http://localhost:8081
+#
+#######################################################################################################################################
+
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@df666aea22cf:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("ef2a8c75-4fe0-465f-9de8-e4aefd9faff9") }
+MongoDB server version: 4.4.6
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+        https://docs.mongodb.com/
+Questions? Try the MongoDB Developer Community Forums
+        https://community.mongodb.com
+---
+The server generated these startup warnings when booting:
+        2021-05-11T13:06:47.173+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-11T13:06:53.993+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-11T13:06:53.994+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> ################################## CTRL + D
+bye
+root@df666aea22cf:/#
+
+
+root@df666aea22cf:/# ls
+bin   data  docker-entrypoint-initdb.d  home        lib    media  opt   root  sbin  sys  usr
+boot  dev   etc                         js-yaml.js  lib64  mnt    proc  run   srv   tmp  var
+
+root@df666aea22cf:/# exit   ######################## CTRL + D
+
+PS E:\projetos\docker-mongodb> docker volume ls
+DRIVER    VOLUME NAME
+local     dbeb10d7a7b97743f2e196910e47328d3da54716d7ef40fbcd78fe135d0f9690
+local     docker-mongodb_db
+
+PS E:\projetos\docker-mongodb> docker-compose stop
+Stopping mongo-express ... done
+Stopping mongo         ... done
+
+PS E:\projetos\docker-mongodb> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+PS E:\projetos\docker-mongodb>
