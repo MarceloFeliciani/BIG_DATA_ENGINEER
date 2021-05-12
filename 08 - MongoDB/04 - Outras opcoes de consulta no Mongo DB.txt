@@ -1,0 +1,203 @@
+
+PS C:\Users\marce> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+PS C:\Users\marce> e:
+
+PS E:\> cd projetos\docker-mongodb
+
+PS E:\projetos\docker-mongodb> docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED        STATUS       PORTS                                           NAMES
+401b772af116   mongo-express   "tini -- /docker-ent…"   27 hours ago   Up 2 hours   0.0.0.0:8081->8081/tcp, :::8081->8081/tcp       mongo-express
+df666aea22cf   mongo           "docker-entrypoint.s…"   27 hours ago   Up 2 hours   0.0.0.0:27017->27017/tcp, :::27017->27017/tcp   mongo
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@df666aea22cf:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("a1b6da22-2469-469a-864c-f8cb4cab4ef9") }
+MongoDB server version: 4.4.6
+---
+The server generated these startup warnings when booting:
+        2021-05-12T14:24:12.710+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-12T14:24:17.839+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-12T14:24:17.841+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> show dbs ################################## LISTANDO AS BASES DE DADOS
+admin      0.000GB
+config     0.000GB
+feliciani  0.000GB
+local      0.000GB
+
+> use feliciani ################################## ACESSANDO A BASE DE DADOS FELICIANI
+switched to db feliciani
+
+> show collections  ################################## LISTANDO AS COLLECTIONS DA BASE DE DADOS FELICIANI
+produto
+
+################################## LISTANDO OS DOCUMENTOS DA COLLECTIONS PRODUTO DA BASE DADOS FELICIANI
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+###################################################################################
+#
+# Realizar as seguintes pesquisas na collection produto:
+#
+###################################################################################
+
+################################################## A) Mostrar os documentos ordenados pelo nome em ordem alfabética
+
+############# sort({nome: 1}) -> O Número 1 define que será em ordem alfabética
+
+> db.produto.find().sort({nome: 1})
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+
+
+############# sort({nome: 1}).pretty() -> Usando o pretty lista de forma indentada
+
+> db.produto.find().sort({nome: 1}).pretty()
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{
+        "_id" : 4,
+        "nome" : "hd externo",
+        "qtd" : 20,
+        "descricao" : {
+                "conexao" : "USB",
+                "armazenamento" : "500GB",
+                "so" : [
+                        "Windows 10",
+                        "Windows 8",
+                        "Windows 7"
+                ]
+        }
+}
+{
+        "_id" : 2,
+        "nome" : "memória ram",
+        "qtd" : 10,
+        "descricao" : {
+                "armazenamento" : "8GB",
+                "tipo" : "DDR4"
+        }
+}
+{
+        "_id" : 3,
+        "nome" : "mouse",
+        "qtd" : 50,
+        "descricao" : {
+                "conexao" : "USB",
+                "so" : [
+                        "Windows",
+                        "Mac",
+                        "Linux"
+                ]
+        }
+}
+
+
+################################################## b) Mostrar os 3 primeiros documentos ordenados por nome e quantidade.
+
+############# sort({nome: 1}) -> O Número 1 define que será em ordem alfabética
+############# limit(3) -> somente 3 itens
+
+> db.produto.find().sort({nome: 1, qtd: 1}).limit(3)
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+
+
+
+################################################## c) Mostrar apenas 1 documento que tenha o atributo Conexão = USB.
+
+############# findOne -> LISTA SOMENTE UM DOCUMENTO
+
+> db.produto.findOne({'descricao.conexao':'USB'})
+{
+        "_id" : 3,
+        "nome" : "mouse",
+        "qtd" : 50,
+        "descricao" : {
+                "conexao" : "USB",
+                "so" : [
+                        "Windows",
+                        "Mac",
+                        "Linux"
+                ]
+        }
+}
+
+
+################################################## d) Mostrar os documentos de tenham o atributo conexão = USB e quantidade menor que 25.
+
+############### $lt: 25   SIGNIFICA MENOR QUE 25
+
+> db.produto.find({'descricao.conexao':'USB', qtd:{$lt: 25}})
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+################################################## e) Mostrar os documentos que tenham o atributo conexão = USB ou quantidade menor que 25.
+
+
+############### $lt: 25   SIGNIFICA MENOR QUE 25
+############### {$or:    SIGNIFICA 'OU'
+
+> db.produto.find({$or:[{'descricao.conexao':'USB'}, {qtd: {$lt: 25}}]})
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+################################################## f) Mostrar apenas os id dos documentos de tenham o atributo conexão = USB ou quantidade menor que 25.
+
+############### {_id: 1})  -> Colocando 1 para filtrar apenas _id, ignorando o resto
+
+> db.produto.find({$or:[{'descricao.conexao':'USB'}, {qtd: {$lt: 25}}]},{_id: 1})
+{ "_id" : 2 }
+{ "_id" : 3 }
+{ "_id" : 4 }
+
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+> ##################################### CTRL + D
+bye
+
+root@df666aea22cf:/# exit ##################################### CTRL + D
+
+PS E:\projetos\docker-mongodb> docker-compose stop
+Stopping mongo-express ... done
+Stopping mongo         ... done
+
+PS E:\projetos\docker-mongodb>
+
