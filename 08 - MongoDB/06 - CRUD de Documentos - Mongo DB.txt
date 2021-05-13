@@ -1,0 +1,157 @@
+
+CRUD de Documentos
+##################
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@3aae9034bfae:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("b27485f7-0a05-4e60-aac7-c7808c18b981") }
+MongoDB server version: 4.4.6
+---
+The server generated these startup warnings when booting:
+        2021-05-13T12:59:24.074+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-13T12:59:29.846+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-13T12:59:29.847+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> show dbs  ############################ LISTANDO OS BANCOS DE DADOS
+admin      0.000GB
+config     0.000GB
+feliciani  0.000GB
+local      0.000GB
+
+> use feliciani ############################ ACESSANDO O BANCO DE DADOS FELICIANI
+switched to db feliciani
+
+> db.createCollection('teste') ####################### CRIANDO A COLLECTION TESTE NA DB FELICIANI
+{ "ok" : 1 }
+
+> show collections  ####################### LISTANDO AS COLLECTIONS NA DB FELICIANI
+produto
+teste
+
+
+###############################################################################################################
+#
+# Inserir o seguinte documento:
+# Campo: usuario, valor: Semantix
+# Campo: data_acesso, valor: data atual no formato ISODate
+#
+###############################################################################################################
+
+
+> db.teste.insertOne({usuario: 'Semantix', data_acesso: new Date()})  ############ new Date()   INSERI A DATA ATUAL 
+{
+        "acknowledged" : true,
+        "insertedId" : ObjectId("609d6a68509cbd1cfab8ef97")
+}
+
+> db.teste.find()
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : ISODate("2021-05-13T18:05:28.003Z") }
+
+
+
+###############################################################################################################
+#
+# Buscar todos os documentos do ano >= 2020
+#
+###############################################################################################################
+
+################# {$gte:  -> SIGNIFICA MAIOR OU IGUAL A 2020
+
+> db.teste.find({data_acesso: {$gte: new Date("2020")}})
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : ISODate("2021-05-13T18:05:28.003Z") }
+
+OU
+
+> db.teste.find({data_acesso: {$gte: ISODate("2020-01-01")}}) ############ MAIOR OU IGUAL A ESTA DATA
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : ISODate("2021-05-13T18:05:28.003Z") }
+
+
+Atualizar o campo “data_acesso” para timestamp com o valor da atualização do usuario Semantix
+
+###############################################################################################################
+#
+# Atualizar o campo “data_acesso” para timestamp com o valor da atualização do usuario Semantix
+#
+###############################################################################################################
+
+> db.teste.find()
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : ISODate("2021-05-13T18:05:28.003Z") }
+
+
+################### FILTRO DO QUÊ SERÁ ALTERADO {usuario: "Semantix"}
+################### ALTERANDO PARA TIMESTAMP {$currentDate: {data_acesso: {$type: "timestamp"}}}
+
+> db.teste.updateOne({usuario: "Semantix"},{$currentDate: {data_acesso: {$type: "timestamp"}}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+################### ALTERADO COM SUCESSO PARA TIMESTAMP
+
+> db.teste.find()
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : Timestamp(1620930095, 1) }
+
+
+
+###############################################################################################################
+#
+# Deletar o documento criado pelo id
+#
+###############################################################################################################
+
+> db.teste.find()
+{ "_id" : ObjectId("609d6a68509cbd1cfab8ef97"), "usuario" : "Semantix", "data_acesso" : Timestamp(1620930095, 1) }
+
+##################### FOI DELETADO
+> db.teste.deleteOne({"_id" : ObjectId("609d6a68509cbd1cfab8ef97")})
+{ "acknowledged" : true, "deletedCount" : 1 }
+
+##################### FOI DELETADO COM SUCESSO
+> db.teste.find()
+>
+
+
+###############################################################################################################
+#
+# Deletar a collection teste
+#
+###############################################################################################################
+
+> db
+feliciani
+
+> show collections
+produto
+teste
+
+> db.teste.drop() ##################### DELETANDO
+true
+
+> show collections
+produto
+>
+
+> ############################################# CTRL + D
+bye
+root@3aae9034bfae:/# exit ############################################# CTRL + D
+
+PS E:\projetos\docker-mongodb> docker-compose stop
+Stopping mongo         ... done
+Stopping mongo-express ... done
+
+PS E:\projetos\docker-mongodb>
+
