@@ -1,0 +1,370 @@
+
+Atualização de Documentos
+#########################
+
+PS E:\projetos\docker-mongodb> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+
+    Diretório: E:\projetos\docker-mongodb
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/05/2021     09:54            606 docker-compose-completo.yml
+-a----        11/05/2021     09:54            399 docker-compose.yml
+-a----        11/05/2021     09:54           1006 PassosInstalacaoDockerLinux.txt
+
+
+PS E:\projetos\docker-mongodb> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+PS E:\projetos\docker-mongodb> docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+mongo                                           latest    07630e791de3   2 days ago      449MB
+mongo-express                                   latest    51fc3f2af7a1   4 weeks ago     128MB
+phpmessages                                     latest    e82455945d20   4 weeks ago     417MB
+confluentinc/cp-kafka                           latest    24aaec098df4   8 weeks ago     748MB
+confluentinc/cp-zookeeper                       latest    3ae87a8bfa8d   8 weeks ago     748MB
+docker.elastic.co/elasticsearch/elasticsearch   7.11.2    a6cbb6bace0e   2 months ago    824MB
+docker.elastic.co/kibana/kibana                 7.11.2    59ddc19818fe   2 months ago    1.01GB
+confluentinc/cp-enterprise-control-center       6.0.1     a594d1370904   5 months ago    973MB
+confluentinc/cp-kafka-connect-base              6.0.0     2662f88d7543   7 months ago    1.17GB
+fjardim/jupyter-spark                           latest    31051dea1e70   9 months ago    5.03GB
+fjardim/datanode                                latest    24fb187ebd91   13 months ago   874MB
+fjardim/namenode_sqoop                          latest    40dc59117765   13 months ago   1.54GB
+fjardim/mysql                                   latest    84164b03fa2e   14 months ago   456MB
+fjardim/nifi                                    latest    bb6705c7125b   14 months ago   1.78GB
+fjardim/hive-metastore                          latest    7ab9e8f93813   14 months ago   275MB
+fjardim/hive                                    latest    87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest    ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest    6fe5551964f5   5 years ago     451MB
+
+PS E:\projetos\docker-mongodb> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Recreating mongo-express ... done
+Recreating mongo         ... done
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@3aae9034bfae:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("bb1b7319-d10e-43b8-8428-31223f7a3613") }
+MongoDB server version: 4.4.6
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+        https://docs.mongodb.com/
+Questions? Try the MongoDB Developer Community Forums
+        https://community.mongodb.com
+---
+The server generated these startup warnings when booting:
+        2021-05-13T12:59:24.074+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-13T12:59:29.846+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-13T12:59:29.847+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+> show dbs ########################################## BASES DE DADOS EXISTENTES
+admin      0.000GB
+config     0.000GB
+feliciani  0.000GB
+local      0.000GB
+
+> use feliciani ########################################## ENTREI NA BASE DE DADOS FELICIANI
+switched to db feliciani
+
+> show collections ########################################## LISTEI AS COLLECTIONS DA BASE DE DADOS FELICIANI
+produto
+
+
+########################################## LISTEI OS DOCUMENTOS DA COLLECTIONS PRODUTO DA BASE DE DADOS FELICIANI
+
+> db.produto.find() 
+{ "_id" : 1, "nome" : "cpu i5", "qtd" : "15" }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+##########################################################################################################
+#
+# Atualizar o valor do campo nome para “cpu i7” do id 1
+#
+##########################################################################################################
+
+############ db.produto.updateOne({FILTRO}, {CAMPO QUE VAI SER ATUALIZADO})
+############ $set:  -> FAZ O UPDATE
+
+> db.produto.updateOne({_id: 1}, {$set: {nome: "cpu i7"}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : "15" }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 50, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+
+##########################################################################################################
+#
+# Atualizar o atributo quantidade para o tipo inteiro do id: 1
+#
+##########################################################################################################
+
+############# 1o PESQUISAR O ITEM QUE SERÁ ALTERADO
+
+> db.produto.findOne({_id: 1})
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : "15" }  ################## O "15" ENTRE ASPAS SERÁ ATUALIZADO PARA INTEIRO
+
+> db.produto.updateOne({_id: 1}, {$set: {qtd: 15}}) #################### USAR O SET SEM AS ASPAS NO 15
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+> db.produto.findOne({_id: 1})
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }  ################## ALTERADO
+
+
+
+
+##########################################################################################################
+#
+# Atualizar o valor do campo qtd para 30 de todos os documentos, com o campo qtd >= 30
+#
+##########################################################################################################
+
+############# db.produto.updateMany({FILTRO DO QUÊ SERÁ ATUALIZADO}}, {CAMPO PARA SER ALTERADO)
+############# {qtd: {$gte:30} -> FILTRANDO QUANTIDADE MAIOR OU IGUAL A 30
+############# $set: {qtd: 30} -> VALORES PARA ATUALIZAR COM O VALOR 30
+
+> db.produto.updateMany({qtd: {$gte:30}}, {$set: {qtd: 30}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+############## O MOUSE ERA VALOR 50.
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+##########################################################################################################
+#
+# Atualizar o nome do campo “descricao.so” para “descricao.sistema” de todos os documentos (RENAME)
+#
+##########################################################################################################
+
+############# ANTES, COM DESCRICAO SO
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB", "so" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "so" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+############# ({}, FILTRANDO TUDO
+############# $rename: {"descricao.so" : "descricao.sistema"} -> FAZENDO O RENAME
+
+> db.produto.updateMany({}, {$rename: {"descricao.so" : "descricao.sistema"}})
+{ "acknowledged" : true, "matchedCount" : 4, "modifiedCount" : 2 }  ####################### ENCONTROU 4 DOCUMENTOS, MAS MODIFICOU 2
+
+
+############# RENAME EXECUTADO COM SUCESSO
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB", "sistema" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+############################################################################################################################
+#
+# Atualizar o valor do campo descricao.conexao para “USB 2.0” de todos os documentos, com o campo descricao.conexão = “USB”
+#
+############################################################################################################################
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB", "sistema" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+> db.produto.updateMany({"descricao.conexao":"USB"},{$set: {"descricao.conexao":"USB 2.0"}})
+{ "acknowledged" : true, "matchedCount" : 2, "modifiedCount" : 2 } ################################## ENCONTROU 2, MODIFICOU 2
+
+
+############# EXECUTADO COM SUCESSO
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 2.0", "sistema" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 2.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+
+####################################################################################################################################
+#
+# Atualizar o valor do campo descricao.conexao para “USB 3.0” de todos os documentos, com o campo descricao.conexao = “USB 2.0” e 
+# adicionar o campo “data_modificacao”, com a data da atualização dos documentos
+#
+####################################################################################################################################
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 2.0", "sistema" : [ "Windows", "Mac", "Linux" ] } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 2.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] } }
+
+
+> db.produto.updateMany({"descricao.conexao": "USB 2.0"},
+... {
+...  $set: {"descricao.conexao": "USB 3.0"},
+...  $currentDate: {
+...    data_modificacao: {$type: "date"}}})
+{ "acknowledged" : true, "matchedCount" : 2, "modifiedCount" : 2 }
+
+
+################### ATUALIZADO PARA USB 3.0 E FOI ADICIONADO O CAMPO DATA MODIFICAÇÃO COM A DATA E HORA DA MODIFICAÇÃO
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+
+
+############################################################################################################################
+#
+# Atualizar um dos elementos do array descricao.sistema de “Windows” para “Windows 10” do id 3
+#
+############################################################################################################################
+
+#################### O ARRAY APARECE ENTRE COLCHETES
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+#################### FILTRANDO ID 3 e WINDOWS NO CAMPO DESCRIÇÃO SISTEMA {_id: 3, "descricao.sistema": "Windows"}
+#################### O .$ INDICA QUE DEVE ALTERAR SOMENTE O PRIMEIRO ELEMENTO QUE ENCONTRAR {"descricao.sistema.$": "Windows 10"}})
+
+> db.produto.updateOne({_id: 3, "descricao.sistema": "Windows"},{$set: {"descricao.sistema.$": "Windows 10"}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+################### ALTERADO COM SUCESSO
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+
+############################################################################################################################
+#
+# Acrescentar o valor “Linux” no array descricao.sistema do id 4
+#
+############################################################################################################################
+
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+#################### $push: -> ADICIONA 
+
+> db.produto.updateOne({_id: 4},{$push: {"descricao.sistema": "Linux"}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+#################### ADICIONADO COM SUCESSO A PALAVRA LINUX NO ID 4
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+
+################################################################################################################################################
+#
+# Remover o valor “Mac” no array descricao.sistema do id 3 e adicionar o campo “ts_modificacao”, com o timestamp da atualização dos documentos
+#
+################################################################################################################################################
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Mac", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+#################### $pull:  -> REMOVE A INFORMAÇÃO
+
+> db.produto.updateOne({_id: 3},{$pull: {"descricao.sistema": "Mac"}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+#################### REMOVIDO COM SUCESSO A PALAVRA MAC DO ID 3
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z") }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+#################### COLOCANDO A ATUALIZAÇÃO COM O TIMESTAMP
+
+> db.produto.updateOne({_id: 3},{$pull: {"descricao.sistema": "Mac"}, $currentDate: { ts_modificado: {$type: "timestamp"}}})
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+
+#################### EXECUTADO COM SUCESSO NO ID 3, ADIÇÃO DO TS MODIFICADO COM SEU TIMESTAMP
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+
+
+
+
+
+
+
+
