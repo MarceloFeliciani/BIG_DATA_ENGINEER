@@ -1,0 +1,263 @@
+
+PS E:\projetos\docker-mongodb> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting mongo-express ... done
+Starting mongo         ... done
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@3aae9034bfae:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("d8e28ca5-72d8-408e-900e-775429bbe1ee") }
+MongoDB server version: 4.4.6
+---
+The server generated these startup warnings when booting:
+        2021-05-13T19:11:28.656+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-13T19:11:38.159+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-13T19:11:38.175+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> show dbs
+admin      0.000GB
+config     0.000GB
+feliciani  0.000GB
+local      0.000GB
+
+> use feliciani
+switched to db feliciani
+
+> show collections
+produto
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+###############################################################################################################
+#
+# Criar o index “query_produto” para pesquisar o campo nome do produto em ordem alfabética
+#
+###############################################################################################################
+
+#################### createIndex({QUAL CAMPO},{QUAL NOME})
+#################### {nome: 1} -> 1 INDICA ORDEM ALFABETICA DE A - Z. SE COLOCAR -1 SERÁ DE Z - A
+
+> db.produto.createIndex({nome: 1},{name: "query_produto"})
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+
+
+
+###############################################################################################################
+#
+# Pesquisar todos os índices da collection produto
+#
+###############################################################################################################
+
+> db.produto.getIndexes()
+[
+        {
+                "v" : 2,
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_"
+        },
+        {
+                "v" : 2,
+                "key" : {
+                        "nome" : 1
+                },
+                "name" : "query_produto"
+        }
+]
+
+
+
+###############################################################################################################
+#
+# Pesquisar todos os documentos da collection produto
+#
+###############################################################################################################
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+###############################################################################################################
+#
+# Visualizar o plano de execução da consulta anterior
+#
+###############################################################################################################
+
+
+> db.produto.find().explain()
+{
+        "queryPlanner" : {
+                "plannerVersion" : 1,
+                "namespace" : "feliciani.produto",
+                "indexFilterSet" : false,
+                "parsedQuery" : {
+
+                },
+                "queryHash" : "8B3D4AB8",
+                "planCacheKey" : "8B3D4AB8",
+                "winningPlan" : {
+                        "stage" : "COLLSCAN",  ######################### ESTÁ "VARRENDO" TODA COLLECTION
+                        "direction" : "forward"
+                },
+                "rejectedPlans" : [ ]
+        },
+        "serverInfo" : {
+                "host" : "3aae9034bfae",
+                "port" : 27017,
+                "version" : "4.4.6",
+                "gitVersion" : "72e66213c2c3eab37d9358d5e78ad7f5c1d0d0d7"
+        },
+        "ok" : 1
+}
+
+
+
+
+###############################################################################################################
+#
+# Pesquisar todos os documentos da collection produto, com uso da index “query_produto”
+#
+###############################################################################################################
+
+################# MOSTROU OS NOMES POR ORDEM ALFABETICA CONFORME FOI CRIADO O INDEX
+
+> db.produto.find().hint({nome: 1})
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+
+
+################# SOMENTE FIND, MOSTRA POR ORDEM NUMÉRICA DO ID
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+
+###############################################################################################################
+#
+# Visualizar o plano de execução da consulta anterior
+#
+###############################################################################################################
+
+
+> db.produto.explain().find().hint({nome: 1})
+{
+        "queryPlanner" : {
+                "plannerVersion" : 1,
+                "namespace" : "feliciani.produto",
+                "indexFilterSet" : false,
+                "parsedQuery" : {
+
+                },
+                "queryHash" : "8B3D4AB8",
+                "planCacheKey" : "8B3D4AB8",
+                "winningPlan" : {
+                        "stage" : "FETCH",
+                        "inputStage" : {
+                                "stage" : "IXSCAN",  ##################### "VARRE" SOMENTE O INDEX
+                                "keyPattern" : {
+                                        "nome" : 1
+                                },
+                                "indexName" : "query_produto",
+                                "isMultiKey" : false,
+                                "multiKeyPaths" : {
+                                        "nome" : [ ]
+                                },
+                                "isUnique" : false,
+                                "isSparse" : false,
+                                "isPartial" : false,
+                                "indexVersion" : 2,
+                                "direction" : "forward",
+                                "indexBounds" : {
+                                        "nome" : [
+                                                "[MinKey, MaxKey]"
+                                        ]
+                                }
+                        }
+                },
+                "rejectedPlans" : [ ]
+        },
+        "serverInfo" : {
+                "host" : "3aae9034bfae",
+                "port" : 27017,
+                "version" : "4.4.6",
+                "gitVersion" : "72e66213c2c3eab37d9358d5e78ad7f5c1d0d0d7"
+        },
+        "ok" : 1
+}
+
+
+
+###############################################################################################################
+#
+# Remover o index “query_produto”
+#
+###############################################################################################################
+
+###################### TEM QUE APAGAR PELA CHAVE nome: 1
+
+> db.produto.dropIndex({nome: 1})
+{ "nIndexesWas" : 2, "ok" : 1 }
+
+
+###############################################################################################################
+#
+# Pesquisar todos os índices da collection produto
+#
+###############################################################################################################
+
+> db.produto.getIndexes()
+[ { "v" : 2, "key" : { "_id" : 1 }, "name" : "_id_" } ]  ################### APENAS O INDEX DO ID
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
