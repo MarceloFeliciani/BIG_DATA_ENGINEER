@@ -1,0 +1,224 @@
+
+CONSULTAS COM UTILIZAÇÃO DO REGEX
+#################################
+
+PS E:\projetos\docker-mongodb> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  Ubuntu-20.04           Running         2
+  docker-desktop         Running         2
+
+PS E:\projetos\docker-mongodb> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+PS E:\projetos\docker-mongodb> ls
+
+
+    Diretório: E:\projetos\docker-mongodb
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        11/05/2021     09:54            606 docker-compose-completo.yml
+-a----        11/05/2021     09:54            399 docker-compose.yml
+-a----        11/05/2021     09:54           1006 PassosInstalacaoDockerLinux.txt
+
+
+
+PS E:\projetos\docker-mongodb> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting mongo-express ... done
+Starting mongo         ... done
+
+PS E:\projetos\docker-mongodb> docker exec -it mongo bash
+
+root@3aae9034bfae:/# mongo
+MongoDB shell version v4.4.6
+connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" : UUID("16a65664-1062-494d-864c-12c126497c6e") }
+MongoDB server version: 4.4.6
+---
+The server generated these startup warnings when booting:
+        2021-05-14T12:03:42.084+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+        2021-05-14T12:03:44.110+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+        2021-05-14T12:03:44.110+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+---
+---
+        Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+        metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+        The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+        and anyone you share the URL with. MongoDB may use this information to make product
+        improvements and to suggest MongoDB products and deployment options to you.
+
+        To enable free monitoring, run the following command: db.enableFreeMonitoring()
+        To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+---
+
+> show dbs
+admin      0.000GB
+config     0.000GB
+feliciani  0.000GB
+local      0.000GB
+
+> use feliciani
+switched to db feliciani
+
+> show collections
+produto
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+
+####################################################################################################
+#
+# Buscar os documentos com o atributo nome,  que contenham a palavra “cpu”
+#
+####################################################################################################
+
+> db.produto.find({nome: {$regex: /cpu/}})
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+>
+
+
+####################################################################################################
+#
+# Buscar os documentos  com o atributo nome, que começam por “hd” e apresentar os campos nome e qtd
+#
+####################################################################################################
+
+############################# ^ SIGNIFICA COMEÇANDO POR
+
+> db.produto.find({nome: {$regex: /^hd/}})
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+############################# MOSTRANDO APENAS O NOME E A QUANTIDADE. {nome: 1, qtd: 1} O NÚMERO 1 FAZ O FILTRO
+
+> db.produto.find({nome: {$regex: /^hd/}},{nome: 1, qtd: 1})
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20 }
+>
+
+
+############################# REMOVI O ID DA LISTA POR QUE COLOQUI _id: 0
+
+> db.produto.find({nome: {$regex: /^hd/}},{nome: 1, qtd: 1, _id: 0})
+{ "nome" : "hd externo", "qtd" : 20 }
+>
+
+
+######################################################################################################################################
+#
+# Buscar os documentos  com o atributo descricao.armazenamento, que terminam com “GB” ou “gb” e apresentar os campos nome e descricao
+#
+######################################################################################################################################
+
+############################# {$regex: /GB/} SOMENTE TENDO GB MAIÚSCULO, SE TIVER MINÚSCULO NÃO LISTARÁ
+
+> db.produto.find({"descricao.armazenamento": {$regex: /GB/}})
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+
+############################# {$regex: /gb/i} COLOCANDO i FARÁ BUSCA, TENDO GB MAIÚSCULO OU MINÚSCULO
+
+> db.produto.find({"descricao.armazenamento": {$regex: /gb/i}})
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+> db.produto.find({"descricao.armazenamento": {$regex: /gb/i}},{nome: 1, descricao: 1})
+{ "_id" : 2, "nome" : "memória ram", "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 4, "nome" : "hd externo", "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] } }
+>
+
+
+#########################################################################################################
+#
+# Buscar os documentos  com o atributo nome, que contenha a palavra memória, ignorando a letra “o”
+#
+#########################################################################################################
+
+############################# PARA LISTAR DEVE TER TODAS AS PALAVRAS COM A MESMA GRAFIA (MEMÓRIA)
+
+> db.produto.find({nome: {$regex: /memória/}})
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+
+
+############################# NÃO RETORNOU, POR QUE NÃO TINHA A PALAVRA MEMORIA, SEM ACENTO
+
+> db.produto.find({nome: {$regex: /memoria/}}) 
+
+
+############################# /mem.ria/ CARACTER CURINGA QUE RETORNARÁ MEMÓRIA COM OU SEM ACENTO
+
+> db.produto.find({nome: {$regex: /mem.ria/}})
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+>
+
+
+#########################################################################################################
+#
+# Buscar os documentos  com o atributo qtd  que contenham valores com letras, ao invés de números.
+#
+#########################################################################################################
+
+> db.produto.find({nome: {$regex: /[a - z]/}})
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+> db.produto.find({qtd: {$regex: /[a - z]/}})   ############# NÃO RETORNA NADA, POR TODOS OS CAMPOS SÃO DO TIPO NUMÉRICO
+>
+
+
+#########################################################################################################
+#
+# Buscar os documentos com o atributo descricao.sistema, que tenha exatamente a palavra “Windows”
+#
+#########################################################################################################
+
+####################### ^Windows$  INICIANDO TERMINANDO COM Windows, exatamente
+
+> db.produto.find({"descricao.sistema": {$regex: /^Windows$/}}) ########### NÃO RETORNOU NADA POR QUE NÃO EXISTE APENAS Windows
+>
+
+############## TEM "Windows 10", "Windows 8", "Windows 7"
+
+> db.produto.find()
+{ "_id" : 1, "nome" : "cpu i7", "qtd" : 15 }
+{ "_id" : 2, "nome" : "memória ram", "qtd" : 10, "descricao" : { "armazenamento" : "8GB", "tipo" : "DDR4" } }
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+###################### LISTEI EXATAMENTE POR Windows 10 USANDO REGEX
+
+> db.produto.find({"descricao.sistema": {$regex: /^Windows 10$/}})
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+###################### LISTEI EXATAMENTE POR Windows 10 SEM USAR REGEX
+
+> db.produto.find({"descricao.sistema": "Windows 10"})
+{ "_id" : 3, "nome" : "mouse", "qtd" : 30, "descricao" : { "conexao" : "USB 3.0", "sistema" : [ "Windows 10", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.819Z"), "ts_modificado" : Timestamp(1620927488, 1) }
+{ "_id" : 4, "nome" : "hd externo", "qtd" : 20, "descricao" : { "conexao" : "USB 3.0", "armazenamento" : "500GB", "sistema" : [ "Windows 10", "Windows 8", "Windows 7", "Linux" ] }, "data_modificacao" : ISODate("2021-05-13T16:56:29.820Z") }
+>
+
+
+> ###################### CTRL + D
+bye
+
+root@3aae9034bfae:/# exit  ###################### CTRL + D
+
+PS E:\projetos\docker-mongodb>docker-compose stop
