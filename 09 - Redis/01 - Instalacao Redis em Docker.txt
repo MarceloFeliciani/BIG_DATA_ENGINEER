@@ -1,0 +1,69 @@
+
+PS E:\projetos> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  Ubuntu-20.04           Running         2
+  docker-desktop         Running         2
+PS E:\projetos>
+
+PS E:\projetos> cd docker-redis
+PS E:\projetos\docker-redis> dir
+
+
+    Diretório: E:\projetos\docker-redis
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        18/05/2021     18:21            230 docker-compose.yml
+-a----        18/05/2021     18:21           1006 PassosInstalacaoDockerLinux.txt
+
+
+PS E:\projetos\docker-redis> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Creating network "docker-redis_default" with the default driver
+Creating volume "docker-redis_data" with default driver
+Pulling redis (redis:)...
+latest: Pulling from library/redis
+69692152171a: Pull complete
+a4a46f2fd7e0: Pull complete
+bcdf6fddc3bd: Pull complete
+b7e9b50900cc: Pull complete
+5f3030c50d85: Pull complete
+63dae8e0776c: Pull complete
+Digest: sha256:365eddf64356169aa0cbfbeaf928eb80762de3cc364402e7653532bcec912973
+Status: Downloaded newer image for redis:latest
+Creating redis ... done
+
+PS E:\projetos\docker-redis> docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED              STATUS          PORTS                                           NAMES
+bbf4822d63ab   redis           "redis-server --appe…"   About a minute ago   Up 46 seconds   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp       redis
+
+PS E:\projetos\docker-redis> docker exec -it redis ls /
+bin   data  etc   lib    media  opt   root  sbin  sys  usr
+boot  dev   home  lib64  mnt    proc  run   srv   tmp  var
+
+PS E:\projetos\docker-redis> docker exec -it redis redis-server --version
+Redis server v=6.2.3 sha=00000000:0 malloc=jemalloc-5.1.0 bits=64 build=dc20d908b7b619b4
+
+PS E:\projetos\docker-redis> docker exec -it redis redis-cli --version
+redis-cli 6.2.3
+
+PS E:\projetos\docker-redis> docker exec -it redis bash  #################### ENTRANDO NO REDIS
+root@bbf4822d63ab:/data# ls
+appendonly.aof
+
+root@bbf4822d63ab:/data# ls /
+bin  boot  data  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+root@bbf4822d63ab:/data# redis-cli ################## ENTRANDO NO CLI
+
+127.0.0.1:6379> ################## CTRL + D para sair
+
+root@bbf4822d63ab:/data# exit  ################## CTRL + D para sair
+
+PS E:\projetos\docker-redis> docker-compose stop
+Stopping redis ... done
+
+PS E:\projetos\docker-redis>
