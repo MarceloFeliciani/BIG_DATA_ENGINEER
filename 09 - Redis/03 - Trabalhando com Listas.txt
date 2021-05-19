@@ -1,0 +1,130 @@
+PS E:\projetos\docker-redis> docker exec -it redis bash
+
+root@bbf4822d63ab:/data# redis-cli
+
+127.0.0.1:6379>
+
+
+############################## Criar a chave “views:ultimo_usuario" e insira nesta ordem os seguintes valores como lista:
+Final da lista “Joao”
+Final da lista “Ana”
+Inicio da lista “Carlos”
+Final da lista “Carol”
+
+
+
+
+127.0.0.1:6379> rpush views:ultimo_usuario Joao Ana   ############ R para o FINAL DA LISTA  (RPUSH)
+(integer) 2
+
+127.0.0.1:6379> lpush views:ultimo_usuario Carlos   ############ L para o INÍCIO DA LISTA  (LPUSH)
+(integer) 3
+
+127.0.0.1:6379> rpush views:ultimo_usuario Carol  ############ R para o FINAL DA LISTA  (RPUSH)
+(integer) 4
+
+
+
+############################## Visualizar todos os elementos da lista
+
+127.0.0.1:6379> lrange views:ultimo_usuario 0 -1 ################## Visualizar do 0 = primeiro ao -1 = último
+1) "Carlos"
+2) "Joao"
+3) "Ana"
+4) "Carol"
+
+
+
+############################## Visualizar todos os elementos da lista, com exceção do último
+############################## UTILIZANDO O -2 SEMPRE VAI OCULTAR O ÚLTIMO REGISTRO QUE É REPRESENTADO POR -1
+
+127.0.0.1:6379> lrange views:ultimo_usuario 0 -2 ############# -1 É O ÚLTIMO, -2 É O PENÚLTIMO, -3 É O ANTE-PENÚLTIMO
+1) "Carlos"
+2) "Joao"
+3) "Ana"
+
+OU
+
+
+127.0.0.1:6379> lrange views:ultimo_usuario 0 2 ################# LISTANDO DO 0 AO 2, EXCLUIU O 3 (CAROL)
+1) "Carlos"
+2) "Joao"
+3) "Ana"
+
+
+
+############################## Visualizar o tamanho da lista
+
+127.0.0.1:6379> llen views:ultimo_usuario
+(integer) 4 ########################################### 4 ELEMENTOS
+
+
+
+############################## Redefinir o tamanho da lista, removendo o primeiro elemento (Sem usar o pop)
+
+127.0.0.1:6379> ltrim views:ultimo_usuario 1 -1    (1 é o start, -1 é o stop)
+OK
+
+
+
+############################## Visualizar o tamanho da lista
+
+127.0.0.1:6379> llen views:ultimo_usuario
+(integer) 3 ########################################### 3 ELEMENTOS
+
+127.0.0.1:6379> lrange views:ultimo_usuario 0 -1
+1) "Joao"
+2) "Ana"
+3) "Carol"
+
+
+
+############################## Recuperar os elementos da lista da seguinte ordem:
+Primeiro
+Último
+Primeiro com bloqueio de 5 segundos se a lista estiver vazia
+Primeiro com bloqueio de 5 segundos se a lista estiver vazia
+
+127.0.0.1:6379> lrange views:ultimo_usuario 0 -1   
+1) "Joao"
+2) "Ana"
+3) "Carol"
+
+127.0.0.1:6379> lpop views:ultimo_usuario   ########################## Primeiro
+"Joao"
+
+127.0.0.1:6379> rpop views:ultimo_usuario   ########################## último
+"Carol"
+
+127.0.0.1:6379> blpop views:ultimo_usuario 5 ########################## Primeiro com bloqueio de 5 segundos se a lista estiver vazia
+1) "views:ultimo_usuario"
+2) "Ana"
+127.0.0.1:6379> blpop views:ultimo_usuario 5 ########################## Primeiro com bloqueio de 5 segundos se a lista estiver vazia
+(nil)
+(5.03s)
+
+127.0.0.1:6379> exists views:ultimo_usuario  ########################## NÃO EXISTEM INFORMAÇÕES PARA A CHAVE views:ultimo_usuario
+(integer) 0
+
+127.0.0.1:6379> ########################### CTRL + D
+
+root@bbf4822d63ab:/data# exit  ########################### CTRL + D
+
+PS E:\projetos\docker-redis> docker-compose stop
+Stopping redis ... done
+
+PS E:\projetos\docker-redis>
+
+
+#########################################################################################
+Redis apresenta caracteres "estranhos" quando inserimos palavras acentuadas.
+
+Ele armazena de forma correta, mas exibe dessa forma.
+
+Para que ele exiba a palavra acentuada basta inicializar o client com o comando --raw
+
+redis-cli --raw
+
+--raw Use raw formatting for replies (default when STDOUT is not a tty).
+
+#########################################################################################
