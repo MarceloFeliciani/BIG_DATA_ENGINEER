@@ -1,0 +1,143 @@
+
+PS E:\projetos\docker-redis> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+PS E:\projetos\docker-redis> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+PS E:\projetos\docker-redis> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting redis ... done
+
+PS E:\projetos\docker-redis> docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED        STATUS          PORTS                                       NAMES
+bbf4822d63ab   redis     "redis-server --appe…"   19 hours ago   Up 15 seconds   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp   redis
+
+PS E:\projetos\docker-redis> docker exec -it redis bash  ################ ENTRANDO NO CONTAINER REDIS
+
+root@bbf4822d63ab:/data# redis-cli  ################ ENTRANDO NO CLI DO REDIS
+
+
+################# Criar a chave "usuario:nome" e atribua o valor do seu nome
+
+127.0.0.1:6379> set usuario:nome feliciani
+OK
+
+
+
+################# Criar a chave "usuario:sobrenome" e atribua o valor do seu sobrenome
+
+127.0.0.1:6379> set usuario:sobrenome goulart
+OK
+
+
+
+################# Busque a chave "usuario:nome"
+
+127.0.0.1:6379> get usuario:nome
+"feliciani"
+
+
+
+################# Verificar o tamanho da chave "usuario:nome"
+
+127.0.0.1:6379> strlen usuario:nome
+(integer) 9
+
+
+
+################# Verificar o tipo da chave "usuario:sobrenome"
+
+127.0.0.1:6379> type usuario:sobrenome
+string
+
+
+
+################# Criar a chave "views:qtd" e atribua o valor 100
+
+127.0.0.1:6379> set views:qtd 100
+OK
+
+
+
+################# Incremente o valor em 10 da chave "views:qtd"
+
+127.0.0.1:6379> incrby views:qtd 10
+(integer) 110
+
+
+
+################# Busque a chave "views:qtd"
+
+127.0.0.1:6379> get views:qtd
+"110"
+
+
+
+################# Deletar a chave "usuario:sobrenome"
+
+127.0.0.1:6379> del usuario:sobrenome
+(integer) 1 ######################################### NÚMERO 1 É POR QUE CONFIRMOU A EXCLUSÃO.
+
+
+
+################# Verificar se a chave "usuario:sobrenome" existe
+
+127.0.0.1:6379> exists usuario:nome
+(integer) 1 ######################################### NÚMERO 1 É POR QUE EXISTE
+
+127.0.0.1:6379> exists usuario:sobrenome
+(integer) 0 ######################################### NÚMERO 0 É POR QUE NÃO EXISTE
+
+127.0.0.1:6379> get usuario:sobrenome
+(nil)
+
+
+
+################# Definir um tempo de 3600 segundos para a chave "views:qtd" ser removida
+################# A CHAVE JÁ EXISTE, ENTÃO APENAS COLOCAR O TEMPO PARA EXPIRAR
+
+127.0.0.1:6379> expire views:qtd 3600   
+(integer) 1
+
+
+
+################# Verificar quanto tempo falta para a chave "views:qtd" ser removida
+################# OS VALORES VÃO DECRESCENDO ATÉ EXPIRAR
+
+127.0.0.1:6379> ttl views:qtd
+(integer) 3521
+
+127.0.0.1:6379> ttl views:qtd
+(integer) 3506
+
+127.0.0.1:6379> ttl views:qtd
+(integer) 3468
+
+
+
+################# Verificar a persistência da chave "usuario:nome"
+
+127.0.0.1:6379> ttl usuario:nome
+(integer) -1 ############################ O -1 INDICA QUE ESTÁ PERSISTIDO
+
+
+
+################# Definir para a chave "views:qtd" ter persistência para sempre
+
+127.0.0.1:6379> persist views:qtd
+(integer) 1
+
+127.0.0.1:6379> ttl views:qtd
+(integer) -1 ############################ PASSOU A TER PERSISTÊNCIA, ESTAVA DECRESCENDO ATÉ EXPIRAR
+
+
+127.0.0.1:6379> ############################ CTRL + D
+
+root@bbf4822d63ab:/data# exit  ############################ CTRL + D
+
+PS E:\projetos\docker-redis> docker-compose stop
