@@ -1,0 +1,105 @@
+
+##############################################################################################
+#
+# Sets Ordenados (Sorted sets) são compostos de elementos de string únicos e não repetitivos
+# Cada elemento é associado a um score
+#
+##############################################################################################
+
+
+PS E:\projetos\docker-redis> docker exec -it redis bash
+
+root@bbf4822d63ab:/data# redis-cli
+
+127.0.0.1:6379>
+
+
+################################# Deletar a chave "pesquisa:produto"
+
+127.0.0.1:6379> del pesquisa:produto
+(integer) 1 ################################# REMOVEU
+
+
+
+################################# Criar a chave "pesquisa:produto" do tipo set ordenado com os seguintes valores:
+Valor: monitor, Score: 100
+Valor: HD, Score: 20
+Valor: mouse, Score: 10
+Valor: teclado, Score: 50
+
+127.0.0.1:6379> zadd pesquisa:produto 100 monitor 200 HD 10 mouse 50 teclado
+(integer) 4
+
+
+
+########## O score representa a quantidade de pesquisas feitas para aquele produto na aplicação
+
+
+
+################################# Visualizar a quantidade de produtos
+
+127.0.0.1:6379> zcard pesquisa:produto
+(integer) 4
+
+
+
+################################# Visualizar todos os produtos do mais pesquisado ao menos pesquisado
+
+127.0.0.1:6379> zrevrange pesquisa:produto 0 -1
+1) "HD"
+2) "monitor"
+3) "teclado"
+4) "mouse"
+
+
+
+################################# Visualizar o rank do produto teclado
+
+127.0.0.1:6379> zrevrank pesquisa:produto teclado
+(integer) 2  ############################################# CONTAGEM INICIA DO 0.
+
+
+
+################################# Visualizar o score do produto teclado
+
+127.0.0.1:6379> zscore pesquisa:produto teclado
+"50"
+
+
+
+################################# Remover o valor HD da chave
+
+127.0.0.1:6379> zrem pesquisa:produto HD
+(integer) 1 ############################################# CONFIRMAÇÃO DA REMOÇÃO
+
+
+
+################################# Recuperar e remover do set o produto mais pesquisado
+
+127.0.0.1:6379> zpopmax pesquisa:produto
+1) "monitor"
+2) "100"
+
+
+
+################################# Recuperar e remover do set o produto menos pesquisado
+
+127.0.0.1:6379> zpopmin pesquisa:produto
+1) "mouse"
+2) "10"
+
+
+
+################################# Visualizar todos os produtos
+
+127.0.0.1:6379> zrange pesquisa:produto 0 -1  ################## SOBROU APENAS O TECLADOS, OS OUTROS JÁ FORAM REMOVIDOS ACIMA
+1) "teclado"
+
+
+127.0.0.1:6379> ######################## CTRL + D
+
+root@bbf4822d63ab:/data# exit ######################## CTRL + D
+
+PS E:\projetos\docker-redis>docker-compose stop
+
+
