@@ -1,0 +1,174 @@
+
+###################################################################################
+#
+# Mensagens Pub/Sub
+# Implementar o paradigma de mensagens Publish/Subscribe (Publicar/Assinar)
+#
+###################################################################################
+
+
+PS E:\projetos\docker-redis> docker exec -it redis bash
+
+root@bbf4822d63ab:/data# redis-cli
+
+127.0.0.1:6379>
+
+
+#################################### Criar um assinante para receber as mensagens do canal noticias:sp
+
+ABRI 2 CANAIS (1 PARA ENVIAR A MENSAGEM E OUTRO PARA RECEBER A MENSAGEM)
+
+ABRI O CANAL 1
+###############
+
+127.0.0.1:6379> subscribe noticias:sp
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "noticias:sp"
+3) (integer) 1
+   ########################### O CURSOR FICA ESPERANDO A MENSAGEM
+
+
+
+
+
+#################################### Criar um editor para enviar as seguintes mensagens no canal noticias:sp
+Msg 1
+Msg 2
+Msg 3
+
+
+
+ABRIR O CANAL 2 (ABRIR NOVAMENTE O REDIS-CLI PARA ESSE NOVO CANAL EM OUTRO TERMINAL)
+####################################################################################
+
+127.0.0.1:6379> publish noticias:sp 'Msg 1' ############################ FEITO PELO CANAL 2
+(integer) 1
+
+
+AUTOMÁTICAMENTE APARECE 'A Msg 1' NO CANAL 1 CONFORME ABAIXO
+
+127.0.0.1:6379> subscribe noticias:sp
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "noticias:sp"
+3) (integer) 1
+1) "message"
+2) "noticias:sp"
+3) "Msg 1"
+   ########################### O CURSOR FICA ESPERANDO A NOVA MENSAGEM
+
+
+
+127.0.0.1:6379> publish noticias:sp 'Msg 2'  ############################ FEITO PELO CANAL 2
+(integer) 1
+
+
+
+AUTOMÁTICAMENTE APARECE 'A Msg 2' NO CANAL 1 CONFORME ABAIXO
+
+127.0.0.1:6379> subscribe noticias:sp
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "noticias:sp"
+3) (integer) 1
+1) "message"
+2) "noticias:sp"
+3) "Msg 1"
+1) "message"
+2) "noticias:sp"
+3) "Msg 2"
+   ########################### O CURSOR FICA ESPERANDO A NOVA MENSAGEM
+
+
+127.0.0.1:6379> publish noticias:sp 'Msg 3'  ############################ FEITO PELO CANAL 2
+(integer) 1
+
+
+
+AUTOMÁTICAMENTE APARECE 'A Msg 3' NO CANAL 1 CONFORME ABAIXO
+
+127.0.0.1:6379> subscribe noticias:sp
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "noticias:sp"
+3) (integer) 1
+1) "message"
+2) "noticias:sp"
+3) "Msg 1"
+1) "message"
+2) "noticias:sp"
+3) "Msg 2"
+1) "message"
+2) "noticias:sp"
+3) "Msg 3"
+   ########################### O CURSOR FICA ESPERANDO A NOVA MENSAGEM
+
+^C  ########################### CTRL + C PARA SAIR DO CANAL QUE RECEBIA AS MENSAGENS
+root@bbf4822d63ab:/data#
+
+root@bbf4822d63ab:/data# redis-cli
+
+127.0.0.1:6379>
+
+
+
+#################################### Criar um assinante para receber as mensagens dos canais com o padrão noticias:*
+
+####### CANAL 1 VAI RECEBER QUALQUER NOTICIA:*
+
+127.0.0.1:6379> psubscribe noticias:*
+Reading messages... (press Ctrl-C to quit)
+1) "psubscribe"
+2) "noticias:*"
+3) (integer) 1
+   ########################### O CURSOR FICA ESPERANDO A NOVA MENSAGEM
+
+
+
+############################ MENSAGENS 4, 5, 6 ENVIADAS PELO CANAL 2
+
+127.0.0.1:6379> publish noticias:rj 'Msg 4'
+(integer) 1
+
+127.0.0.1:6379> publish noticias:rj 'Msg 5'
+(integer) 1
+
+127.0.0.1:6379> publish noticias:rj 'Msg 6'
+(integer) 1
+
+
+
+############################ MENSAGENS RECEBIDAS NO CANAL 1
+
+127.0.0.1:6379> psubscribe noticias:*
+Reading messages... (press Ctrl-C to quit)
+1) "psubscribe"
+2) "noticias:*"
+3) (integer) 1
+1) "pmessage"
+2) "noticias:*"
+3) "noticias:rj"
+4) "Msg 4"
+1) "pmessage"
+2) "noticias:*"
+3) "noticias:rj"
+4) "Msg 5"
+1) "pmessage"
+2) "noticias:*"
+3) "noticias:rj"
+4) "Msg 6"
+   ########################### O CURSOR FICA ESPERANDO A NOVA MENSAGEM
+^C ########################### CTRL + C
+root@bbf4822d63ab:/data# exit
+PS C:\Users\marce>
+############################### ENCERREI O CANAL 1 COM O CLTRL + C
+
+
+CANAL 2
+#########
+127.0.0.1:6379>######################### CTRL + D
+
+root@bbf4822d63ab:/data# exit  ######################### CTRL + D
+
+PS E:\projetos\docker-redis> docker-compose stop
