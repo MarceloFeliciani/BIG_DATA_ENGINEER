@@ -1,0 +1,127 @@
+
+#####################################################################################################
+#
+# SETS são coleções não ordenadas de strings
+#
+#####################################################################################################
+
+
+
+PS E:\projetos\docker-redis> docker exec -it redis bash
+
+root@bbf4822d63ab:/data# redis-cli
+
+127.0.0.1:6379>
+
+
+############################# Deletar a chave “pesquisa:produto”
+
+127.0.0.1:6379> del pesquisa:produto
+(integer) 0 ########################################## 0 PORQUE A CHAVE NÃO EXISTIA. SE APARECER 1 É PORQUE A CHAVE EXISTIA E FOI DELETADA
+
+
+
+############################# Criar a chave "pesquisa:produto" do tipo set com os seguintes valores: monitor, mouse e teclado
+
+127.0.0.1:6379> sadd pesquisa:produto monitor mouse teclado
+(integer) 3
+
+
+
+############################# Visualizar a quantidade de valores da chave
+
+127.0.0.1:6379> scard pesquisa:produto
+(integer) 3
+
+
+
+############################# Retornar todos os elementos da chave
+
+127.0.0.1:6379> smembers pesquisa:produto ###################################### NÃO ESTÁ NA ORDERM QUE FOI ADICIONADO
+1) "mouse"
+2) "monitor"
+3) "teclado"
+
+
+
+############################# Verificar se existe o valor monitor
+
+127.0.0.1:6379> sismember pesquisa:produto monitor
+(integer) 1
+
+
+
+############################# Remover o valor monitor
+
+127.0.0.1:6379> srem pesquisa:produto monitor
+(integer) 1 ############################################### CONFIRMAÇÃO DE REMOVIDO
+
+127.0.0.1:6379> sismember pesquisa:produto monitor
+(integer) 0
+
+
+
+############################# Recuperar um elemento e remove-lo do set
+
+127.0.0.1:6379> spop pesquisa:produto
+"mouse"  ############################################### REMOVEU O MOUSE. TINHA DUAS OPÇÕES (MOUSE OU TECLADO)
+
+
+
+############################# Criar a chave "pesquisa:desconto“ do tipo set com os seguintes valores: memória RAM, monitor, teclado, HD
+
+127.0.0.1:6379> sadd pesquisa:desconto 'memoria RAM' monitor teclado HD
+(integer) 4
+
+
+
+############################# Próximas questões fazem uso dos sets pesquisa:produto e pesquisa:desconto
+- Visualizar a interseção entre os 2 sets
+- Visualizar a diferença entre os 2 sets
+- Criar o set "pesquisa:produto_desconto" com a união entre os 2 sets
+
+
+127.0.0.1:6379> sinter pesquisa:produto pesquisa:desconto   ############################# INTERSEÇÃO ENTRE OS 2 SETS
+1) "teclado" 
+
+
+127.0.0.1:6379> sdiff pesquisa:produto pesquisa:desconto    ############################# DIFERENÇA ENTRE OS 2 SETS. pesquisa.produto SÓ TEM TECLADO.
+(empty array)
+
+
+127.0.0.1:6379> sunion pesquisa:produto pesquisa:desconto   ############################# PRINTA OS VALORES
+1) "monitor"
+2) "teclado"
+3) "memoria RAM"
+4) "HD"
+
+
+127.0.0.1:6379> sunionstore pesquisa:produto_desconto pesquisa:produto pesquisa:desconto  ############################# CRIOU NOVA CHAVE pesquisa:produto_desconto
+(integer) 4
+
+
+127.0.0.1:6379> smembers pesquisa:produto_desconto
+1) "monitor"
+2) "teclado"
+3) "memoria RAM"
+4) "HD"
+
+
+127.0.0.1:6379> ########################### CTRL + D
+
+root@bbf4822d63ab:/data# exit  ########################### CTRL + D
+
+PS E:\projetos\docker-redis>docker-compose stop
+
+
+
+
+
+
+
+
+
+
+
+
+
