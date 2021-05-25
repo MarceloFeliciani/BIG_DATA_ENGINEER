@@ -1,0 +1,95 @@
+ACESSANDO O KAFKA BROKER
+#########################
+
+PS E:\projetos\docker-kafka> docker exec -it broker bash
+
+root@broker:/# kafka-topics --version
+5.5.2-ce (Commit:417a2e7a085d90a7)
+
+############ LISTANDO TÓPICOS
+
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --list
+__confluent.support.metrics
+__consumer_offsets
+__transaction_state
+_confluent-command
+_confluent-controlcenter-5-5-2-1-AlertHistoryStore-changelog
+_confluent-controlcenter-5-5-2-1-AlertHistoryStore-repartition
+_confluent-controlcenter-5-5-2-1-Group-ONE_MINUTE-changelog
+_confluent-controlcenter-5-5-2-1-Group-ONE_MINUTE-repartition
+_confluent-controlcenter-5-5-2-1-Group-THREE_HOURS-changelog
+_confluent-controlcenter-5-5-2-1-Group-THREE_HOURS-repartition
+_confluent-controlcenter-5-5-2-1-KSTREAM-OUTEROTHER-0000000106-store-changelog
+_confluent-controlcenter-5-5-2-1-KSTREAM-OUTEROTHER-0000000106-store-repartition
+_confluent-controlcenter-5-5-2-1-KSTREAM-OUTERTHIS-0000000105-store-changelog
+_confluent-controlcenter-5-5-2-1-KSTREAM-OUTERTHIS-0000000105-store-repartition
+_confluent-controlcenter-5-5-2-1-MetricsAggregateStore-changelog
+_confluent-controlcenter-5-5-2-1-MetricsAggregateStore-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringMessageAggregatorWindows-ONE_MINUTE-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringMessageAggregatorWindows-ONE_MINUTE-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringMessageAggregatorWindows-THREE_HOURS-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringMessageAggregatorWindows-THREE_HOURS-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringStream-ONE_MINUTE-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringStream-ONE_MINUTE-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringStream-THREE_HOURS-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringStream-THREE_HOURS-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringTriggerStore-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringTriggerStore-repartition
+_confluent-controlcenter-5-5-2-1-MonitoringVerifierStore-changelog
+_confluent-controlcenter-5-5-2-1-MonitoringVerifierStore-repartition
+_confluent-controlcenter-5-5-2-1-TriggerActionsStore-changelog
+_confluent-controlcenter-5-5-2-1-TriggerActionsStore-repartition
+_confluent-controlcenter-5-5-2-1-TriggerEventsStore-changelog
+_confluent-controlcenter-5-5-2-1-TriggerEventsStore-repartition
+_confluent-controlcenter-5-5-2-1-actual-group-consumption-rekey
+_confluent-controlcenter-5-5-2-1-aggregate-topic-partition-store-changelog
+_confluent-controlcenter-5-5-2-1-aggregate-topic-partition-store-repartition
+_confluent-controlcenter-5-5-2-1-aggregatedTopicPartitionTableWindows-ONE_MINUTE-changelog
+_confluent-controlcenter-5-5-2-1-aggregatedTopicPartitionTableWindows-ONE_MINUTE-repartition
+_confluent-controlcenter-5-5-2-1-aggregatedTopicPartitionTableWindows-THREE_HOURS-changelog
+_confluent-controlcenter-5-5-2-1-aggregatedTopicPartitionTableWindows-THREE_HOURS-repartition
+_confluent-controlcenter-5-5-2-1-cluster-rekey
+_confluent-controlcenter-5-5-2-1-expected-group-consumption-rekey
+_confluent-controlcenter-5-5-2-1-group-aggregate-store-ONE_MINUTE-changelog
+_confluent-controlcenter-5-5-2-1-group-aggregate-store-ONE_MINUTE-repartition
+_confluent-controlcenter-5-5-2-1-group-aggregate-store-THREE_HOURS-changelog
+_confluent-controlcenter-5-5-2-1-group-aggregate-store-THREE_HOURS-repartition
+_confluent-controlcenter-5-5-2-1-group-stream-extension-rekey
+_confluent-controlcenter-5-5-2-1-metrics-trigger-measurement-rekey
+_confluent-controlcenter-5-5-2-1-monitoring-aggregate-rekey-store-changelog
+_confluent-controlcenter-5-5-2-1-monitoring-aggregate-rekey-store-repartition
+_confluent-controlcenter-5-5-2-1-monitoring-message-rekey-store
+_confluent-controlcenter-5-5-2-1-monitoring-trigger-event-rekey
+_confluent-ksql-default__command_topic
+_confluent-license
+_confluent-metrics
+_confluent-monitoring
+_schemas
+default_ksql_processing_log
+docker-connect-configs
+docker-connect-offsets
+docker-connect-status
+
+###################################### CRIANDO UM TÓPICO COM 3 PARTIÇÕES E 1 RÉPLICA
+
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --topic feliciani --create --partitions 3 --replication-factor 1
+
+
+
+###################################### CRIADO
+
+Created topic feliciani.
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --topic feliciani --describe
+Topic: feliciani        PartitionCount: 3       ReplicationFactor: 1    Configs:
+        Topic: feliciani        Partition: 0    Leader: 1       Replicas: 1     Isr: 1  Offline:
+        Topic: feliciani        Partition: 1    Leader: 1       Replicas: 1     Isr: 1  Offline:
+        Topic: feliciani        Partition: 2    Leader: 1       Replicas: 1     Isr: 1  Offline:
+
+
+
+###################################### DELETANDO O TÓPICO CRIADO
+
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --topic feliciani --delete
+
+
+

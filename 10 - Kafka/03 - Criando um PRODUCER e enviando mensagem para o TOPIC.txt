@@ -1,0 +1,31 @@
+
+###################### CRIEI UM TÓPICO PARA ENVIAR MENSAGENS DO PRODUCER
+
+root@broker:/# kaftopics --bootstrap-server localhost:9092 --topic teste --create --partitions 3 --replication-factor 1
+Created topic teste.
+
+
+root@broker:/# kafkatopics --bootstrap-server localhost:9092 --topic teste --describe
+Topic: teste    PartitionCount: 3       ReplicationFactor: 1    Configs:
+        Topic: teste    Partition: 0    Leader: 1       Replicas: 1     Isr: 1  Offline:
+        Topic: teste    Partition: 1    Leader: 1       Replicas: 1     Isr: 1  Offline:
+        Topic: teste    Partition: 2    Leader: 1       Replicas: 1     Isr: 1  Offline:
+
+root@broker:/#
+
+
+###################### CRIEI UM PRODUCER E ESTOU MANDANDO MENSAGENS PARA O TOPIC
+
+root@broker:/# kafka-console-producer --broker-list localhost:9092 --topic teste
+>testando a mensagem para o topic
+>Marcelo Feliciani
+>
+##################### DEI UM CTRL + C PARA SAIR DO ENVIO DE MENSAGENS
+
+
+###################### DESTA FORMA LIDER E REPLICAS TERIAM QUE RECONHECER O ENVIO DA MENSAGEM ENVIANDO CONFIRMAÇÃO. TORNO MAIS LENTO O PROCESSO. 
+kafka-console-produtor --broker-list localhost:9092 --topi teste --producer-property acks=all
+
+
+####################### POR PADRÃO O LÍDER ENVIA O RECONHECIMENTO DO RECEBIMENTO DA MENSAGEM
+

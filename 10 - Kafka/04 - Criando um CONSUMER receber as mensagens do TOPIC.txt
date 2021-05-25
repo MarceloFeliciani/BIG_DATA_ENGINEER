@@ -1,0 +1,17 @@
+
+######################### CRIANDO UM CONSUMER PARA RECEBER AS MENSAGENS DO TOPIC
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic teste
+   ############################# O CURSOR FICA ESPERANDO AS MENSAGENS QUE SERÃO PRODUZIDAS EM OUTRO TERMINAL (PRODUCER)
+
+
+
+######################### RECEBENDO MENSAGENS DESDE A CRIAÇÃO DO TOPIC
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic teste --from-beginning
+testando a mensagem para o topic
+
+Marcelo Feliciani
+Processed a total of 3 messages
+
+
