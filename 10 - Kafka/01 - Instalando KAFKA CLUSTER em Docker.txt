@@ -1,0 +1,355 @@
+
+#################################################################################################################################
+#
+# DEU UM CONFLITO DO CONTAINER DO ZOOKEEPER DO KAFKA COM O CONTAINER DO ZOOKEEPER DO BIG DATA DA PRIMEIRO MÓDULO DO TREINAMENTO
+# PRECISEI DAR UM docker-compose down DENTRO DO DIRETÓRIO DO BIG DATA PARA LIBERAR O ZOOKEEPER PARA O KAFKA
+#
+# REPETI O docker-compose up -d DENTRO DO DIRETÓRIO DO KAFKA PARA MONTAR O CLUSTER SEM CONFLITO COM O ZOOKEEPER
+#
+#################################################################################################################################
+
+
+PS E:\projetos\docker-kafka> dir
+
+
+    Diretório: E:\projetos\docker-kafka
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        25/05/2021     09:21           6911 docker-compose.yml
+
+
+
+PS E:\projetos\docker-kafka> cat docker-compose.yml
+---
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.2
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-server:5.5.2
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
+      CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: 'true'
+      CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.5.2
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - zookeeper
+      - broker
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
+
+  connect:
+    image: cnfldemos/cp-server-connect-datagen:0.3.2-5.5.0
+    hostname: connect
+    container_name: connect
+    depends_on:
+      - zookeeper
+      - broker
+      - schema-registry
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'broker:29092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: compose-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      # CLASSPATH required due to CC-2422
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-5.5.2.jar
+      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:5.5.2
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      - zookeeper
+      - broker
+      - schema-registry
+      - connect
+      - ksqldb-server
+    ports:
+      - "9021:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: 'broker:29092'
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      CONTROL_CENTER_CONNECT_CLUSTER: 'connect:8083'
+      CONTROL_CENTER_KSQL_KSQLDB1_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL: "http://localhost:8088"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
+
+  ksqldb-server:
+    image: confluentinc/cp-ksqldb-server:5.5.2
+    hostname: ksqldb-server
+    container_name: ksqldb-server
+    depends_on:
+      - broker
+      - connect
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_BOOTSTRAP_SERVERS: "broker:29092"
+      KSQL_HOST_NAME: ksqldb-server
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
+
+  ksqldb-cli:
+    image: confluentinc/cp-ksqldb-cli:5.5.2
+    container_name: ksqldb-cli
+    depends_on:
+      - broker
+      - connect
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
+
+  ksql-datagen:
+    image: confluentinc/ksqldb-examples:5.5.2
+    hostname: ksql-datagen
+    container_name: ksql-datagen
+    depends_on:
+      - ksqldb-server
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b broker:29092 1 40 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry 8081 40 && \
+                       echo Waiting a few seconds for topic creation to finish... && \
+                       sleep 11 && \
+                       tail -f /dev/null'"
+    environment:
+      KSQL_CONFIG_DIR: "/etc/ksql"
+      STREAMS_BOOTSTRAP_SERVERS: broker:29092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
+      STREAMS_SCHEMA_REGISTRY_PORT: 8081
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.5.2
+    depends_on:
+      - zookeeper
+      - broker
+      - schema-registry
+    ports:
+      - 8082:8082
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+
+
+
+
+PS E:\projetos\docker-kafka> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Pulling zookeeper (confluentinc/cp-zookeeper:5.5.2)...
+5.5.2: Pulling from confluentinc/cp-zookeeper
+290431e50016: Already exists
+0e8fe17f602d: Already exists
+c69665a89e68: Already exists
+ef0261055e6f: Already exists
+6fe1aa18e4d8: Already exists
+62e8d86e9d72: Pull complete
+6f51b881d6b1: Pull complete
+Digest: sha256:b524143e3588da9419a3a635caefbe1079919b84d6aaf73a75f47228b12f62c2
+Status: Downloaded newer image for confluentinc/cp-zookeeper:5.5.2
+Pulling broker (confluentinc/cp-server:5.5.2)...
+5.5.2: Pulling from confluentinc/cp-server
+290431e50016: Already exists
+0e8fe17f602d: Already exists
+c69665a89e68: Already exists
+ef0261055e6f: Already exists
+6fe1aa18e4d8: Already exists
+47096cbdf950: Pull complete
+4a6a658b770f: Pull complete
+Digest: sha256:2f1fe73753db6f66b8b36df2c921e63da0ee05f1f21f18d1b05515a88ecc5ab5
+Status: Downloaded newer image for confluentinc/cp-server:5.5.2
+Pulling schema-registry (confluentinc/cp-schema-registry:5.5.2)...
+5.5.2: Pulling from confluentinc/cp-schema-registry
+290431e50016: Already exists
+0e8fe17f602d: Already exists
+c69665a89e68: Already exists
+ef0261055e6f: Already exists
+6fe1aa18e4d8: Already exists
+3bd3954b5864: Pull complete
+8c70db4bac0f: Pull complete
+Digest: sha256:2becf923fcdaa2ed28770688661a1757ad06a44ac6aa7d5c9cb83298e8e2c6c0
+Status: Downloaded newer image for confluentinc/cp-schema-registry:5.5.2
+Pulling ksqldb-server (confluentinc/cp-ksqldb-server:5.5.2)...
+5.5.2: Pulling from confluentinc/cp-ksqldb-server
+3192219afd04: Already exists
+414e3405359b: Already exists
+d5c3fcf84417: Already exists
+0e8fe17f602d: Already exists
+e3f3651359de: Already exists
+a85d9233a8e1: Already exists
+cf713699ae42: Already exists
+877e001537a0: Already exists
+f7c6025f3c46: Pull complete
+2971599e9225: Pull complete
+a17a6d749616: Pull complete
+077a97d5fd17: Pull complete
+6fdd0f936098: Pull complete
+74f5350ffd1e: Pull complete
+5e5db5c2907f: Pull complete
+575b051330ca: Pull complete
+439803d5268a: Pull complete
+4b31b0c69b6f: Pull complete
+bcd3dab030c7: Pull complete
+Digest: sha256:405998a435c25d66565d9475445e89c8707b6f4dece149a35f63812935957e53
+Status: Downloaded newer image for confluentinc/cp-ksqldb-server:5.5.2
+Pulling ksql-datagen (confluentinc/ksqldb-examples:5.5.2)...
+5.5.2: Pulling from confluentinc/ksqldb-examples
+3192219afd04: Already exists
+414e3405359b: Already exists
+d5c3fcf84417: Already exists
+0e8fe17f602d: Already exists
+e3f3651359de: Already exists
+a85d9233a8e1: Already exists
+cf713699ae42: Already exists
+877e001537a0: Already exists
+ca8bd45ea970: Pull complete
+12b911c4e756: Pull complete
+a0f0a4aa0fa2: Pull complete
+bf4d9b0075b7: Pull complete
+Digest: sha256:abb029603d6f55e5837383f3472e0cc43be600b922664ffd29fb8221976dbad3
+Status: Downloaded newer image for confluentinc/ksqldb-examples:5.5.2
+Pulling rest-proxy (confluentinc/cp-kafka-rest:5.5.2)...
+5.5.2: Pulling from confluentinc/cp-kafka-rest
+290431e50016: Already exists
+0e8fe17f602d: Already exists
+c69665a89e68: Already exists
+ef0261055e6f: Already exists
+6fe1aa18e4d8: Already exists
+162760a878d4: Pull complete
+8d01392afa47: Pull complete
+Digest: sha256:aba399adabe3e8a720fafa1fd492df697661b061417024447c7b0298d744ed80
+Status: Downloaded newer image for confluentinc/cp-kafka-rest:5.5.2
+Creating zookeeper ... done
+Creating broker    ... done
+Creating schema-registry ... done
+Creating rest-proxy      ... done
+Creating connect         ... done
+Creating ksqldb-server   ... done
+Creating ksql-datagen    ... done
+Creating control-center  ... done
+Creating ksqldb-cli      ... done
+
+
+PS E:\projetos\docker-kafka> docker ps
+CONTAINER ID   IMAGE                                             COMMAND                  CREATED         STATUS                            PORTS                                                                                  NAMES
+e78265c64fa8   confluentinc/cp-ksqldb-cli:5.5.2                  "/bin/sh"                3 minutes ago   Up 2 minutes                                                                                                             ksqldb-cli
+7e66963ca8ca   confluentinc/cp-enterprise-control-center:5.5.2   "/etc/confluent/dock…"   3 minutes ago   Up 2 minutes                      0.0.0.0:9021->9021/tcp, :::9021->9021/tcp                                              control-center
+f0df5d8ff30d   confluentinc/cp-ksqldb-server:5.5.2               "/etc/confluent/dock…"   3 minutes ago   Up 3 minutes (health: starting)   0.0.0.0:8088->8088/tcp, :::8088->8088/tcp                                              ksqldb-server
+58f67fcc5833   cnfldemos/cp-server-connect-datagen:0.3.2-5.5.0   "/etc/confluent/dock…"   3 minutes ago   Up 3 minutes                      0.0.0.0:8083->8083/tcp, :::8083->8083/tcp, 9092/tcp                                    connect
+64688d34a63a   confluentinc/cp-schema-registry:5.5.2             "/etc/confluent/dock…"   3 minutes ago   Up 3 minutes                      0.0.0.0:8081->8081/tcp, :::8081->8081/tcp                                              schema-registry
+21af136c30f1   confluentinc/cp-server:5.5.2                      "/etc/confluent/dock…"   3 minutes ago   Up 3 minutes                      0.0.0.0:9092->9092/tcp, :::9092->9092/tcp, 0.0.0.0:9101->9101/tcp, :::9101->9101/tcp   broker
+5ecd27752de7   confluentinc/cp-zookeeper:5.5.2                   "/etc/confluent/dock…"   4 minutes ago   Up 3 minutes                      2888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp, 3888/tcp                          zookeeper
+
+
+
+PS E:\projetos\docker-kafka> docker images
+REPOSITORY                                  TAG           IMAGE ID       CREATED         SIZE
+redis                                       latest        bc8d70f9ef6c   12 days ago     105MB
+mongo                                       latest        07630e791de3   2 weeks ago     449MB
+mongo-express                               latest        51fc3f2af7a1   5 weeks ago     128MB
+apache/nifi                                 latest        6ca96dc25d43   2 months ago    2.03GB
+apache/nifi-registry                        latest        137ce960a111   7 months ago    460MB
+confluentinc/ksqldb-examples                5.5.2         d739ab13f1da   7 months ago    630MB
+confluentinc/cp-ksqldb-server               5.5.2         cb294553b9ec   7 months ago    663MB
+confluentinc/cp-server                      5.5.2         95c0e238b456   7 months ago    1.05GB
+confluentinc/cp-schema-registry             5.5.2         c511d747f9f8   7 months ago    1.26GB
+confluentinc/cp-kafka-rest                  5.5.2         c25996d4f5d8   7 months ago    1.22GB
+confluentinc/cp-ksqldb-cli                  5.5.2         cd82f01891f7   7 months ago    647MB
+confluentinc/cp-enterprise-control-center   5.5.2         4482d015d567   7 months ago    958MB
+confluentinc/cp-zookeeper                   5.5.2         d510b733e82d   7 months ago    666MB
+fjardim/jupyter-spark                       latest        31051dea1e70   9 months ago    5.03GB
+cnfldemos/cp-server-connect-datagen         0.3.2-5.5.0   8b1a9577099c   12 months ago   1.53GB
+fjardim/datanode                            latest        24fb187ebd91   14 months ago   874MB
+fjardim/namenode_sqoop                      latest        40dc59117765   14 months ago   1.54GB
+fjardim/mysql                               latest        84164b03fa2e   14 months ago   456MB
+fjardim/hive-metastore                      latest        7ab9e8f93813   15 months ago   275MB
+fjardim/hive                                latest        87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                        latest        ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                           latest        6fe5551964f5   5 years ago     451MB
+
+
+PS E:\projetos\docker-kafka>
+
+
+#########################################################################################
+#
+# ACESSEI O   http://localhost:9021/clusters    (CLUSTERS)
+#
+#########################################################################################
+
+
+PS E:\projetos\docker-kafka>docker-compose stop
