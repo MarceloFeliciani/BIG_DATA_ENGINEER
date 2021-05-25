@@ -1,0 +1,64 @@
+
+
+PRODUCER 1
+##########
+
+
+O PRODUCER está produzindo ness terminal
+O CONSUMIDOR FOI CRIADO EM OUTRO TERMINAL docker exec -it broker bash
+
+
+######################### CRIANDO O TOPIC msg-cli COM 2 PARTIÇÕES E 1 RÉPLICA
+
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --topic msg-cli --create --partitions 2 --replication-factor 1
+Created topic msg-cli.
+
+
+
+######################### DESCRIÇÃO DO TOPIC msg-cli
+
+root@broker:/# kafka-topics --bootstrap-server localhost:9092 --topic msg-cli --describe
+Topic: msg-cli  PartitionCount: 2       ReplicationFactor: 1    Configs:
+        Topic: msg-cli  Partition: 0    Leader: 1       Replicas: 1     Isr: 1  Offline:
+        Topic: msg-cli  Partition: 1    Leader: 1       Replicas: 1     Isr: 1  Offline:
+
+
+######################### CRIADO O PRODUCER PARA ENVIAR AS MENSAGENS PARA O TOPIC msg-cli
+
+root@broker:/# kafka-console-producer --broker-list localhost:9092 --topic msg-cli
+>[2021-05-25 19:37:42,077] WARN [Producer clientId=console-producer] Bootstrap broker localhost:9092 (id: -1 rack: null) disconnected (org.apache.kafka.clients.NetworkClient)
+
+>Msg 1
+>Msg 2
+>
+
+
+
+root@broker:/# kafka-console-producer --broker-list localhost:9092 --topic msg-cli
+>[2021-05-25 19:37:42,077] WARN [Producer clientId=console-producer] Bootstrap broker localhost:9092 (id: -1 rack: null) disconnected (org.apache.kafka.clients.NetworkClient)
+
+>Msg 1
+>Msg 2
+>Msg 4
+>Msg 5
+>Msg 6
+>Feliciani
+>Msg 7
+>Msg 8
+>Marcelo
+>  ################################ MAIS MENSAGENS ENVIADAS
+
+
+>^C  #####################
+
+root@broker:/# exit
+
+PS E:\projetos\docker-kafka> docker-compose stop
+Stopping ksqldb-cli      ... done
+Stopping control-center  ... done
+Stopping ksqldb-server   ... done
+Stopping connect         ... done
+Stopping schema-registry ... done
+Stopping broker          ... done
+Stopping zookeeper       ... done
+

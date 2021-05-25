@@ -1,0 +1,24 @@
+
+CONSUMER 3 É DE OUTRO CONSUMER GROUP  (app2-cli )
+###################################################
+
+CONSUMERS DO MESMO GROUP RECEBEM AS MENSAGENS INTERCALAS
+CONSUMERS DE GROUP DIFERENTES, TODOS RECEBEM AS MENSAGENS
+
+#########################################################################################################################
+
+######################################## MENSAGENS VINDAS DO PRODUCER 1
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app2-cli
+NOVO CONSUMER GROUP
+TESTE
+ ####################################### AGUARDANDO NOVA MENSAGEM
+
+
+###################################################################################################################################
+#
+# AS MENSAGENS SÃO ENVIADAS PARA TODOS OS GROUP CONSUMER. DETRO DO GRUOUP CONSUMER AS MENSAGENS SÃO INTERCALADAS COM OS CONSUMERS
+#
+###################################################################################################################################
+
+

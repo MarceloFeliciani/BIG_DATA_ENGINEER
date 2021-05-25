@@ -1,0 +1,30 @@
+
+CONSUMER 2 e 1 SÃO DO MESMO GROUP CONSUMER (msg-cli)
+####################################################
+
+
+CONSUMERS DO MESMO GROUP RECEBEM AS MENSAGENS INTERCALAS
+CONSUMERS DE GROUP DIFERENTES, TODOS RECEBEM AS MENSAGENS
+
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+Msg 4
+
+
+
+PS C:\Users\marce> docker exec -it broker bash
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+Msg 4
+Msg 6
+Msg 7
+Marcelo  ######################## AS Msg 5, 8 e Feliciani FORAM PARA O PRODUCER 1
+
+
+
+PS C:\Users\marce> docker exec -it broker bash
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+Msg 4
+Msg 6
+Msg 7
+Marcelo
+NOVO CONSUMER GROUP

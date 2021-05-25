@@ -1,0 +1,109 @@
+
+PS E:\projetos\docker-kafka> docker ps
+CONTAINER ID   IMAGE                                             COMMAND                  CREATED       STATUS                 PORTS                                                                                  NAMES
+e78265c64fa8   confluentinc/cp-ksqldb-cli:5.5.2                  "/bin/sh"                5 hours ago   Up 5 hours                                                                                                    ksqldb-cli
+7e66963ca8ca   confluentinc/cp-enterprise-control-center:5.5.2   "/etc/confluent/dock…"   5 hours ago   Up 5 hours             0.0.0.0:9021->9021/tcp, :::9021->9021/tcp                                              control-center
+f0df5d8ff30d   confluentinc/cp-ksqldb-server:5.5.2               "/etc/confluent/dock…"   5 hours ago   Up 5 hours (healthy)   0.0.0.0:8088->8088/tcp, :::8088->8088/tcp                                              ksqldb-server
+58f67fcc5833   cnfldemos/cp-server-connect-datagen:0.3.2-5.5.0   "/etc/confluent/dock…"   5 hours ago   Up 5 hours             0.0.0.0:8083->8083/tcp, :::8083->8083/tcp, 9092/tcp                                    connect
+64688d34a63a   confluentinc/cp-schema-registry:5.5.2             "/etc/confluent/dock…"   5 hours ago   Up 5 hours             0.0.0.0:8081->8081/tcp, :::8081->8081/tcp                                              schema-registry
+21af136c30f1   confluentinc/cp-server:5.5.2                      "/etc/confluent/dock…"   5 hours ago   Up 5 hours             0.0.0.0:9092->9092/tcp, :::9092->9092/tcp, 0.0.0.0:9101->9101/tcp, :::9101->9101/tcp   broker
+5ecd27752de7   confluentinc/cp-zookeeper:5.5.2                   "/etc/confluent/dock…"   5 hours ago   Up 5 hours             2888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp, 3888/tcp                          zookeeper
+
+PS E:\projetos\docker-kafka> docker exec -it broker bash
+
+
+root@broker:/# kafka-console-producer --broker-list localhost:9092 --list
+list is not a recognized option
+Option                                   Description
+------                                   -----------
+--batch-size <Integer: size>             Number of messages to send in a single
+                                           batch if they are not being sent
+                                           synchronously. (default: 200)
+--bootstrap-server <String: server to    REQUIRED unless --broker-list
+  connect to>                              (deprecated) is specified. The server
+                                           (s) to connect to. The broker list
+                                           string in the form HOST1:PORT1,HOST2:
+                                           PORT2.
+--broker-list <String: broker-list>      DEPRECATED, use --bootstrap-server
+                                           instead; ignored if --bootstrap-
+                                           server is specified.  The broker
+                                           list string in the form HOST1:PORT1,
+                                           HOST2:PORT2.
+--compression-codec [String:             The compression codec: either 'none',
+  compression-codec]                       'gzip', 'snappy', 'lz4', or 'zstd'.
+                                           If specified without value, then it
+                                           defaults to 'gzip'
+--help                                   Print usage information.
+--line-reader <String: reader_class>     The class name of the class to use for
+                                           reading lines from standard in. By
+                                           default each line is read as a
+                                           separate message. (default: kafka.
+                                           tools.
+                                           ConsoleProducer$LineMessageReader)
+--max-block-ms <Long: max block on       The max time that the producer will
+  send>                                    block for during a send request
+                                           (default: 60000)
+--max-memory-bytes <Long: total memory   The total memory used by the producer
+  in bytes>                                to buffer records waiting to be sent
+                                           to the server. (default: 33554432)
+--max-partition-memory-bytes <Long:      The buffer size allocated for a
+  memory in bytes per partition>           partition. When records are received
+                                           which are smaller than this size the
+                                           producer will attempt to
+                                           optimistically group them together
+                                           until this size is reached.
+                                           (default: 16384)
+--message-send-max-retries <Integer>     Brokers can fail receiving the message
+                                           for multiple reasons, and being
+                                           unavailable transiently is just one
+                                           of them. This property specifies the
+                                           number of retires before the
+                                           producer give up and drop this
+                                           message. (default: 3)
+--metadata-expiry-ms <Long: metadata     The period of time in milliseconds
+  expiration interval>                     after which we force a refresh of
+                                           metadata even if we haven't seen any
+                                           leadership changes. (default: 300000)
+--producer-property <String:             A mechanism to pass user-defined
+  producer_prop>                           properties in the form key=value to
+                                           the producer.
+--producer.config <String: config file>  Producer config properties file. Note
+                                           that [producer-property] takes
+                                           precedence over this config.
+--property <String: prop>                A mechanism to pass user-defined
+                                           properties in the form key=value to
+                                           the message reader. This allows
+                                           custom configuration for a user-
+                                           defined message reader. Default
+                                           properties include:
+                                                parse.key=true|false
+                                                key.separator=<key.separator>
+                                                ignore.error=true|false
+--request-required-acks <String:         The required acks of the producer
+  request required acks>                   requests (default: 1)
+--request-timeout-ms <Integer: request   The ack timeout of the producer
+  timeout ms>                              requests. Value must be non-negative
+                                           and non-zero (default: 1500)
+--retry-backoff-ms <Integer>             Before each retry, the producer
+                                           refreshes the metadata of relevant
+                                           topics. Since leader election takes
+                                           a bit of time, this property
+                                           specifies the amount of time that
+                                           the producer waits before refreshing
+                                           the metadata. (default: 100)
+--socket-buffer-size <Integer: size>     The size of the tcp RECV size.
+                                           (default: 102400)
+--sync                                   If set message send requests to the
+                                           brokers are synchronously, one at a
+                                           time as they arrive.
+--timeout <Integer: timeout_ms>          If set and the producer is running in
+                                           asynchronous mode, this gives the
+                                           maximum amount of time a message
+                                           will queue awaiting sufficient batch
+                                           size. The value is given in ms.
+                                           (default: 1000)
+--topic <String: topic>                  REQUIRED: The topic id to produce
+                                           messages to.
+--version                                Display Kafka version.
+
+root@broker:/#

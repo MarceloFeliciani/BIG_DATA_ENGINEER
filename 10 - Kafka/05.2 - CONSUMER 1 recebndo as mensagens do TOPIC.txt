@@ -1,0 +1,124 @@
+
+CONSUMER 1 e 2 SÃO DO MESMO GROUP CONSUMER (msg-cli)
+####################################################
+
+CONSUMERS DO MESMO GROUP RECEBEM AS MENSAGENS INTERCALAS
+CONSUMERS DE GROUP DIFERENTES, TODOS RECEBEM AS MENSAGENS
+
+O PRODUCER ESTÁ EM OUTRO TERMINAL 
+O CONSUMIDOR está recebendo as mensagens enviadas do PRODUCER para o TOPIC (msg-cli) NESSE TERMINAL
+
+########################################################################################################
+
+PS C:\Users\marce> docker exec -it broker bash
+
+root@broker:/# 
+
+############################################# CRIANDO O CONSUMER GROUP app-cli
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+ ############################ CURSOR FICA ESPERANDO AS MENSAGENS ENTRAREM
+
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+
+Msg 1
+Msg 2
+ ################################## 2 MENSAGENS JÁ FORAM RECEBIDAS
+
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+
+Msg 1
+Msg 2
+Msg 5 ####################### A Msg 4 FOI ENVIADA PARA O OUTRO CONSUMER
+
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+
+Msg 1
+Msg 2
+Msg 5
+Feliciani
+Msg 8 ################# AS MENSAGENS 6, 7 e Marcelo FORAM PARA O CONSUMER 2
+
+
+
+
+bash: kafka-console-: command not found
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+
+Msg 1
+Msg 2
+Msg 5
+Feliciani
+Msg 8
+NOVAS MENSAGENS
+TESTE
+Msg 11
+Msg 13
+
+
+##################################################### REDEFININDO O OFFSET COM DESLOCAMENTO PARA -2
+
+root@broker:/# kafka-consumer-groups --bootstrap-server localhost:9092 --reset-offsets --shift-by -2 --execute --topic msg-cli --group app-cli
+
+GROUP                          TOPIC                          PARTITION  NEW-OFFSET
+app-cli                        msg-cli                        0          7
+app-cli                        msg-cli                        1          7
+root@broker:/#
+
+
+
+##################################################### DESCREVENDO O CONSUMER GROUP
+
+root@broker:/# kafka-consumer-groups --bootstrap-server localhost:9092 --reset-offsets --shift-by -2 --execute --topic msg-cli --group app-cli
+
+GROUP                          TOPIC                          PARTITION  NEW-OFFSET
+app-cli                        msg-cli                        0          7
+app-cli                        msg-cli                        1          7
+root@broker:/#
+
+
+
+root@broker:/# kafka-console-consumer --bootstrap-server localhost:9092 --topic msg-cli --group app-cli
+Msg 11
+Msg 13
+Msg 12
+Msg 14 ###################################### AS Msg 12 e 14 VIERAM DE OUTRO CONSUMER, POR QUE DESLOQUEI 2 OFFSETS 
+^CProcessed a total of 4 messages
+root@broker:/#
+
+
+
+
+root@broker:/# kafka-consumer-groups --bootstrap-server localhost:9092 --group app-cli --describe
+
+Consumer group 'app-cli' has no active members.
+
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+app-cli         msg-cli         0          9               9               0               -               -               -
+app-cli         msg-cli         1          9               9               0               -               -               -
+root@broker:/#
+
+
+
+#################################### REDEFIR TODO DESLOCAMENTO
+
+root@broker:/# kafka-consumer-groups --bootstrap-server localhost:9092 --reset-offsets --to-earliest --execute --topic msg-cli --group app-cli
+
+GROUP                          TOPIC                          PARTITION  NEW-OFFSET
+app-cli                        msg-cli                        0          0
+app-cli                        msg-cli                        1          0
+root@broker:/#
+
+
+
+#################################### LISTANDO TODOS OS CONSUMER GROUPS
+
+root@broker:/# kafka-consumer-groups --bootstrap-server localhost:9092 --list
+app2-cli
+_confluent-controlcenter-5-5-2-1
+_confluent-controlcenter-5-5-2-1-command
+app-cli
+root@broker:/#
