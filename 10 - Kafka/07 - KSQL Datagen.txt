@@ -1,0 +1,527 @@
+
+Exercicio KSQL Datagen
+
+
+Exercicios feitos com auxílio do colega Ebraim Carvalho
+#######################################################
+
+PS E:\projetos\docker-kafka> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Recreating zookeeper ... done
+Recreating broker    ... done
+Recreating schema-registry ... done
+Recreating connect         ... done
+Recreating rest-proxy      ... done
+Recreating ksqldb-server   ... done
+Recreating ksql-datagen    ... done
+Recreating ksqldb-cli      ... done
+Recreating control-center  ... done
+
+PS E:\projetos\docker-kafka>
+
+
+######################################### Exercicio KSQL Datagen
+
+Abrir dois terminais:
+
+- docker exec -it ksql-datagen bash
+
+- docker exec -it ksqldb-server bash > ksql
+
+
+
+
+PS E:\projetos\docker-kafka> docker exec -it ksql-datagen bash
+root@ksql-datagen:/#
+
+
+########################################### Criar o tópico users com os dados do ksql-datagen
+
+quickstart=users
+topic=users
+Usar o iterations para não gerar linhas infinitas
+
+
+root@ksql-datagen:/# ksql-datagen bootstrap-server=broker:29092 schemaRegistryUrl=schema-registry:8081 quickstart=users topic=users iterations=50
+[2021-06-01 13:56:18,530] INFO AvroDataConfig values:
+        connect.meta.data = true
+        enhanced.avro.schema.support = false
+        schemas.cache.config = 1000
+ (io.confluent.connect.avro.AvroDataConfig:347)
+[2021-06-01 13:56:21,467] INFO JsonSchemaDataConfig values:
+        decimal.format = BASE64
+        schemas.cache.size = 1000
+ (io.confluent.connect.json.JsonSchemaDataConfig:179)
+[2021-06-01 13:56:21,472] INFO JsonSchemaDataConfig values:
+        decimal.format = BASE64
+        schemas.cache.size = 1000
+ (io.confluent.connect.json.JsonSchemaDataConfig:179)
+[2021-06-01 13:56:21,711] INFO ProtobufDataConfig values:
+        schemas.cache.config = 1000
+        enhanced.protobuf.schema.support = false
+ (io.confluent.connect.protobuf.ProtobufDataConfig:179)
+[2021-06-01 13:56:24,467] INFO KsqlConfig values:
+        ksql.access.validator.enable = auto
+        ksql.authorization.cache.expiry.time.secs = 30
+        ksql.authorization.cache.max.entries = 10000
+        ksql.connect.url = http://localhost:8083
+        ksql.connect.worker.config =
+        ksql.extension.dir = ext
+        ksql.hidden.topics = [_confluent.*, __confluent.*, _schemas, __consumer_offsets, __transaction_state, connect-configs, connect-offsets, connect-status, connect-statuses]
+        ksql.insert.into.values.enabled = true
+        ksql.internal.topic.min.insync.replicas = 1
+        ksql.internal.topic.replicas = 1
+        ksql.metric.reporters = []
+        ksql.metrics.extension = null
+        ksql.metrics.tags.custom =
+        ksql.new.api.enabled = false
+        ksql.output.topic.name.prefix =
+        ksql.persistence.wrap.single.values = true
+        ksql.persistent.prefix = query_
+        ksql.pull.queries.enable = true
+        ksql.query.persistent.active.limit = 2147483647
+        ksql.query.pull.enable.standby.reads = false
+        ksql.query.pull.max.allowed.offset.lag = 9223372036854775807
+        ksql.readonly.topics = [_confluent.*, __confluent.*, _schemas, __consumer_offsets, __transaction_state, connect-configs, connect-offsets, connect-status, connect-statuses]
+        ksql.schema.registry.url = schema-registry:8081
+        ksql.security.extension.class = null
+        ksql.service.id = default_
+        ksql.sink.window.change.log.additional.retention = 1000000
+        ksql.streams.shutdown.timeout.ms = 300000
+        ksql.transient.prefix = transient_
+        ksql.udf.collect.metrics = false
+        ksql.udf.enable.security.manager = true
+        ksql.udfs.enabled = true
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+ (io.confluent.ksql.util.KsqlConfig:347)
+[2021-06-01 13:56:26,278] INFO AvroDataConfig values:
+        connect.meta.data = true
+        enhanced.avro.schema.support = false
+        schemas.cache.config = 1
+ (io.confluent.connect.avro.AvroDataConfig:347)
+[2021-06-01 13:56:27,206] INFO ProcessingLogConfig values:
+        ksql.logging.processing.rows.include = false
+        ksql.logging.processing.stream.auto.create = false
+        ksql.logging.processing.stream.name = KSQL_PROCESSING_LOG
+        ksql.logging.processing.topic.auto.create = false
+        ksql.logging.processing.topic.name =
+        ksql.logging.processing.topic.partitions = 1
+        ksql.logging.processing.topic.replication.factor = 1
+ (io.confluent.ksql.logging.processing.ProcessingLogConfig:347)
+[2021-06-01 13:56:29,751] WARN The configuration 'ksql.schema.registry.url' was supplied but isn't a known config. (org.apache.kafka.clients.producer.ProducerConfig:355)
+[2021-06-01 13:56:29,751] WARN The configuration 'ksql.schema.registry.url' was supplied but isn't a known config. (org.apache.kafka.clients.producer.ProducerConfig:355)
+User_1 --> ([ 1506050882544L | 'User_1' | 'Region_2' | 'MALE' ]) ts:1622555793580
+User_8 --> ([ 1499134206526L | 'User_8' | 'Region_4' | 'MALE' ]) ts:1622555794624
+User_9 --> ([ 1490802029234L | 'User_9' | 'Region_6' | 'MALE' ]) ts:1622555794628
+User_5 --> ([ 1512429770670L | 'User_5' | 'Region_6' | 'OTHER' ]) ts:1622555794628
+User_7 --> ([ 1503224353249L | 'User_7' | 'Region_1' | 'MALE' ]) ts:1622555794629
+User_4 --> ([ 1504442695101L | 'User_4' | 'Region_5' | 'MALE' ]) ts:1622555794629
+User_5 --> ([ 1501197514036L | 'User_5' | 'Region_7' | 'FEMALE' ]) ts:1622555794631
+User_9 --> ([ 1498736698133L | 'User_9' | 'Region_2' | 'MALE' ]) ts:1622555794632
+User_6 --> ([ 1507771663278L | 'User_6' | 'Region_3' | 'OTHER' ]) ts:1622555794632
+User_4 --> ([ 1495102712677L | 'User_4' | 'Region_4' | 'OTHER' ]) ts:1622555794633
+User_8 --> ([ 1508755720066L | 'User_8' | 'Region_7' | 'OTHER' ]) ts:1622555794633
+User_2 --> ([ 1508883188239L | 'User_2' | 'Region_2' | 'OTHER' ]) ts:1622555794650
+User_7 --> ([ 1500704739739L | 'User_7' | 'Region_9' | 'MALE' ]) ts:1622555794650
+User_9 --> ([ 1501288963054L | 'User_9' | 'Region_9' | 'MALE' ]) ts:1622555794651
+User_7 --> ([ 1508299628054L | 'User_7' | 'Region_3' | 'FEMALE' ]) ts:1622555794651
+User_3 --> ([ 1496603963650L | 'User_3' | 'Region_9' | 'OTHER' ]) ts:1622555794651
+User_4 --> ([ 1513883524597L | 'User_4' | 'Region_7' | 'FEMALE' ]) ts:1622555794657
+User_7 --> ([ 1516989268459L | 'User_7' | 'Region_3' | 'OTHER' ]) ts:1622555794666
+User_9 --> ([ 1492400048653L | 'User_9' | 'Region_6' | 'OTHER' ]) ts:1622555794667
+User_9 --> ([ 1505630797823L | 'User_9' | 'Region_3' | 'OTHER' ]) ts:1622555794668
+User_2 --> ([ 1500703468911L | 'User_2' | 'Region_9' | 'MALE' ]) ts:1622555794668
+User_8 --> ([ 1506107913412L | 'User_8' | 'Region_4' | 'FEMALE' ]) ts:1622555794669
+User_6 --> ([ 1502137159718L | 'User_6' | 'Region_6' | 'FEMALE' ]) ts:1622555794669
+User_1 --> ([ 1504435635064L | 'User_1' | 'Region_1' | 'FEMALE' ]) ts:1622555794683
+User_4 --> ([ 1515474050111L | 'User_4' | 'Region_4' | 'OTHER' ]) ts:1622555794699
+User_3 --> ([ 1512571515066L | 'User_3' | 'Region_7' | 'FEMALE' ]) ts:1622555794700
+User_6 --> ([ 1490696439158L | 'User_6' | 'Region_9' | 'FEMALE' ]) ts:1622555794701
+User_7 --> ([ 1518270456233L | 'User_7' | 'Region_2' | 'FEMALE' ]) ts:1622555794701
+User_1 --> ([ 1507341951980L | 'User_1' | 'Region_3' | 'OTHER' ]) ts:1622555794702
+User_4 --> ([ 1515931325745L | 'User_4' | 'Region_9' | 'OTHER' ]) ts:1622555794703
+User_7 --> ([ 1508175409273L | 'User_7' | 'Region_9' | 'OTHER' ]) ts:1622555794703
+User_4 --> ([ 1511937521077L | 'User_4' | 'Region_1' | 'OTHER' ]) ts:1622555794704
+User_8 --> ([ 1494977448151L | 'User_8' | 'Region_5' | 'OTHER' ]) ts:1622555794705
+User_8 --> ([ 1510039967398L | 'User_8' | 'Region_2' | 'MALE' ]) ts:1622555794705
+User_5 --> ([ 1504347570174L | 'User_5' | 'Region_2' | 'FEMALE' ]) ts:1622555794710
+User_3 --> ([ 1490129439590L | 'User_3' | 'Region_9' | 'OTHER' ]) ts:1622555794710
+User_4 --> ([ 1499277286319L | 'User_4' | 'Region_9' | 'OTHER' ]) ts:1622555794710
+User_3 --> ([ 1500304253824L | 'User_3' | 'Region_9' | 'MALE' ]) ts:1622555794711
+User_5 --> ([ 1513865139778L | 'User_5' | 'Region_8' | 'FEMALE' ]) ts:1622555794713
+User_8 --> ([ 1506584533271L | 'User_8' | 'Region_3' | 'OTHER' ]) ts:1622555794718
+User_1 --> ([ 1511782370440L | 'User_1' | 'Region_4' | 'OTHER' ]) ts:1622555794774
+User_3 --> ([ 1507040041448L | 'User_3' | 'Region_9' | 'FEMALE' ]) ts:1622555794802
+User_3 --> ([ 1491142863176L | 'User_3' | 'Region_6' | 'FEMALE' ]) ts:1622555794804
+User_3 --> ([ 1505654591365L | 'User_3' | 'Region_7' | 'OTHER' ]) ts:1622555794805
+User_2 --> ([ 1495306345385L | 'User_2' | 'Region_3' | 'OTHER' ]) ts:1622555794806
+User_1 --> ([ 1511557450255L | 'User_1' | 'Region_1' | 'FEMALE' ]) ts:1622555794806
+User_1 --> ([ 1499278911198L | 'User_1' | 'Region_3' | 'FEMALE' ]) ts:1622555794807
+User_5 --> ([ 1493186295582L | 'User_5' | 'Region_7' | 'MALE' ]) ts:1622555794809
+User_1 --> ([ 1510334393266L | 'User_1' | 'Region_4' | 'OTHER' ]) ts:1622555794810
+User_1 --> ([ 1501383660130L | 'User_1' | 'Region_6' | 'FEMALE' ]) ts:1622555794858
+root@ksql-datagen:/#
+
+
+
+
+############################################ Visualizar os dados do tópico no Ksql
+
+PS E:\projetos\docker-kafka> docker exec -it ksqldb-server bash
+root@ksqldb-server:/# ksql
+
+
+
+                  ===========================================
+                  =       _              _ ____  ____       =
+                  =      | | _____  __ _| |  _ \| __ )      =
+                  =      | |/ / __|/ _` | | | | |  _ \      =
+                  =      |   <\__ \ (_| | | |_| | |_) |     =
+                  =      |_|\_\___/\__, |_|____/|____/      =
+                  =                   |_|                   =
+                  =  Event Streaming Database purpose-built =
+                  =        for stream processing apps       =
+                  ===========================================
+
+Copyright 2017-2020 Confluent Inc.
+
+CLI v5.5.2, Server v5.5.2 located at http://localhost:8088
+
+Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+
+ksql> print "users" from beginning limit 10;
+Key format: KAFKA_STRING
+Value format: JSON or KAFKA_STRING
+rowtime: 6/1/21 1:56:33 PM UTC, key: User_1, value: {"registertime":1506050882544,"userid":"User_1","regionid":"Region_2","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_8, value: {"registertime":1499134206526,"userid":"User_8","regionid":"Region_4","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_9, value: {"registertime":1490802029234,"userid":"User_9","regionid":"Region_6","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_5, value: {"registertime":1512429770670,"userid":"User_5","regionid":"Region_6","gender":"OTHER"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_7, value: {"registertime":1503224353249,"userid":"User_7","regionid":"Region_1","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_4, value: {"registertime":1504442695101,"userid":"User_4","regionid":"Region_5","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_5, value: {"registertime":1501197514036,"userid":"User_5","regionid":"Region_7","gender":"FEMALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_9, value: {"registertime":1498736698133,"userid":"User_9","regionid":"Region_2","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_6, value: {"registertime":1507771663278,"userid":"User_6","regionid":"Region_3","gender":"OTHER"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_4, value: {"registertime":1495102712677,"userid":"User_4","regionid":"Region_4","gender":"OTHER"}
+ksql>
+
+
+
+################################################ Criar o stream users_raw com os dados do tópico users com as seguintes propriedades
+kafka_topic='users’
+value_format='JSON’
+key = 'userid’
+timestamp='viewtime’
+
+
+ksql> create stream users_raw(userid VARCHAR, regionid VARCHAR, gender VARCHAR) with(kafka_topic='users', value_format='json', key='userid');
+
+ Message
+----------------
+ Stream created
+----------------
+
+
+#####################################################################################################################################################################
+#
+# Obs.: Nao existe a coluna viewtime no topico users, existe a coluna registertime. Para usa-la como timestamp, precisamos incluir essa coluna na definicao do schema, # ficando dessa forma.
+#
+#####################################################################################################################################################################
+
+
+################################################# Visualizar a estrutura da Stream users_raw
+
+ksql> describe users_raw;
+
+Name                 : USERS_RAW
+ Field    | Type
+--------------------------------------
+ ROWTIME  | BIGINT           (system)
+ ROWKEY   | VARCHAR(STRING)  (system)
+ USERID   | VARCHAR(STRING)
+ REGIONID | VARCHAR(STRING)
+ GENDER   | VARCHAR(STRING)
+--------------------------------------
+For runtime statistics and query details run: DESCRIBE EXTENDED <Stream,Table>;
+
+
+
+################################################# Visualizar os dados da Stream users_raw
+########### Precisamos setar o offset para earliest antes:
+
+ksql> set 'auto.offset.reset'='earliest';
+Successfully changed local property 'auto.offset.reset' to 'earliest'. Use the UNSET command to revert your change.
+
+ksql> select * from users_raw emit changes limit 10;
++---------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
+|ROWTIME                    |ROWKEY                     |USERID                     |REGIONID                   |GENDER                     |
++---------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
+|1622555793580              |User_1                     |User_1                     |Region_2                   |MALE                       |
+|1622555794624              |User_8                     |User_8                     |Region_4                   |MALE                       |
+|1622555794628              |User_9                     |User_9                     |Region_6                   |MALE                       |
+|1622555794628              |User_5                     |User_5                     |Region_6                   |OTHER                      |
+|1622555794629              |User_7                     |User_7                     |Region_1                   |MALE                       |
+|1622555794629              |User_4                     |User_4                     |Region_5                   |MALE                       |
+|1622555794631              |User_5                     |User_5                     |Region_7                   |FEMALE                     |
+|1622555794632              |User_9                     |User_9                     |Region_2                   |MALE                       |
+|1622555794632              |User_6                     |User_6                     |Region_3                   |OTHER                      |
+|1622555794633              |User_4                     |User_4                     |Region_4                   |OTHER                      |
+Limit Reached
+Query terminated
+
+
+
+################################################# Repetir todo o proceso para o topico pageviews
+########### Atencao para usar o iterations para nao gerar linhas infinitas
+
+########### TERMINAL DO DATAGEN
+
+root@ksql-datagen:/#
+root@ksql-datagen:/#
+root@ksql-datagen:/# ksql-datagen bootstrap-server=broker:29092 schemaRegistryUrl=schemaregistry:8081 quickstart=pageviews topic=pageviews iterations=50
+[2021-06-01 14:13:38,759] INFO AvroDataConfig values:
+        connect.meta.data = true
+        enhanced.avro.schema.support = false
+        schemas.cache.config = 1000
+ (io.confluent.connect.avro.AvroDataConfig:347)
+[2021-06-01 14:13:39,892] INFO JsonSchemaDataConfig values:
+        decimal.format = BASE64
+        schemas.cache.size = 1000
+ (io.confluent.connect.json.JsonSchemaDataConfig:179)
+[2021-06-01 14:13:39,894] INFO JsonSchemaDataConfig values:
+        decimal.format = BASE64
+        schemas.cache.size = 1000
+ (io.confluent.connect.json.JsonSchemaDataConfig:179)
+[2021-06-01 14:13:39,914] INFO ProtobufDataConfig values:
+        schemas.cache.config = 1000
+        enhanced.protobuf.schema.support = false
+ (io.confluent.connect.protobuf.ProtobufDataConfig:179)
+[2021-06-01 14:13:40,014] INFO KsqlConfig values:
+        ksql.access.validator.enable = auto
+        ksql.authorization.cache.expiry.time.secs = 30
+        ksql.authorization.cache.max.entries = 10000
+        ksql.connect.url = http://localhost:8083
+        ksql.connect.worker.config =
+        ksql.extension.dir = ext
+        ksql.hidden.topics = [_confluent.*, __confluent.*, _schemas, __consumer_offsets, __transaction_state, connect-configs, connect-offsets, connect-status, connect-statuses]
+        ksql.insert.into.values.enabled = true
+        ksql.internal.topic.min.insync.replicas = 1
+        ksql.internal.topic.replicas = 1
+        ksql.metric.reporters = []
+        ksql.metrics.extension = null
+        ksql.metrics.tags.custom =
+        ksql.new.api.enabled = false
+        ksql.output.topic.name.prefix =
+        ksql.persistence.wrap.single.values = true
+        ksql.persistent.prefix = query_
+        ksql.pull.queries.enable = true
+        ksql.query.persistent.active.limit = 2147483647
+        ksql.query.pull.enable.standby.reads = false
+        ksql.query.pull.max.allowed.offset.lag = 9223372036854775807
+        ksql.readonly.topics = [_confluent.*, __confluent.*, _schemas, __consumer_offsets, __transaction_state, connect-configs, connect-offsets, connect-status, connect-statuses]
+        ksql.schema.registry.url = schemaregistry:8081
+        ksql.security.extension.class = null
+        ksql.service.id = default_
+        ksql.sink.window.change.log.additional.retention = 1000000
+        ksql.streams.shutdown.timeout.ms = 300000
+        ksql.transient.prefix = transient_
+        ksql.udf.collect.metrics = false
+        ksql.udf.enable.security.manager = true
+        ksql.udfs.enabled = true
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+ (io.confluent.ksql.util.KsqlConfig:347)
+[2021-06-01 14:13:40,300] INFO AvroDataConfig values:
+        connect.meta.data = true
+        enhanced.avro.schema.support = false
+        schemas.cache.config = 1
+ (io.confluent.connect.avro.AvroDataConfig:347)
+[2021-06-01 14:13:40,432] INFO ProcessingLogConfig values:
+        ksql.logging.processing.rows.include = false
+        ksql.logging.processing.stream.auto.create = false
+        ksql.logging.processing.stream.name = KSQL_PROCESSING_LOG
+        ksql.logging.processing.topic.auto.create = false
+        ksql.logging.processing.topic.name =
+        ksql.logging.processing.topic.partitions = 1
+        ksql.logging.processing.topic.replication.factor = 1
+ (io.confluent.ksql.logging.processing.ProcessingLogConfig:347)
+[2021-06-01 14:13:44,960] WARN The configuration 'ksql.schema.registry.url' was supplied but isn't a known config. (org.apache.kafka.clients.producer.ProducerConfig:355)
+[2021-06-01 14:13:44,960] WARN The configuration 'ksql.schema.registry.url' was supplied but isn't a known config. (org.apache.kafka.clients.producer.ProducerConfig:355)
+[2021-06-01 14:13:47,812] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 1 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:47,812] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 1 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:47,997] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 3 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:47,997] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 3 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,123] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 4 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,123] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 4 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,258] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 5 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,258] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 5 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,382] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 6 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,382] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 6 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,506] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 7 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,506] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 7 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,701] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 8 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,701] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 8 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,811] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 9 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,811] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 9 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,920] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 10 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:48,920] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 10 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:49,028] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 11 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+[2021-06-01 14:13:49,028] WARN [Producer clientId=KSQLDataGenProducer] Error while fetching metadata with correlation id 11 : {pageviews=LEADER_NOT_AVAILABLE} (org.apache.kafka.clients.NetworkClient:1077)
+1622556826113 --> ([ 1622556826113L | 'User_3' | 'Page_95' ]) ts:1622556829248
+1622556829345 --> ([ 1622556829345L | 'User_6' | 'Page_78' ]) ts:1622556829346
+1622556829351 --> ([ 1622556829351L | 'User_5' | 'Page_73' ]) ts:1622556829351
+1622556829352 --> ([ 1622556829352L | 'User_4' | 'Page_95' ]) ts:1622556829352
+1622556829352 --> ([ 1622556829352L | 'User_3' | 'Page_56' ]) ts:1622556829352
+1622556829353 --> ([ 1622556829353L | 'User_2' | 'Page_58' ]) ts:1622556829353
+1622556829353 --> ([ 1622556829353L | 'User_3' | 'Page_46' ]) ts:1622556829354
+1622556829354 --> ([ 1622556829354L | 'User_9' | 'Page_38' ]) ts:1622556829354
+1622556829355 --> ([ 1622556829355L | 'User_4' | 'Page_25' ]) ts:1622556829356
+1622556829358 --> ([ 1622556829358L | 'User_8' | 'Page_16' ]) ts:1622556829358
+1622556829360 --> ([ 1622556829360L | 'User_6' | 'Page_69' ]) ts:1622556829360
+1622556829361 --> ([ 1622556829361L | 'User_1' | 'Page_24' ]) ts:1622556829362
+1622556829362 --> ([ 1622556829362L | 'User_6' | 'Page_36' ]) ts:1622556829363
+1622556829364 --> ([ 1622556829364L | 'User_9' | 'Page_44' ]) ts:1622556829364
+1622556829365 --> ([ 1622556829365L | 'User_5' | 'Page_50' ]) ts:1622556829366
+1622556829366 --> ([ 1622556829366L | 'User_6' | 'Page_12' ]) ts:1622556829367
+1622556829368 --> ([ 1622556829368L | 'User_3' | 'Page_31' ]) ts:1622556829368
+1622556829368 --> ([ 1622556829368L | 'User_4' | 'Page_23' ]) ts:1622556829368
+1622556829369 --> ([ 1622556829369L | 'User_3' | 'Page_65' ]) ts:1622556829369
+1622556829370 --> ([ 1622556829370L | 'User_4' | 'Page_82' ]) ts:1622556829370
+1622556829372 --> ([ 1622556829372L | 'User_6' | 'Page_28' ]) ts:1622556829372
+1622556829373 --> ([ 1622556829373L | 'User_9' | 'Page_32' ]) ts:1622556829374
+1622556829375 --> ([ 1622556829375L | 'User_6' | 'Page_17' ]) ts:1622556829376
+1622556829378 --> ([ 1622556829378L | 'User_2' | 'Page_69' ]) ts:1622556829378
+1622556829379 --> ([ 1622556829379L | 'User_4' | 'Page_86' ]) ts:1622556829379
+1622556829380 --> ([ 1622556829380L | 'User_3' | 'Page_85' ]) ts:1622556829380
+1622556829381 --> ([ 1622556829381L | 'User_6' | 'Page_86' ]) ts:1622556829381
+1622556829382 --> ([ 1622556829382L | 'User_2' | 'Page_90' ]) ts:1622556829383
+1622556829385 --> ([ 1622556829385L | 'User_1' | 'Page_94' ]) ts:1622556829386
+1622556829386 --> ([ 1622556829386L | 'User_1' | 'Page_70' ]) ts:1622556829386
+1622556829388 --> ([ 1622556829388L | 'User_3' | 'Page_78' ]) ts:1622556829388
+1622556829388 --> ([ 1622556829388L | 'User_1' | 'Page_33' ]) ts:1622556829389
+1622556829389 --> ([ 1622556829389L | 'User_3' | 'Page_76' ]) ts:1622556829390
+1622556829390 --> ([ 1622556829390L | 'User_3' | 'Page_18' ]) ts:1622556829390
+1622556829391 --> ([ 1622556829391L | 'User_9' | 'Page_47' ]) ts:1622556829392
+1622556829392 --> ([ 1622556829392L | 'User_6' | 'Page_17' ]) ts:1622556829393
+1622556829393 --> ([ 1622556829393L | 'User_5' | 'Page_62' ]) ts:1622556829393
+1622556829394 --> ([ 1622556829394L | 'User_7' | 'Page_23' ]) ts:1622556829394
+1622556829394 --> ([ 1622556829394L | 'User_8' | 'Page_75' ]) ts:1622556829394
+1622556829395 --> ([ 1622556829395L | 'User_3' | 'Page_63' ]) ts:1622556829395
+1622556829396 --> ([ 1622556829396L | 'User_8' | 'Page_87' ]) ts:1622556829396
+1622556829396 --> ([ 1622556829396L | 'User_9' | 'Page_51' ]) ts:1622556829396
+1622556829397 --> ([ 1622556829397L | 'User_9' | 'Page_19' ]) ts:1622556829397
+1622556829397 --> ([ 1622556829397L | 'User_7' | 'Page_78' ]) ts:1622556829397
+1622556829398 --> ([ 1622556829398L | 'User_7' | 'Page_21' ]) ts:1622556829398
+1622556829398 --> ([ 1622556829398L | 'User_3' | 'Page_32' ]) ts:1622556829398
+1622556829399 --> ([ 1622556829399L | 'User_1' | 'Page_23' ]) ts:1622556829400
+1622556829400 --> ([ 1622556829400L | 'User_6' | 'Page_72' ]) ts:1622556829400
+1622556829403 --> ([ 1622556829403L | 'User_1' | 'Page_50' ]) ts:1622556829404
+1622556829405 --> ([ 1622556829405L | 'User_5' | 'Page_13' ]) ts:1622556829405
+root@ksql-datagen:/#
+
+
+
+########### TERMINAL DO KSQL
+
+ksql> print "pageviews" from beginning limit 10;
+Key format: KAFKA_BIGINT or KAFKA_DOUBLE
+Value format: JSON or KAFKA_STRING
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556826113, value: {"viewtime":1622556826113,"userid":"User_3","pageid":"Page_95"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829345, value: {"viewtime":1622556829345,"userid":"User_6","pageid":"Page_78"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829351, value: {"viewtime":1622556829351,"userid":"User_5","pageid":"Page_73"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829352, value: {"viewtime":1622556829352,"userid":"User_4","pageid":"Page_95"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829352, value: {"viewtime":1622556829352,"userid":"User_3","pageid":"Page_56"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829353, value: {"viewtime":1622556829353,"userid":"User_2","pageid":"Page_58"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829353, value: {"viewtime":1622556829353,"userid":"User_3","pageid":"Page_46"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829354, value: {"viewtime":1622556829354,"userid":"User_9","pageid":"Page_38"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829355, value: {"viewtime":1622556829355,"userid":"User_4","pageid":"Page_25"}
+rowtime: 6/1/21 2:13:49 PM UTC, key: 1622556829358, value: {"viewtime":1622556829358,"userid":"User_8","pageid":"Page_16"}
+ksql>
+
+
+
+ksql> create stream pageviews_raw(userid VARCHAR, pageid VARCHAR, viewtime BIGINT) with(kafka_topic='pageviews', value_format='json', key='userid',
+TIMESTAMP='viewtime');
+
+ Message
+----------------
+ Stream created
+----------------
+ksql>
+
+
+ksql> describe pageviews_raw;
+
+Name                 : PAGEVIEWS_RAW
+ Field    | Type
+--------------------------------------
+ ROWTIME  | BIGINT           (system)
+ ROWKEY   | VARCHAR(STRING)  (system)
+ USERID   | VARCHAR(STRING)
+ PAGEID   | VARCHAR(STRING)
+ VIEWTIME | BIGINT
+--------------------------------------
+For runtime statistics and query details run: DESCRIBE EXTENDED <Stream,Table>;
+ksql>
+
+
+
+ksql> select * from pageviews_raw emit changes limit 10;
++---------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
+|ROWTIME                    |ROWKEY                     |USERID                     |PAGEID                     |VIEWTIME                   |
++---------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
+|1622556826113              |☺y��Z☺                   |User_3                     |Page_95                    |1622556826113              |
+|1622556829345              |☺y��f�                   |User_6                     |Page_78                    |1622556829345              |
+|1622556829351              |☺y��f�                   |User_5                     |Page_73                    |1622556829351              |
+|1622556829352              |☺y��f�                   |User_4                     |Page_95                    |1622556829352              |
+|1622556829352              |☺y��f�                   |User_3                     |Page_56                    |1622556829352              |
+|1622556829353              |☺y��f�                   |User_2                     |Page_58                    |1622556829353              |
+|1622556829353              |☺y��f�                   |User_3                     |Page_46                    |1622556829353              |
+|1622556829354              |☺y��f�                   |User_9                     |Page_38                    |1622556829354              |
+|1622556829355              |☺y��f�                   |User_4                     |Page_25                    |1622556829355              |
+|1622556829358              |☺y��f�                   |User_8                     |Page_16                    |1622556829358              |
+Limit Reached
+Query terminated
+ksql>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
