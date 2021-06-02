@@ -1,0 +1,607 @@
+
+########## Exercicio realizado com ajuda do colega Ebraim Carvalho
+
+### Exercicio Avro e Schema Registry
+
+Abrir 3 terminais:
+
+- docker exec -it ksqldb-server bash > ksql
+- docker exec -it schema-regsitry bash
+- docker exec -it schema-regsitry bash
+
+
+
+1o Terminal aberto KSQL
+#######################
+
+PS E:\projetos\docker-kafka> docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+PS E:\projetos\docker-kafka> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Starting zookeeper1 ... done
+Starting broker     ... done
+Starting schema-registry ... done
+Starting connect         ... done
+Starting rest-proxy      ... done
+Starting ksqldb-server   ... done
+Starting ksql-datagen    ... done
+Starting control-center  ... done
+Starting ksqldb-cli      ... done
+PS E:\projetos\docker-kafka> docker exec -it ksqldb-server bash
+root@ksqldb-server:/# sql
+bash: sql: command not found
+root@ksqldb-server:/# ksql
+
+                  ===========================================
+                  =       _              _ ____  ____       =
+                  =      | | _____  __ _| |  _ \| __ )      =
+                  =      | |/ / __|/ _` | | | | |  _ \      =
+                  =      |   <\__ \ (_| | | |_| | |_) |     =
+                  =      |_|\_\___/\__, |_|____/|____/      =
+                  =                   |_|                   =
+                  =  Event Streaming Database purpose-built =
+                  =        for stream processing apps       =
+                  ===========================================
+
+Copyright 2017-2020 Confluent Inc.
+
+CLI v5.5.2, Server v<unknown> located at http://localhost:8088
+
+Having trouble? Type 'help' (case-insensitive) for a rundown of how things work!
+
+
+*************************************ERROR**************************************
+Remote server at http://localhost:8088 does not appear to be a valid KSQL
+server. Please ensure that the URL provided is for an active KSQL server.
+
+The server responded with the following error:
+Error issuing GET to KSQL server. path:/info
+Caused by: java.net.ConnectException: Connection refused (Connection refused)
+Caused by: Could not connect to the server.
+********************************************************************************
+
+ksql>
+
+
+
+
+2o Terminal aberto SCHEMA-REGISTRY
+##################################
+
+PS E:\projetos\docker-kafka> docker exec -it schema-registry bash
+root@schema-registry:/#
+
+
+
+3o Terminal, 2o aberto para o SCHEMA-REGISTRY
+#############################################
+
+
+
+#######################################################################################################
+#
+#                                           EXERCICIOS
+#
+#######################################################################################################
+
+
+########################## 1. Visualizar os dados do tópico users
+
+ksql> print "users" from beginning limit 10;
+Key format: KAFKA_STRING
+Value format: JSON or KAFKA_STRING
+rowtime: 6/1/21 1:56:33 PM UTC, key: User_1, value: {"registertime":1506050882544,"userid":"User_1","regionid":"Region_2","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_8, value: {"registertime":1499134206526,"userid":"User_8","regionid":"Region_4","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_9, value: {"registertime":1490802029234,"userid":"User_9","regionid":"Region_6","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_5, value: {"registertime":1512429770670,"userid":"User_5","regionid":"Region_6","gender":"OTHER"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_7, value: {"registertime":1503224353249,"userid":"User_7","regionid":"Region_1","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_4, value: {"registertime":1504442695101,"userid":"User_4","regionid":"Region_5","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_5, value: {"registertime":1501197514036,"userid":"User_5","regionid":"Region_7","gender":"FEMALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_9, value: {"registertime":1498736698133,"userid":"User_9","regionid":"Region_2","gender":"MALE"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_6, value: {"registertime":1507771663278,"userid":"User_6","regionid":"Region_3","gender":"OTHER"}
+rowtime: 6/1/21 1:56:34 PM UTC, key: User_4, value: {"registertime":1495102712677,"userid":"User_4","regionid":"Region_4","gender":"OTHER"}
+ksql>
+
+
+
+
+########################## 2. Criar o tópico users-avro10
+############# a) Usar o kafka-avro-console-producer para enviar 1 mensagem
+
+root@schema-registry:/# kafka-avro-console-producer --topic users-avro10 --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --property value.schema='{"type": "record", "name": "myrecord", "fields": [ {"name": "id", "type": "int"}, {"name": "nome", "type": "string"} ]}'
+[2021-06-02 13:43:22,879] INFO Registered kafka:type=kafka.Log4jController MBean (kafka.utils.Log4jControllerRegistration$)
+[2021-06-02 13:43:25,252] INFO ProducerConfig values:
+        acks = 1
+        batch.size = 16384
+        bootstrap.servers = [broker:29092]
+        buffer.memory = 33554432
+        client.dns.lookup = default
+        client.id = console-producer
+        compression.type = none
+        connections.max.idle.ms = 540000
+        delivery.timeout.ms = 120000
+        enable.idempotence = false
+        interceptor.classes = []
+        key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+        linger.ms = 1000
+        max.block.ms = 60000
+        max.in.flight.requests.per.connection = 5
+        max.request.size = 1048576
+        metadata.max.age.ms = 300000
+        metadata.max.idle.ms = 300000
+        metric.reporters = []
+        metrics.num.samples = 2
+        metrics.recording.level = INFO
+        metrics.sample.window.ms = 30000
+        partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+        receive.buffer.bytes = 32768
+        reconnect.backoff.max.ms = 1000
+        reconnect.backoff.ms = 50
+        request.timeout.ms = 1500
+        retries = 3
+        retry.backoff.ms = 100
+        sasl.client.callback.handler.class = null
+        sasl.jaas.config = null
+        sasl.kerberos.kinit.cmd = /usr/bin/kinit
+        sasl.kerberos.min.time.before.relogin = 60000
+        sasl.kerberos.service.name = null
+        sasl.kerberos.ticket.renew.jitter = 0.05
+        sasl.kerberos.ticket.renew.window.factor = 0.8
+        sasl.login.callback.handler.class = null
+        sasl.login.class = null
+        sasl.login.refresh.buffer.seconds = 300
+        sasl.login.refresh.min.period.seconds = 60
+        sasl.login.refresh.window.factor = 0.8
+        sasl.login.refresh.window.jitter = 0.05
+        sasl.mechanism = GSSAPI
+        security.protocol = PLAINTEXT
+        security.providers = null
+        send.buffer.bytes = 102400
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+        transaction.timeout.ms = 60000
+        transactional.id = null
+        value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+ (org.apache.kafka.clients.producer.ProducerConfig)
+[2021-06-02 13:43:25,453] INFO Kafka version: 5.5.2-ce (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:43:25,456] INFO Kafka commitId: 417a2e7a085d90a7 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:43:25,458] INFO Kafka startTimeMs: 1622641405443 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:43:25,931] INFO [Producer clientId=console-producer] Cluster ID: qkpARaMETdmsf7NPGSpjaA (org.apache.kafka.clients.Metadata)
+{"id":1,"nome":"Feliciani"}
+{"id":2,"nome":"Marcelo"}
+
+org.apache.kafka.common.errors.SerializationException: Error deserializing json  to Avro of schema {"type":"record","name":"myrecord","fields":[{"name":"id","type":"int"},{"name":"nome","type":"string"}]}
+Caused by: java.io.EOFException
+        at org.apache.avro.io.JsonDecoder.advance(JsonDecoder.java:134)
+        at org.apache.avro.io.JsonDecoder.readInt(JsonDecoder.java:162)
+        at org.apache.avro.io.ValidatingDecoder.readInt(ValidatingDecoder.java:83)
+        at org.apache.avro.generic.GenericDatumReader.readInt(GenericDatumReader.java:551)
+        at org.apache.avro.generic.GenericDatumReader.readWithoutConversion(GenericDatumReader.java:195)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:160)
+        at org.apache.avro.generic.GenericDatumReader.readField(GenericDatumReader.java:259)
+        at org.apache.avro.generic.GenericDatumReader.readRecord(GenericDatumReader.java:247)
+        at org.apache.avro.generic.GenericDatumReader.readWithoutConversion(GenericDatumReader.java:179)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:160)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:153)
+        at io.confluent.kafka.schemaregistry.avro.AvroSchemaUtils.toObject(AvroSchemaUtils.java:142)
+        at io.confluent.kafka.formatter.AvroMessageReader.readFrom(AvroMessageReader.java:121)
+        at io.confluent.kafka.formatter.SchemaMessageReader.readMessage(SchemaMessageReader.java:261)
+        at kafka.tools.ConsoleProducer$.main(ConsoleProducer.scala:51)
+        at kafka.tools.ConsoleProducer.main(ConsoleProducer.scala)
+[2021-06-02 13:44:47,269] INFO [Producer clientId=console-producer] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms. (org.apache.kafka.clients.producer.KafkaProducer)
+
+root@schema-registry:/#
+
+
+
+
+##################################### b) Usar o kafka-avro-console-consumer para consumir a mensagem
+
+root@schema-registry:/# kafka-avro-console-consumer --topic users-avro10 --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --from-beginning
+[2021-06-02 13:46:15,470] INFO Registered kafka:type=kafka.Log4jController MBean (kafka.utils.Log4jControllerRegistration$)
+[2021-06-02 13:46:16,171] INFO ConsumerConfig values:
+        allow.auto.create.topics = true
+        auto.commit.interval.ms = 5000
+        auto.offset.reset = earliest
+        bootstrap.servers = [broker:29092]
+        check.crcs = true
+        client.dns.lookup = default
+        client.id =
+        client.rack =
+        connections.max.idle.ms = 540000
+        default.api.timeout.ms = 60000
+        enable.auto.commit = false
+        exclude.internal.topics = true
+        fetch.max.bytes = 52428800
+        fetch.max.wait.ms = 500
+        fetch.min.bytes = 1
+        group.id = console-consumer-93486
+        group.instance.id = null
+        heartbeat.interval.ms = 3000
+        interceptor.classes = []
+        internal.leave.group.on.close = true
+        isolation.level = read_uncommitted
+        key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+        max.partition.fetch.bytes = 1048576
+        max.poll.interval.ms = 300000
+        max.poll.records = 500
+        metadata.max.age.ms = 300000
+        metric.reporters = []
+        metrics.num.samples = 2
+        metrics.recording.level = INFO
+        metrics.sample.window.ms = 30000
+        partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+        receive.buffer.bytes = 65536
+        reconnect.backoff.max.ms = 1000
+        reconnect.backoff.ms = 50
+        request.timeout.ms = 30000
+        retry.backoff.ms = 100
+        sasl.client.callback.handler.class = null
+        sasl.jaas.config = null
+        sasl.kerberos.kinit.cmd = /usr/bin/kinit
+        sasl.kerberos.min.time.before.relogin = 60000
+        sasl.kerberos.service.name = null
+        sasl.kerberos.ticket.renew.jitter = 0.05
+        sasl.kerberos.ticket.renew.window.factor = 0.8
+        sasl.login.callback.handler.class = null
+        sasl.login.class = null
+        sasl.login.refresh.buffer.seconds = 300
+        sasl.login.refresh.min.period.seconds = 60
+        sasl.login.refresh.window.factor = 0.8
+        sasl.login.refresh.window.jitter = 0.05
+        sasl.mechanism = GSSAPI
+        security.protocol = PLAINTEXT
+        security.providers = null
+        send.buffer.bytes = 131072
+        session.timeout.ms = 10000
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+        value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+ (org.apache.kafka.clients.consumer.ConsumerConfig)
+[2021-06-02 13:46:16,396] INFO Kafka version: 5.5.2-ce (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:46:16,397] INFO Kafka commitId: 417a2e7a085d90a7 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:46:16,397] INFO Kafka startTimeMs: 1622641576319 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 13:46:16,426] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Subscribed to topic(s): users-avro10 (org.apache.kafka.clients.consumer.KafkaConsumer)
+[2021-06-02 13:46:20,104] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Cluster ID: qkpARaMETdmsf7NPGSpjaA (org.apache.kafka.clients.Metadata)
+[2021-06-02 13:46:20,109] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Discovered group coordinator broker:29092 (id: 2147483646 rack: null) (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 13:46:20,118] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] (Re-)joining group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 13:46:20,156] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Join group failed with org.apache.kafka.common.errors.MemberIdRequiredException: The group member needs to have a valid member id before actually entering a consumer group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 13:46:20,157] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] (Re-)joining group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 13:46:20,166] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Finished assignment for group at generation 1: {consumer-console-consumer-93486-1-16516940-e8ab-4edb-bdb3-0d4216894dbf=Assignment(partitions=[users-avro10-0])} (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 13:46:20,175] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Successfully joined group with generation 1 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 13:46:20,181] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Adding newly assigned partitions: users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 13:46:20,210] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Found no committed offset for partition users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 13:46:20,236] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Resetting offset for partition users-avro10-0 to offset 0. (org.apache.kafka.clients.consumer.internals.SubscriptionState)
+{"id":1,"nome":"Feliciani"}
+{"id":2,"nome":"Marcelo"}
+
+
+
+^C[2021-06-02 13:54:14,045] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Revoke previously assigned partitions users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 13:54:14,046] INFO [Consumer clientId=consumer-console-consumer-93486-1, groupId=console-consumer-93486] Member consumer-console-consumer-93486-1-16516940-e8ab-4edb-bdb3-0d4216894dbf sending LeaveGroup request to coordinator broker:29092 (id: 2147483646 rack: null) due to the consumer is being closed (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+Processed a total of 2 messages
+root@schema-registry:/#
+
+
+
+
+##################################### c) Visualizar o esquema no Control Center
+- Acessando http://localhost:9021/ 
+- Acessar topics/users-avro/schema/value
+
+
+
+
+####################################################### 3. Visualizar os dados do users-avro10 no KSQL
+
+ksql> print "users-avro10" from beginning limit 10;
+Key format: SESSION(AVRO) or HOPPING(AVRO) or TUMBLING(AVRO) or AVRO or SESSION(PROTOBUF) or HOPPING(PROTOBUF) or TUMBLING(PROTOBUF) or PROTOBUF or SESSION(JSON) or HOPPING(JSON) or TUMBLING(JSON) or JSON or SESSION(JSON_SR) or HOPPING(JSON_SR) or TUMBLING(JSON_SR) or JSON_SR or SESSION(KAFKA_INT) or HOPPING(KAFKA_INT) or TUMBLING(KAFKA_INT) or KAFKA_INT or SESSION(KAFKA_BIGINT) or HOPPING(KAFKA_BIGINT) or TUMBLING(KAFKA_BIGINT) or KAFKA_BIGINT or SESSION(KAFKA_DOUBLE) or HOPPING(KAFKA_DOUBLE) or TUMBLING(KAFKA_DOUBLE) or KAFKA_DOUBLE or SESSION(KAFKA_STRING) or HOPPING(KAFKA_STRING) or TUMBLING(KAFKA_STRING) or KAFKA_STRING
+Value format: AVRO or KAFKA_STRING
+rowtime: 6/2/21 1:44:20 PM UTC, key: <null>, value: {"id": 1, "nome": "Feliciani"}
+rowtime: 6/2/21 1:44:44 PM UTC, key: <null>, value: {"id": 2, "nome": "Marcelo"}
+^CTopic printing ceased
+ksql>
+
+
+
+
+####################################################### 4. Criar um stream users_avro11 para o tópico users-avro10
+################### Nao utilizar hifem "-" no nome
+
+ksql> create stream usersAvro11 with(kafka_topic='users-avro10', value_format='avro');
+
+ Message
+----------------
+ Stream created
+----------------
+ksql>
+
+
+
+
+####################################################### 5. Visualizar os dados do stream users_avro11
+
+ksql> set 'auto.offset.reset'='earliest';
+Successfully changed local property 'auto.offset.reset' to 'earliest'. Use the UNSET command to revert your change.
+
+ksql> select * from usersAvro11 emit changes limit 10;
++-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
+|ROWTIME                            |ROWKEY                             |ID                                 |NOME                               |
++-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
+|1622641460845                      |null                               |1                                  |Feliciani                          |
+|1622641484759                      |null                               |2                                  |Marcelo                            |
+^CQuery terminated
+ksql>
+
+
+
+
+####################################################### 6. Usar o kafka-avro-console-producer para adicionar um novo campo chamado “unit” com valor padrão “1”
+
+root@schema-registry:/# kafka-avro-console-producer --topic users-avro10 --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --property value.schema='{"type": "record", "name": "myrecord", "fields": [ {"name": "id", "type": "int"}, {"name": "nome", "type": "string"}, {"name": "unit", "type":"string", "default": "1"} ]}'
+[2021-06-02 14:06:50,484] INFO Registered kafka:type=kafka.Log4jController MBean (kafka.utils.Log4jControllerRegistration$)
+[2021-06-02 14:06:51,042] INFO ProducerConfig values:
+        acks = 1
+        batch.size = 16384
+        bootstrap.servers = [broker:29092]
+        buffer.memory = 33554432
+        client.dns.lookup = default
+        client.id = console-producer
+        compression.type = none
+        connections.max.idle.ms = 540000
+        delivery.timeout.ms = 120000
+        enable.idempotence = false
+        interceptor.classes = []
+        key.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+        linger.ms = 1000
+        max.block.ms = 60000
+        max.in.flight.requests.per.connection = 5
+        max.request.size = 1048576
+        metadata.max.age.ms = 300000
+        metadata.max.idle.ms = 300000
+        metric.reporters = []
+        metrics.num.samples = 2
+        metrics.recording.level = INFO
+        metrics.sample.window.ms = 30000
+        partitioner.class = class org.apache.kafka.clients.producer.internals.DefaultPartitioner
+        receive.buffer.bytes = 32768
+        reconnect.backoff.max.ms = 1000
+        reconnect.backoff.ms = 50
+        request.timeout.ms = 1500
+        retries = 3
+        retry.backoff.ms = 100
+        sasl.client.callback.handler.class = null
+        sasl.jaas.config = null
+        sasl.kerberos.kinit.cmd = /usr/bin/kinit
+        sasl.kerberos.min.time.before.relogin = 60000
+        sasl.kerberos.service.name = null
+        sasl.kerberos.ticket.renew.jitter = 0.05
+        sasl.kerberos.ticket.renew.window.factor = 0.8
+        sasl.login.callback.handler.class = null
+        sasl.login.class = null
+        sasl.login.refresh.buffer.seconds = 300
+        sasl.login.refresh.min.period.seconds = 60
+        sasl.login.refresh.window.factor = 0.8
+        sasl.login.refresh.window.jitter = 0.05
+        sasl.mechanism = GSSAPI
+        security.protocol = PLAINTEXT
+        security.providers = null
+        send.buffer.bytes = 102400
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+        transaction.timeout.ms = 60000
+        transactional.id = null
+        value.serializer = class org.apache.kafka.common.serialization.ByteArraySerializer
+ (org.apache.kafka.clients.producer.ProducerConfig)
+[2021-06-02 14:06:51,166] INFO Kafka version: 5.5.2-ce (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:06:51,167] INFO Kafka commitId: 417a2e7a085d90a7 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:06:51,168] INFO Kafka startTimeMs: 1622642811157 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:06:52,081] INFO [Producer clientId=console-producer] Cluster ID: qkpARaMETdmsf7NPGSpjaA (org.apache.kafka.clients.Metadata)
+{"id":3,"nome":"Goulart","unit":"1"}
+
+org.apache.kafka.common.errors.SerializationException: Error deserializing json  to Avro of schema {"type":"record","name":"myrecord","fields":[{"name":"id","type":"int"},{"name":"nome","type":"string"},{"name":"unit","type":"string","default":"1"}]}
+Caused by: java.io.EOFException
+        at org.apache.avro.io.JsonDecoder.advance(JsonDecoder.java:134)
+        at org.apache.avro.io.JsonDecoder.readInt(JsonDecoder.java:162)
+        at org.apache.avro.io.ValidatingDecoder.readInt(ValidatingDecoder.java:83)
+        at org.apache.avro.generic.GenericDatumReader.readInt(GenericDatumReader.java:551)
+        at org.apache.avro.generic.GenericDatumReader.readWithoutConversion(GenericDatumReader.java:195)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:160)
+        at org.apache.avro.generic.GenericDatumReader.readField(GenericDatumReader.java:259)
+        at org.apache.avro.generic.GenericDatumReader.readRecord(GenericDatumReader.java:247)
+        at org.apache.avro.generic.GenericDatumReader.readWithoutConversion(GenericDatumReader.java:179)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:160)
+        at org.apache.avro.generic.GenericDatumReader.read(GenericDatumReader.java:153)
+        at io.confluent.kafka.schemaregistry.avro.AvroSchemaUtils.toObject(AvroSchemaUtils.java:142)
+        at io.confluent.kafka.formatter.AvroMessageReader.readFrom(AvroMessageReader.java:121)
+        at io.confluent.kafka.formatter.SchemaMessageReader.readMessage(SchemaMessageReader.java:261)
+        at kafka.tools.ConsoleProducer$.main(ConsoleProducer.scala:51)
+        at kafka.tools.ConsoleProducer.main(ConsoleProducer.scala)
+[2021-06-02 14:08:35,324] INFO [Producer clientId=console-producer] Closing the Kafka producer with timeoutMillis = 9223372036854775807 ms. (org.apache.kafka.clients.producer.KafkaProducer)
+
+
+
+
+################################################# 7. Usar o kafka-avro-console-consumer para consumir as mensagens
+
+root@schema-registry:/# kafka-avro-console-consumer --topic users-avro10 --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --from-beginning
+[2021-06-02 14:08:51,635] INFO Registered kafka:type=kafka.Log4jController MBean (kafka.utils.Log4jControllerRegistration$)
+[2021-06-02 14:08:52,328] INFO ConsumerConfig values:
+        allow.auto.create.topics = true
+        auto.commit.interval.ms = 5000
+        auto.offset.reset = earliest
+        bootstrap.servers = [broker:29092]
+        check.crcs = true
+        client.dns.lookup = default
+        client.id =
+        client.rack =
+        connections.max.idle.ms = 540000
+        default.api.timeout.ms = 60000
+        enable.auto.commit = false
+        exclude.internal.topics = true
+        fetch.max.bytes = 52428800
+        fetch.max.wait.ms = 500
+        fetch.min.bytes = 1
+        group.id = console-consumer-91352
+        group.instance.id = null
+        heartbeat.interval.ms = 3000
+        interceptor.classes = []
+        internal.leave.group.on.close = true
+        isolation.level = read_uncommitted
+        key.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+        max.partition.fetch.bytes = 1048576
+        max.poll.interval.ms = 300000
+        max.poll.records = 500
+        metadata.max.age.ms = 300000
+        metric.reporters = []
+        metrics.num.samples = 2
+        metrics.recording.level = INFO
+        metrics.sample.window.ms = 30000
+        partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor]
+        receive.buffer.bytes = 65536
+        reconnect.backoff.max.ms = 1000
+        reconnect.backoff.ms = 50
+        request.timeout.ms = 30000
+        retry.backoff.ms = 100
+        sasl.client.callback.handler.class = null
+        sasl.jaas.config = null
+        sasl.kerberos.kinit.cmd = /usr/bin/kinit
+        sasl.kerberos.min.time.before.relogin = 60000
+        sasl.kerberos.service.name = null
+        sasl.kerberos.ticket.renew.jitter = 0.05
+        sasl.kerberos.ticket.renew.window.factor = 0.8
+        sasl.login.callback.handler.class = null
+        sasl.login.class = null
+        sasl.login.refresh.buffer.seconds = 300
+        sasl.login.refresh.min.period.seconds = 60
+        sasl.login.refresh.window.factor = 0.8
+        sasl.login.refresh.window.jitter = 0.05
+        sasl.mechanism = GSSAPI
+        security.protocol = PLAINTEXT
+        security.providers = null
+        send.buffer.bytes = 131072
+        session.timeout.ms = 10000
+        ssl.cipher.suites = null
+        ssl.enabled.protocols = [TLSv1.2, TLSv1.1, TLSv1]
+        ssl.endpoint.identification.algorithm = https
+        ssl.key.password = null
+        ssl.keymanager.algorithm = SunX509
+        ssl.keystore.location = null
+        ssl.keystore.password = null
+        ssl.keystore.type = JKS
+        ssl.protocol = TLS
+        ssl.provider = null
+        ssl.secure.random.implementation = null
+        ssl.trustmanager.algorithm = PKIX
+        ssl.truststore.location = null
+        ssl.truststore.password = null
+        ssl.truststore.type = JKS
+        value.deserializer = class org.apache.kafka.common.serialization.ByteArrayDeserializer
+ (org.apache.kafka.clients.consumer.ConsumerConfig)
+[2021-06-02 14:08:52,431] INFO Kafka version: 5.5.2-ce (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:08:52,432] INFO Kafka commitId: 417a2e7a085d90a7 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:08:52,432] INFO Kafka startTimeMs: 1622642932426 (org.apache.kafka.common.utils.AppInfoParser)
+[2021-06-02 14:08:52,437] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Subscribed to topic(s): users-avro10 (org.apache.kafka.clients.consumer.KafkaConsumer)
+[2021-06-02 14:08:53,080] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Cluster ID: qkpARaMETdmsf7NPGSpjaA (org.apache.kafka.clients.Metadata)
+[2021-06-02 14:08:53,082] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Discovered group coordinator broker:29092 (id: 2147483646 rack: null) (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 14:08:53,086] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] (Re-)joining group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 14:08:53,110] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Join group failed with org.apache.kafka.common.errors.MemberIdRequiredException: The group member needs to have a valid member id before actually entering a consumer group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 14:08:53,110] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] (Re-)joining group (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 14:08:53,123] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Finished assignment for group at generation 1: {consumer-console-consumer-91352-1-98023a21-1d59-40c3-a622-83f97a1838ab=Assignment(partitions=[users-avro10-0])} (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 14:08:54,464] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Successfully joined group with generation 1 (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+[2021-06-02 14:08:54,478] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Adding newly assigned partitions: users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 14:08:54,513] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Found no committed offset for partition users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 14:08:54,536] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Resetting offset for partition users-avro10-0 to offset 0. (org.apache.kafka.clients.consumer.internals.SubscriptionState)
+{"id":1,"nome":"Feliciani"}
+{"id":2,"nome":"Marcelo"}
+{"id":3,"nome":"Goulart","unit":"1"}
+
+^C[2021-06-02 14:09:00,879] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Revoke previously assigned partitions users-avro10-0 (org.apache.kafka.clients.consumer.internals.ConsumerCoordinator)
+[2021-06-02 14:09:00,879] INFO [Consumer clientId=consumer-console-consumer-91352-1, groupId=console-consumer-91352] Member consumer-console-consumer-91352-1-98023a21-1d59-40c3-a622-83f97a1838ab sending LeaveGroup request to coordinator broker:29092 (id: 2147483646 rack: null) due to the consumer is being closed (org.apache.kafka.clients.consumer.internals.AbstractCoordinator)
+Processed a total of 3 messages
+root@schema-registry:/#
+
+
+
+
+####################################################### 8. Comparar os esquemas do users-avro no Control Center
+
+- Acessar http://localhost:9021/ 
+- Acessar topics/users-avro/schema/value/history/2
+
+
+
+
+####################################################### 9. Visualizar os dados no stream do tópico users-avro11
+
+ksql> set 'auto.offset.reset'='earliest';
+Successfully changed local property 'auto.offset.reset' from 'earliest' to 'earliest'.
+
+ksql> select * from usersAvro11 emit changes limit 10;
++-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
+|ROWTIME                            |ROWKEY                             |ID                                 |NOME                               |
++-----------------------------------+-----------------------------------+-----------------------------------+-----------------------------------+
+|1622641460845                      |null                               |1                                  |Feliciani                          |
+|1622641484759                      |null                               |2                                  |Marcelo                            |
+|1622642911815                      |null                               |3                                  |Goulart                            |
+^CQuery terminated
+ksql>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
