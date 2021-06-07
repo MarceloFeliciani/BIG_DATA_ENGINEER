@@ -1,0 +1,269 @@
+
+PS E:\projetos\docker-elasticsearch> docker-compose up -d
+Docker Compose is now in the Docker CLI, try `docker compose up`
+
+Creating network "docker-elasticsearch_elastic" with driver "bridge"
+Creating volume "docker-elasticsearch_es-data" with local driver
+Pulling elasticsearch (docker.elastic.co/elasticsearch/elasticsearch:7.9.2)...
+7.9.2: Pulling from elasticsearch/elasticsearch
+f1feca467797: Pull complete
+2b669da077a4: Pull complete
+e5b4c466fc6d: Pull complete
+3b660c013f1a: Pull complete
+0e7ad1133ad1: Pull complete
+b50d6e48f432: Pull complete
+bff3705905f9: Pull complete
+9509765886ad: Pull complete
+b7f06f509306: Pull complete
+Digest: sha256:2be3302537236874fdeca184c78a49aed17d5aca0f8fc3f6192a80e93e817cb4
+Status: Downloaded newer image for docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+Pulling kibana (docker.elastic.co/kibana/kibana:7.9.2)...
+7.9.2: Pulling from kibana/kibana
+f1feca467797: Already exists
+931233f554d6: Pull complete
+581a489dbecb: Pull complete
+aa6fbd91b2db: Pull complete
+bff28ae590a6: Pull complete
+ad686c2de296: Pull complete
+65ff4ca7a663: Pull complete
+f0eefcb039b2: Pull complete
+a742df43ef13: Pull complete
+6f64f5502816: Pull complete
+3bffd6feec15: Pull complete
+Digest: sha256:48d7d2e91b7903321748432e22a01576c7e4db539021836b54bd58d5659aa5e5
+Status: Downloaded newer image for docker.elastic.co/kibana/kibana:7.9.2
+Pulling logstash (docker.elastic.co/logstash/logstash:7.9.2)...
+7.9.2: Pulling from logstash/logstash
+f1feca467797: Already exists
+22fdec40f1c0: Pull complete
+c28c84c9e5c7: Pull complete
+1d1287f5a060: Pull complete
+0afab2e978b8: Pull complete
+d51d089eccd4: Pull complete
+73d0d31b4de2: Pull complete
+994fac792cb1: Pull complete
+340e8ebd0411: Pull complete
+8533ba55b320: Pull complete
+176d22ffad29: Pull complete
+Digest: sha256:f2c9d6d0fcd63cdb2a44dea7e9af1ccd6cc388a8af409fa66865abcab64b2c61
+Status: Downloaded newer image for docker.elastic.co/logstash/logstash:7.9.2
+Creating docker-elasticsearch_elasticsearch_1 ... done
+Creating docker-elasticsearch_kibana_1        ... done
+Creating docker-elasticsearch_logstash_1      ... done
+
+PS E:\projetos\docker-elasticsearch>
+
+PS E:\projetos\docker-elasticsearch\pipeline> dir
+
+
+    Diretório: E:\projetos\docker-elasticsearch\pipeline
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        07/06/2021     15:51            185 logstash.conf
+
+
+PS E:\projetos\docker-elasticsearch\pipeline> cd ..
+
+PS E:\projetos\docker-elasticsearch> cd settings
+
+PS E:\projetos\docker-elasticsearch\settings> dir
+
+
+    Diretório: E:\projetos\docker-elasticsearch\settings
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        07/06/2021     15:51            103 elasticsearch.yml
+-a----        07/06/2021     15:51             96 kibana.yml
+-a----        07/06/2021     15:51             93 logstash.yml
+
+
+PS E:\projetos\docker-elasticsearch\settings> cd ..
+
+PS E:\projetos\docker-elasticsearch> wsl -d docker-desktop
+LAPTOP-V176DRSL:/tmp/docker-desktop-root/mnt/host/e/projetos/docker-elasticsearch# sysctl -w vm.max_map_count=262144
+vm.max_map_count = 262144
+LAPTOP-V176DRSL:/tmp/docker-desktop-root/mnt/host/e/projetos/docker-elasticsearch#
+LAPTOP-V176DRSL:/tmp/docker-desktop-root/mnt/host/e/projetos/docker-elasticsearch#
+
+PS E:\projetos\docker-elasticsearch> docker images
+REPOSITORY                                      TAG           IMAGE ID       CREATED         SIZE
+redis                                           latest        bc8d70f9ef6c   3 weeks ago     105MB
+mongo                                           latest        07630e791de3   3 weeks ago     449MB
+mongo-express                                   latest        51fc3f2af7a1   7 weeks ago     128MB
+apache/nifi                                     latest        6ca96dc25d43   2 months ago    2.03GB
+apache/nifi-registry                            latest        137ce960a111   7 months ago    460MB
+confluentinc/ksqldb-examples                    5.5.2         d739ab13f1da   8 months ago    630MB
+confluentinc/cp-ksqldb-server                   5.5.2         cb294553b9ec   8 months ago    663MB
+confluentinc/cp-server                          5.5.2         95c0e238b456   8 months ago    1.05GB
+confluentinc/cp-schema-registry                 5.5.2         c511d747f9f8   8 months ago    1.26GB
+confluentinc/cp-kafka-rest                      5.5.2         c25996d4f5d8   8 months ago    1.22GB
+confluentinc/cp-ksqldb-cli                      5.5.2         cd82f01891f7   8 months ago    647MB
+confluentinc/cp-enterprise-control-center       5.5.2         4482d015d567   8 months ago    958MB
+confluentinc/cp-zookeeper                       5.5.2         d510b733e82d   8 months ago    666MB
+docker.elastic.co/logstash/logstash             7.9.2         736bccdc74f4   8 months ago    735MB
+docker.elastic.co/kibana/kibana                 7.9.2         ba296c26886a   8 months ago    1.18GB
+docker.elastic.co/elasticsearch/elasticsearch   7.9.2         caa7a21ca06e   8 months ago    763MB
+fjardim/jupyter-spark                           latest        31051dea1e70   10 months ago   5.03GB
+cnfldemos/cp-server-connect-datagen             0.3.2-5.5.0   8b1a9577099c   13 months ago   1.53GB
+fjardim/datanode                                latest        24fb187ebd91   14 months ago   874MB
+fjardim/namenode_sqoop                          latest        40dc59117765   14 months ago   1.54GB
+fjardim/mysql                                   latest        84164b03fa2e   15 months ago   456MB
+fjardim/hive-metastore                          latest        7ab9e8f93813   15 months ago   275MB
+fjardim/hive                                    latest        87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest        ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest        6fe5551964f5   5 years ago     451MB
+
+
+PS E:\projetos\docker-elasticsearch> docker ps
+CONTAINER ID   IMAGE                                                 COMMAND                  CREATED          STATUS          PORTS
+                                                                  NAMES
+08ff01acd157   docker.elastic.co/logstash/logstash:7.9.2             "/usr/local/bin/dock…"   26 minutes ago   Up 18 seconds   0.0.0.0:5044->5044/tcp, :::5044->5044/tcp, 0.0.0.0:9600->9600/tcp, :::9600->9600/tcp   docker-elasticsearch_logstash_1
+5ef07977b02c   docker.elastic.co/kibana/kibana:7.9.2                 "/usr/local/bin/dumb…"   26 minutes ago   Up 18 seconds   0.0.0.0:5601->5601/tcp, :::5601->5601/tcp                                              docker-elasticsearch_kibana_1
+cc7ac178e9cc   docker.elastic.co/elasticsearch/elasticsearch:7.9.2   "/tini -- /usr/local…"   26 minutes ago   Up 23 seconds   0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp                                    docker-elasticsearch_elasticsearch_1
+
+
+PS E:\projetos\docker-elasticsearch> docker logs docker-elasticsearch_elasticsearch_1
+{"type": "server", "timestamp": "2021-06-07T20:13:27,555Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "version[7.9.2], pid[7], build[default/docker/d34da0ea4a966c4e49417f2da2f244e3e97b4e6e/2020-09-23T00:45:33.626720Z], OS[Linux/5.4.72-microsoft-standard-WSL2/amd64], JVM[AdoptOpenJDK/OpenJDK 64-Bit Server VM/15/15+36]" }
+{"type": "server", "timestamp": "2021-06-07T20:13:27,618Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "JVM home [/usr/share/elasticsearch/jdk]" }
+{"type": "server", "timestamp": "2021-06-07T20:13:27,620Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "JVM arguments [-Xshare:auto, -Des.networkaddress.cache.ttl=60, -Des.networkaddress.cache.negative.ttl=10, -XX:+AlwaysPreTouch, -Xss1m, -Djava.awt.headless=true, -Dfile.encoding=UTF-8, -Djna.nosys=true, -XX:-OmitStackTraceInFastThrow, -XX:+ShowCodeDetailsInExceptionMessages, -Dio.netty.noUnsafe=true, -Dio.netty.noKeySetOptimization=true, -Dio.netty.recycler.maxCapacityPerThread=0, -Dio.netty.allocator.numDirectArenas=0, -Dlog4j.shutdownHookEnabled=false, -Dlog4j2.disable.jmx=true, -Djava.locale.providers=SPI,COMPAT, -Xms1g, -Xmx1g, -XX:+UseG1GC, -XX:G1ReservePercent=25, -XX:InitiatingHeapOccupancyPercent=30, -Djava.io.tmpdir=/tmp/elasticsearch-312801914891674677, -XX:+HeapDumpOnOutOfMemoryError, -XX:HeapDumpPath=data, -XX:ErrorFile=logs/hs_err_pid%p.log, -Xlog:gc*,gc+age=trace,safepoint:file=logs/gc.log:utctime,pid,tags:filecount=32,filesize=64m, -Des.cgroups.hierarchy.override=/, -Xms512m, -Xmx512m, -XX:MaxDirectMemorySize=268435456, -Des.path.home=/usr/share/elasticsearch, -Des.path.conf=/usr/share/elasticsearch/config, -Des.distribution.flavor=default, -Des.distribution.type=docker, -Des.bundled_jdk=true]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,680Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [aggs-matrix-stats]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,682Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [analysis-common]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,683Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [constant-keyword]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,684Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [flattened]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,686Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [frozen-indices]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,687Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-common]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,688Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-geoip]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,690Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-user-agent]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,691Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [kibana]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,693Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-expression]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,694Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-mustache]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,695Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-painless]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,697Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [mapper-extras]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,698Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [parent-join]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,699Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [percolator]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,701Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [rank-eval]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,702Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [reindex]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,704Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [repository-url]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,705Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [search-business-rules]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,706Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [searchable-snapshots]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,707Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [spatial]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,708Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [tasks]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,709Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [transform]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,710Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [transport-netty4]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,712Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [vectors]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,713Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [wildcard]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,714Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-analytics]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,715Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-async]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,716Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-async-search]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,718Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-autoscaling]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,719Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ccr]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,720Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-core]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,722Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-data-streams]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,722Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-deprecation]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,724Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-enrich]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,724Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-eql]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,725Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-graph]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,725Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-identity-provider]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,726Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ilm]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,726Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-logstash]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,727Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ml]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,727Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-monitoring]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,728Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ql]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,728Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-rollup]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,728Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-security]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,729Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-sql]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,729Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-stack]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,729Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-voting-only-node]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,730Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-watcher]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:01,731Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "no plugins loaded" }
+{"type": "server", "timestamp": "2021-06-07T20:14:02,845Z", "level": "INFO", "component": "o.e.e.NodeEnvironment", "cluster.name": "my_cluster", "node.name": "node1", "message": "using [1] data paths, mounts [[/usr/share/elasticsearch/data (/dev/sdd)]], net usable_space [204.1gb], net total_space [250.9gb], types [ext4]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:02,845Z", "level": "INFO", "component": "o.e.e.NodeEnvironment", "cluster.name": "my_cluster", "node.name": "node1", "message": "heap size [512mb], compressed ordinary object pointers [true]" }
+{"type": "server", "timestamp": "2021-06-07T20:14:03,454Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "node name [node1], node ID [WvhASwFaQ6uwTs5tU6HQHA], cluster name [my_cluster]" }
+{"type": "server", "timestamp": "2021-06-07T20:15:23,847Z", "level": "INFO", "component": "o.e.x.m.p.l.CppLogMessageHandler", "cluster.name": "my_cluster", "node.name": "node1", "message": "[controller/223] [Main.cc@114] controller (64 bit): Version 7.9.2 (Build 6a60f0cf2dd5a5) Copyright (c) 2020 Elasticsearch BV" }
+{"type": "server", "timestamp": "2021-06-07T20:15:25,514Z", "level": "INFO", "component": "o.e.x.s.a.s.FileRolesStore", "cluster.name": "my_cluster", "node.name": "node1", "message": "parsed [0] roles from file [/usr/share/elasticsearch/config/roles.yml]" }
+{"type": "server", "timestamp": "2021-06-07T20:15:58,403Z", "level": "INFO", "component": "o.e.t.NettyAllocator", "cluster.name": "my_cluster", "node.name": "node1", "message": "creating NettyAllocator with the following configs: [name=unpooled, factors={es.unsafe.use_unpooled_allocator=false, g1gc_enabled=true, g1gc_region_size=1mb, heap_size=512mb}]" }
+{"type": "server", "timestamp": "2021-06-07T20:16:01,192Z", "level": "INFO", "component": "o.e.d.DiscoveryModule", "cluster.name": "my_cluster", "node.name": "node1", "message": "using discovery type [zen] and seed hosts providers [settings]" }
+{"type": "server", "timestamp": "2021-06-07T20:16:14,118Z", "level": "WARN", "component": "o.e.g.DanglingIndicesState", "cluster.name": "my_cluster", "node.name": "node1", "message": "gateway.auto_import_dangling_indices is disabled, dangling indices will not be automatically detected or imported and must be managed manually" }
+{"type": "server", "timestamp": "2021-06-07T20:16:31,141Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "initialized" }
+{"type": "server", "timestamp": "2021-06-07T20:16:31,142Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "starting ..." }
+{"type": "server", "timestamp": "2021-06-07T20:16:50,611Z", "level": "INFO", "component": "o.e.t.TransportService", "cluster.name": "my_cluster", "node.name": "node1", "message": "publish_address {172.18.0.2:9300}, bound_addresses {172.18.0.2:9300}" }
+{"type": "server", "timestamp": "2021-06-07T20:16:56,157Z", "level": "INFO", "component": "o.e.b.BootstrapChecks", "cluster.name": "my_cluster", "node.name": "node1", "message": "bound or publishing to a non-loopback address, enforcing bootstrap checks" }
+ERROR: [1] bootstrap checks failed
+[1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+ERROR: Elasticsearch did not exit normally - check the logs at /usr/share/elasticsearch/logs/my_cluster.log
+{"type": "server", "timestamp": "2021-06-07T20:16:56,227Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "stopping ..." }
+{"type": "server", "timestamp": "2021-06-07T20:16:56,249Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "stopped" }
+{"type": "server", "timestamp": "2021-06-07T20:16:56,250Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "closing ..." }
+{"type": "server", "timestamp": "2021-06-07T20:16:56,276Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "closed" }
+{"type": "server", "timestamp": "2021-06-07T20:39:03,042Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "version[7.9.2], pid[7], build[default/docker/d34da0ea4a966c4e49417f2da2f244e3e97b4e6e/2020-09-23T00:45:33.626720Z], OS[Linux/5.4.72-microsoft-standard-WSL2/amd64], JVM[AdoptOpenJDK/OpenJDK 64-Bit Server VM/15/15+36]" }
+{"type": "server", "timestamp": "2021-06-07T20:39:03,234Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "JVM home [/usr/share/elasticsearch/jdk]" }
+{"type": "server", "timestamp": "2021-06-07T20:39:03,236Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "JVM arguments [-Xshare:auto, -Des.networkaddress.cache.ttl=60, -Des.networkaddress.cache.negative.ttl=10, -XX:+AlwaysPreTouch, -Xss1m, -Djava.awt.headless=true, -Dfile.encoding=UTF-8, -Djna.nosys=true, -XX:-OmitStackTraceInFastThrow, -XX:+ShowCodeDetailsInExceptionMessages, -Dio.netty.noUnsafe=true, -Dio.netty.noKeySetOptimization=true, -Dio.netty.recycler.maxCapacityPerThread=0, -Dio.netty.allocator.numDirectArenas=0, -Dlog4j.shutdownHookEnabled=false, -Dlog4j2.disable.jmx=true, -Djava.locale.providers=SPI,COMPAT, -Xms1g, -Xmx1g, -XX:+UseG1GC, -XX:G1ReservePercent=25, -XX:InitiatingHeapOccupancyPercent=30, -Djava.io.tmpdir=/tmp/elasticsearch-2905975705805087000, -XX:+HeapDumpOnOutOfMemoryError, -XX:HeapDumpPath=data, -XX:ErrorFile=logs/hs_err_pid%p.log, -Xlog:gc*,gc+age=trace,safepoint:file=logs/gc.log:utctime,pid,tags:filecount=32,filesize=64m, -Des.cgroups.hierarchy.override=/, -Xms512m, -Xmx512m, -XX:MaxDirectMemorySize=268435456, -Des.path.home=/usr/share/elasticsearch, -Des.path.conf=/usr/share/elasticsearch/config, -Des.distribution.flavor=default, -Des.distribution.type=docker, -Des.bundled_jdk=true]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,674Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [aggs-matrix-stats]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,676Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [analysis-common]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,676Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [constant-keyword]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,677Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [flattened]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,678Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [frozen-indices]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,678Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-common]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,679Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-geoip]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,679Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [ingest-user-agent]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,680Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [kibana]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,681Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-expression]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,681Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-mustache]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,681Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [lang-painless]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,682Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [mapper-extras]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,682Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [parent-join]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,683Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [percolator]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,684Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [rank-eval]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,684Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [reindex]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,685Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [repository-url]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,686Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [search-business-rules]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,687Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [searchable-snapshots]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,687Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [spatial]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,688Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [tasks]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,689Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [transform]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,690Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [transport-netty4]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,690Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [vectors]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,691Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [wildcard]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,691Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-analytics]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,692Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-async]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,692Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-async-search]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,693Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-autoscaling]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,693Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ccr]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,693Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-core]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,694Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-data-streams]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,694Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-deprecation]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,694Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-enrich]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,695Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-eql]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,695Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-graph]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,695Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-identity-provider]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,696Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ilm]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,696Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-logstash]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,696Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ml]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,696Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-monitoring]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,697Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-ql]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,697Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-rollup]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,697Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-security]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,698Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-sql]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,698Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-stack]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,698Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-voting-only-node]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,698Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "loaded module [x-pack-watcher]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:49,699Z", "level": "INFO", "component": "o.e.p.PluginsService", "cluster.name": "my_cluster", "node.name": "node1", "message": "no plugins loaded" }
+{"type": "server", "timestamp": "2021-06-07T20:40:54,940Z", "level": "INFO", "component": "o.e.e.NodeEnvironment", "cluster.name": "my_cluster", "node.name": "node1", "message": "using [1] data paths, mounts [[/usr/share/elasticsearch/data (/dev/sdd)]], net usable_space [204gb], net total_space [250.9gb], types [ext4]" }
+{"type": "server", "timestamp": "2021-06-07T20:40:54,941Z", "level": "INFO", "component": "o.e.e.NodeEnvironment", "cluster.name": "my_cluster", "node.name": "node1", "message": "heap size [512mb], compressed ordinary object pointers [true]" }
+{"type": "server", "timestamp": "2021-06-07T20:41:22,513Z", "level": "INFO", "component": "o.e.n.Node", "cluster.name": "my_cluster", "node.name": "node1", "message": "node name [node1], node ID [WvhASwFaQ6uwTs5tU6HQHA], cluster name [my_cluster]" }
+
+PS E:\projetos\docker-elasticsearch>
+
+
+acessar o Elasticsearch
+http://localhost:9200
+
+Acessar o Kibana
+http://localhost:5601
+
+
+PS E:\projetos\docker-elasticsearch>docker-compose stop
