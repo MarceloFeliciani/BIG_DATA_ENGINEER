@@ -1,0 +1,411 @@
+PS E:\projetos\docker-spark\spark> dir
+
+
+    Diretório: E:\projetos\docker-spark\spark
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23/06/2021     10:03                data
+-a----        23/06/2021     10:04           7050 docker-compose-completo-windows.yml
+-a----        23/06/2021     10:04           6671 docker-compose-completo.yml
+-a----        23/06/2021     10:04           5401 docker-compose-parcial.yml
+-a----        23/06/2021     10:04           3941 docker-compose.yml
+-a----        23/06/2021     10:04         343678 ecosystem.jpeg
+-a----        23/06/2021     10:03           3586 README.md
+
+
+###############################################################################################################################################################
+#
+# docker-compose.yml -> é arquivo para "montar" o ambiente do curso Big Data Foundations com (HDFS, MySQL, Hbase, Hive, Spark)
+#
+# docker-compose-completo.yml -> é um arquivo que montará um ambiente muito grande para a memória ram disponível na máquina (NiFi, Presto, HDFS, Kafka ...)
+#
+# docker-compose-parcial.yml -> SERÁ USADO por que tem o necessário para este treinamento de SPARK Data Processing
+#
+###############################################################################################################################################################
+
+PS E:\projetos\docker-spark\spark> cat docker-compose-parcial.yml
+version: '3'
+services:
+
+  namenode:
+    image: fjardim/namenode_sqoop
+    container_name: namenode
+    hostname: namenode
+    volumes:
+      - ./data/hdfs/namenode:/hadoop/dfs/name
+      - ./input:/input
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    ports:
+      - "50070:50070"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  datanode:
+    image: fjardim/datanode
+    container_name: datanode
+    hostname: datanode
+    volumes:
+      - ./data/hdfs/datanode:/hadoop/dfs/data
+      #- ./data/hadoop/bank:/bank
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
+    depends_on:
+      - namenode
+    ports:
+      - "50075:50075"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-server:
+    image: fjardim/hive
+    container_name: hive-server
+    hostname: hive_server
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    environment:
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+    depends_on:
+      - hive-metastore
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-metastore:
+    image: fjardim/hive
+    container_name: hive_metastore
+    hostname: hive_metastore
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+    ports:
+      - "9083:9083"
+    depends_on:
+      - hive-metastore-postgresql
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-metastore-postgresql:
+    image: fjardim/hive-metastore
+    container_name: hive-metastore-postgresql
+    hostname: hive_metastore_postgresql
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    depends_on:
+      - datanode
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  database:
+    image: fjardim/mysql
+    container_name: database
+    hostname: database
+    ports:
+        - "33061:3306"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+    command: mysqld --innodb-flush-method=O_DSYNC --innodb-use-native-aio=OFF --init-file /data/application/init.sql
+    volumes:
+        - ./data/mysql/data:/var/lib/mysql
+        - ./data/mysql/init.sql:/data/application/init.sql
+    environment:
+        MYSQL_ROOT_USER: root
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: hue
+        MYSQL_USER: root
+        MYSQL_PASSWORD: secret
+
+  zookeeper:
+    image: fjardim/zookeeper
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - ./data/zookeeper:/opt/zookeeper-3.4.6/data
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  kafka:
+    image: fjardim/kafka
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./data/kafka:/kafka/kafka-logs-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hbase-master:
+    image: fjardim/hbase-master
+    container_name: hbase-master
+    hostname: hbase-master
+    env_file:
+      - ./data/hbase/hbase-standalone.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zookeeper:2181"
+    ports:
+      - 16010:16010
+    depends_on:
+      - namenode
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  mongo:
+    image: fjardim/mongo
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo:/data
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  mongo-express:
+    image: fjardim/mongo-express
+    container_name: mongo_express
+    hostname: mongo_express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: mongo
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+
+  kafkamanager:
+    image: fjardim/kafkamanager
+    container_name: kafkamanager
+    hostname: kafkamanager
+    environment:
+      ZK_HOSTS: zookeeper:2181
+    ports:
+      - 9000:9000
+    depends_on:
+      - kafka
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+
+  jupyter-spark:
+    image: fjardim/jupyter-spark
+    hostname: jupyter-spark
+    container_name: jupyter-spark
+    command: notebook
+    env_file:
+      - ./data/jupyter/jupyter.env
+    ports:
+      - 8889:8889
+      - 4040:4040
+      - 4041:4041
+      - 4042:4042
+      - 4043:4043
+    volumes:
+       - ./data/notebooks:/mnt/notebooks/
+    environment:
+       SPARK_MASTER: local[*]
+       JUPYTER_PORT: 8889
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+
+
+########################################### INICIALIZANDO O CLUSTER
+
+
+PS E:\projetos\docker-spark\spark> docker-compose -f docker-compose-parcial.yml up -d
+Starting namenode ...
+Starting zookeeper ...
+Starting namenode      ... done
+Starting zookeeper     ... done
+Starting database      ... done
+Starting hbase-master  ...
+Starting kafka                     ... done
+Starting hbase-master  ... done
+Starting datanode      ... done
+Starting hive-metastore-postgresql ... done
+Starting kafkamanager              ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+
+
+PS E:\projetos\docker-spark\spark> docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED       STATUS                   PORTS                                                                                                                NAMES
+8f281f8d9836   fjardim/hive             "entrypoint.sh /bin/…"   3 hours ago   Up 4 minutes             0.0.0.0:10000->10000/tcp, :::10000->10000/tcp, 10002/tcp                                                             hive-server
+a759d779abb6   fjardim/hive-metastore   "/docker-entrypoint.…"   3 hours ago   Up 5 minutes             5432/tcp
+                                                                         hive-metastore-postgresql
+84957a6b284e   fjardim/datanode         "/entrypoint.sh /run…"   3 hours ago   Up 5 minutes (healthy)   0.0.0.0:50075->50075/tcp, :::50075->50075/tcp                                                                        datanode
+823d09814f14   fjardim/hbase-master     "/entrypoint.sh /run…"   3 hours ago   Up 6 minutes             16000/tcp, 0.0.0.0:16010->16010/tcp, :::16010->16010/tcp                                                             hbase-master
+4da91f9220d5   fjardim/namenode_sqoop   "/entrypoint.sh /run…"   3 hours ago   Up 6 minutes (healthy)   0.0.0.0:50070->50070/tcp, :::50070->50070/tcp                                                                        namenode
+0ab3a39d6bef   fjardim/mysql            "docker-entrypoint.s…"   3 hours ago   Up 6 minutes             33060/tcp, 0.0.0.0:33061->3306/tcp, :::33061->3306/tcp                                                               database
+009159cef189   fjardim/mongo            "docker-entrypoint.s…"   3 hours ago   Up 53 minutes            0.0.0.0:27017->27017/tcp, :::27017->27017/tcp                                                                        mongo
+77813c4fb96e   fjardim/jupyter-spark    "/opt/docker/bin/ent…"   3 hours ago   Up 6 minutes             0.0.0.0:4040-4043->4040-4043/tcp, :::4040-4043->4040-4043/tcp, 0.0.0.0:8889->8889/tcp, :::8889->8889/tcp, 8899/tcp   jupyter-spark
+97250b9c393a   fjardim/kafka            "start-kafka.sh"         3 hours ago   Up 5 minutes             0.0.0.0:9092->9092/tcp, :::9092->9092/tcp                                                                            kafka
+647919623f8d   fjardim/zookeeper        "/bin/sh -c '/usr/sb…"   3 hours ago   Up 6 minutes             22/tcp, 2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp                                                zookeeper
+d30b4bc329d3   fjardim/mongo-express    "tini -- /docker-ent…"   3 hours ago   Up 53 minutes            0.0.0.0:8081->8081/tcp, :::8081->8081/tcp                                                                            mongo_express
+
+
+PS E:\projetos\docker-spark\spark> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+
+PS E:\projetos\docker-spark\spark>curl -O https://repo1.maven.org/maven2/com/twitter/parquet-hadoop-bundle/1.6.0/parquet-hadoop-bundle-1.6.0.jar
+
+PS E:\projetos\docker-spark\spark> ls
+
+
+    Diretório: E:\projetos\docker-spark\spark
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23/06/2021     10:04                data
+d-----        23/06/2021     10:18                input
+-a----        23/06/2021     10:04           7050 docker-compose-completo-windows.yml
+-a----        23/06/2021     10:04           6671 docker-compose-completo.yml
+-a----        23/06/2021     10:04           5401 docker-compose-parcial.yml
+-a----        23/06/2021     10:04           3941 docker-compose.yml
+-a----        14/02/2021     16:20         343678 ecosystem.jpeg
+-a----        04/03/2021     11:08        2796935 parquet-hadoop-bundle-1.6.0.jar
+-a----        23/06/2021     10:03           3586 README.md
+
+
+
+################# ESSE ARQUIVO É NECESSÁRIO PARA INTERFACE COM O Hive
+
+PS E:\projetos\docker-spark\spark>docker cp parquet-hadoop-bundle-1.6.0.jar jupyter-spark:/opt/spark/jars
+
+PS E:\projetos\docker-spark\spark> git clone https://github.com/rodrigo-reboucas/exercises-data.git
+Cloning into 'exercises-data'...
+remote: Enumerating objects: 311, done.
+remote: Total 311 (delta 0), reused 0 (delta 0), pack-reused 311
+Receiving objects: 100% (311/311), 88.96 MiB | 1.69 MiB/s, done.
+Resolving deltas: 100% (17/17), done.
+Checking out files: 100% (283/283), done.
+
+PS E:\projetos\docker-spark\spark> cd input
+PS E:\projetos\docker-spark\spark\input> ls
+
+
+    Diretório: E:\projetos\docker-spark\spark\input
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23/06/2021     15:13                beneficio
+d-----        23/06/2021     15:13                db-sql
+d-----        23/06/2021     15:13                economicFitness
+d-----        23/06/2021     15:13                empreendimento
+d-----        23/06/2021     15:13                escola
+d-----        23/06/2021     15:13                hnpStats
+d-----        23/06/2021     15:13                iris
+d-----        23/06/2021     15:13                juros_selic
+d-----        23/06/2021     15:14                names
+d-----        23/06/2021     15:14                namesbystate
+d-----        23/06/2021     15:14                ouvidoria
+d-----        23/06/2021     15:14                populacaoLA
+-a----        23/06/2021     15:13             60 entrada1.txt
+-a----        23/06/2021     15:13             48 entrada2.txt
+-a----        23/06/2021     15:13            170 map.py
+-a----        23/06/2021     15:13             49 README.md
+-a----        23/06/2021     15:14            537 reduce.py
+-a----        23/06/2021     15:13           2150 WordCount.java
+
+
+################################### Dados dos exercícios do treinamento no diretório spark/input (volume no Namenode)
+
+PS E:\projetos\docker-spark\spark\input> docker exec -it namenode ls /input
+README.md       economicFitness  escola       map.py        populacaoLA
+WordCount.java  empreendimento   hnpStats     names         reduce.py
+beneficio       entrada1.txt     iris         namesbystate
+db-sql          entrada2.txt     juros_selic  ouvidoria
+
+
+################################### Entrei no container namenode e listei os arquivos do input
+
+PS E:\projetos\docker-spark\spark\input> docker exec -it namenode bash
+root@namenode:/# ls /input
+README.md       beneficio  economicFitness  entrada1.txt  escola    iris         map.py  namesbystate  populacaoLA
+WordCount.java  db-sql     empreendimento   entrada2.txt  hnpStats  juros_selic  names   ouvidoria     reduce.py
+root@namenode:/#
+
+root@namenode:/# hdfs dfs -mkdir -p /user/feliciani/data  ####################### -p permite criar várias pastas
+
+root@namenode:/# hdfs dfs -put /input/* /user/feliciani/data  ####################### copiando os dados do local do container para o HDFS
+
+root@namenode:/# hdfs dfs -ls /user/feliciani/data   ####################### Arquivos copiados para o HDFS
+Found 18 items
+-rw-r--r--   3 root supergroup         49 2021-06-23 18:22 /user/feliciani/data/README.md
+-rw-r--r--   3 root supergroup       2150 2021-06-23 18:22 /user/feliciani/data/WordCount.java
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:22 /user/feliciani/data/beneficio
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/db-sql
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/economicFitness
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/empreendimento
+-rw-r--r--   3 root supergroup         60 2021-06-23 18:23 /user/feliciani/data/entrada1.txt
+-rw-r--r--   3 root supergroup         48 2021-06-23 18:23 /user/feliciani/data/entrada2.txt
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/escola
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/hnpStats
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/iris
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:23 /user/feliciani/data/juros_selic
+-rw-r--r--   3 root supergroup        170 2021-06-23 18:23 /user/feliciani/data/map.py
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:24 /user/feliciani/data/names
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:24 /user/feliciani/data/namesbystate
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:24 /user/feliciani/data/ouvidoria
+drwxr-xr-x   - root supergroup          0 2021-06-23 18:24 /user/feliciani/data/populacaoLA
+-rw-r--r--   3 root supergroup        537 2021-06-23 18:24 /user/feliciani/data/reduce.py
+
+
+
+
+
