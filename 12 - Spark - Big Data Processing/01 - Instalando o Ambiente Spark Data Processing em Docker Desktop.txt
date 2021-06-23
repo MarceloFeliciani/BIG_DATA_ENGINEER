@@ -1,0 +1,455 @@
+
+Spark - Big Data Processing
+###########################
+
+- Executar um docker-compose down em todas as pastas dos outros treinamentos (Big Data Foundations, Kafka, Mongodb, Redis, Elastic, etc...)
+
+- Executar os comandos abaixo caso o windows tiver sido atualizado automaticamente
+net stop winnat
+
+net start winnat
+
+
+PS E:\projetos\docker-elasticsearch\elastic> docker-compose down
+Removing elastic_logstash_1      ... done
+Removing elastic_elasticsearch_1 ... done
+Removing network elastic_elastic
+
+PS E:\projetos\docker-elasticsearch\elastic> cd ..
+
+PS E:\projetos\docker-elasticsearch> cd ..
+
+PS E:\projetos> cd docker-spark
+
+PS E:\projetos\docker-spark> ls
+
+
+    Diretório: E:\projetos\docker-spark
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23/06/2021     10:04                spark
+
+
+PS E:\projetos\docker-spark> cd spark
+
+PS E:\projetos\docker-spark\spark> dir
+
+
+    Diretório: E:\projetos\docker-spark\spark
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        23/06/2021     10:03                data
+-a----        23/06/2021     10:04           7050 docker-compose-completo-windows.yml
+-a----        23/06/2021     10:04           6671 docker-compose-completo.yml
+-a----        23/06/2021     10:04           5401 docker-compose-parcial.yml
+-a----        23/06/2021     10:04           3941 docker-compose.yml
+-a----        23/06/2021     10:04         343678 ecosystem.jpeg
+-a----        23/06/2021     10:03           3586 README.md
+
+
+###############################################################################################################################################################
+#
+# docker-compose.yml -> é arquivo para "montar" o ambiente do curso Big Data Foundations com (HDFS, MySQL, Hbase, Hive, Spark)
+#
+# docker-compose-completo.yml -> é um arquivo que montará um ambiente muito grande para a memória ram disponível na máquina (NiFi, Presto, HDFS, Kafka ...)
+#
+# docker-compose-parcial.yml -> SERÁ USADO por que tem o necessário para este treinamento de SPARK Data Processing
+#
+###############################################################################################################################################################
+
+PS E:\projetos\docker-spark\spark> cat docker-compose-parcial.yml
+version: '3'
+services:
+
+  namenode:
+    image: fjardim/namenode_sqoop
+    container_name: namenode
+    hostname: namenode
+    volumes:
+      - ./data/hdfs/namenode:/hadoop/dfs/name
+      - ./input:/input
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    ports:
+      - "50070:50070"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  datanode:
+    image: fjardim/datanode
+    container_name: datanode
+    hostname: datanode
+    volumes:
+      - ./data/hdfs/datanode:/hadoop/dfs/data
+      #- ./data/hadoop/bank:/bank
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
+    depends_on:
+      - namenode
+    ports:
+      - "50075:50075"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-server:
+    image: fjardim/hive
+    container_name: hive-server
+    hostname: hive_server
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    environment:
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+    depends_on:
+      - hive-metastore
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-metastore:
+    image: fjardim/hive
+    container_name: hive_metastore
+    hostname: hive_metastore
+    env_file:
+      - ./data/hadoop/hadoop-hive.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+    ports:
+      - "9083:9083"
+    depends_on:
+      - hive-metastore-postgresql
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hive-metastore-postgresql:
+    image: fjardim/hive-metastore
+    container_name: hive-metastore-postgresql
+    hostname: hive_metastore_postgresql
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    depends_on:
+      - datanode
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  database:
+    image: fjardim/mysql
+    container_name: database
+    hostname: database
+    ports:
+        - "33061:3306"
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+    command: mysqld --innodb-flush-method=O_DSYNC --innodb-use-native-aio=OFF --init-file /data/application/init.sql
+    volumes:
+        - ./data/mysql/data:/var/lib/mysql
+        - ./data/mysql/init.sql:/data/application/init.sql
+    environment:
+        MYSQL_ROOT_USER: root
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: hue
+        MYSQL_USER: root
+        MYSQL_PASSWORD: secret
+
+  zookeeper:
+    image: fjardim/zookeeper
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - ./data/zookeeper:/opt/zookeeper-3.4.6/data
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  kafka:
+    image: fjardim/kafka
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    volumes:
+      - ./data/kafka:/kafka/kafka-logs-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  hbase-master:
+    image: fjardim/hbase-master
+    container_name: hbase-master
+    hostname: hbase-master
+    env_file:
+      - ./data/hbase/hbase-standalone.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 zookeeper:2181"
+    ports:
+      - 16010:16010
+    depends_on:
+      - namenode
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  mongo:
+    image: fjardim/mongo
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongo:/data
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+
+  mongo-express:
+    image: fjardim/mongo-express
+    container_name: mongo_express
+    hostname: mongo_express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: mongo
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+
+  kafkamanager:
+    image: fjardim/kafkamanager
+    container_name: kafkamanager
+    hostname: kafkamanager
+    environment:
+      ZK_HOSTS: zookeeper:2181
+    ports:
+      - 9000:9000
+    depends_on:
+      - kafka
+    deploy:
+      resources:
+        limits:
+          memory: 200m
+
+  jupyter-spark:
+    image: fjardim/jupyter-spark
+    hostname: jupyter-spark
+    container_name: jupyter-spark
+    command: notebook
+    env_file:
+      - ./data/jupyter/jupyter.env
+    ports:
+      - 8889:8889
+      - 4040:4040
+      - 4041:4041
+      - 4042:4042
+      - 4043:4043
+    volumes:
+       - ./data/notebooks:/mnt/notebooks/
+    environment:
+       SPARK_MASTER: local[*]
+       JUPYTER_PORT: 8889
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+
+
+PS E:\projetos\docker-spark\spark> docker images
+REPOSITORY                                      TAG           IMAGE ID       CREATED         SIZE
+redis                                           latest        bc8d70f9ef6c   5 weeks ago     105MB
+mongo                                           latest        07630e791de3   6 weeks ago     449MB
+mongo-express                                   latest        51fc3f2af7a1   2 months ago    128MB
+apache/nifi                                     latest        6ca96dc25d43   3 months ago    2.03GB
+apache/nifi-registry                            latest        137ce960a111   8 months ago    460MB
+confluentinc/ksqldb-examples                    5.5.2         d739ab13f1da   8 months ago    630MB
+confluentinc/cp-ksqldb-server                   5.5.2         cb294553b9ec   8 months ago    663MB
+confluentinc/cp-server                          5.5.2         95c0e238b456   8 months ago    1.05GB
+confluentinc/cp-schema-registry                 5.5.2         c511d747f9f8   8 months ago    1.26GB
+confluentinc/cp-kafka-rest                      5.5.2         c25996d4f5d8   8 months ago    1.22GB
+confluentinc/cp-ksqldb-cli                      5.5.2         cd82f01891f7   8 months ago    647MB
+confluentinc/cp-enterprise-control-center       5.5.2         4482d015d567   8 months ago    958MB
+confluentinc/cp-zookeeper                       5.5.2         d510b733e82d   8 months ago    666MB
+docker.elastic.co/logstash/logstash             7.9.2         736bccdc74f4   9 months ago    735MB
+docker.elastic.co/kibana/kibana                 7.9.2         ba296c26886a   9 months ago    1.18GB
+docker.elastic.co/elasticsearch/elasticsearch   7.9.2         caa7a21ca06e   9 months ago    763MB
+fjardim/jupyter-spark                           latest        31051dea1e70   10 months ago   5.03GB
+cnfldemos/cp-server-connect-datagen             0.3.2-5.5.0   8b1a9577099c   13 months ago   1.53GB
+fjardim/datanode                                latest        24fb187ebd91   15 months ago   874MB
+fjardim/namenode_sqoop                          latest        40dc59117765   15 months ago   1.54GB
+fjardim/mysql                                   latest        84164b03fa2e   15 months ago   456MB
+fjardim/hive-metastore                          latest        7ab9e8f93813   16 months ago   275MB
+fjardim/hive                                    latest        87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest        ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest        6fe5551964f5   5 years ago     451MB
+
+
+
+PS E:\projetos\docker-spark\spark> docker-compose -f docker-compose-parcial.yml pull
+Pulling namenode                  ... done
+Pulling datanode                  ... done
+Pulling hive-metastore-postgresql ... done
+Pulling hive-metastore            ... done
+Pulling hive-server               ... done
+Pulling database                  ... done
+Pulling zookeeper                 ... done
+Pulling kafka                     ... done
+Pulling hbase-master              ... done
+Pulling mongo                     ... done
+Pulling mongo-express             ... done
+Pulling kafkamanager              ... done
+Pulling jupyter-spark             ... done
+
+
+PS E:\projetos\docker-spark\spark> docker images
+REPOSITORY                                      TAG           IMAGE ID       CREATED         SIZE
+redis                                           latest        bc8d70f9ef6c   5 weeks ago     105MB
+mongo                                           latest        07630e791de3   6 weeks ago     449MB
+mongo-express                                   latest        51fc3f2af7a1   2 months ago    128MB
+apache/nifi                                     latest        6ca96dc25d43   3 months ago    2.03GB
+apache/nifi-registry                            latest        137ce960a111   8 months ago    460MB
+confluentinc/ksqldb-examples                    5.5.2         d739ab13f1da   8 months ago    630MB
+confluentinc/cp-ksqldb-server                   5.5.2         cb294553b9ec   8 months ago    663MB
+confluentinc/cp-server                          5.5.2         95c0e238b456   8 months ago    1.05GB
+confluentinc/cp-schema-registry                 5.5.2         c511d747f9f8   8 months ago    1.26GB
+confluentinc/cp-kafka-rest                      5.5.2         c25996d4f5d8   8 months ago    1.22GB
+confluentinc/cp-ksqldb-cli                      5.5.2         cd82f01891f7   8 months ago    647MB
+confluentinc/cp-enterprise-control-center       5.5.2         4482d015d567   8 months ago    958MB
+confluentinc/cp-zookeeper                       5.5.2         d510b733e82d   8 months ago    666MB
+docker.elastic.co/logstash/logstash             7.9.2         736bccdc74f4   9 months ago    735MB
+docker.elastic.co/kibana/kibana                 7.9.2         ba296c26886a   9 months ago    1.18GB
+docker.elastic.co/elasticsearch/elasticsearch   7.9.2         caa7a21ca06e   9 months ago    763MB
+fjardim/jupyter-spark                           latest        31051dea1e70   10 months ago   5.03GB
+cnfldemos/cp-server-connect-datagen             0.3.2-5.5.0   8b1a9577099c   13 months ago   1.53GB
+fjardim/datanode                                latest        24fb187ebd91   15 months ago   874MB
+fjardim/namenode_sqoop                          latest        40dc59117765   15 months ago   1.54GB
+fjardim/mysql                                   latest        84164b03fa2e   15 months ago   456MB
+fjardim/hive-metastore                          latest        7ab9e8f93813   16 months ago   275MB
+fjardim/mongo                                   latest        bcef5fd2979d   16 months ago   386MB
+fjardim/mongo-express                           latest        fd78ac5dfca8   16 months ago   129MB
+fjardim/kafka                                   latest        eea608a69fa5   18 months ago   422MB
+fjardim/kafkamanager                            latest        6a508d0e11b2   2 years ago     438MB
+fjardim/hive                                    latest        87f5c9f4e2df   3 years ago     1.17GB
+fjardim/hbase-master                            latest        ce0efeff9785   3 years ago     1.1GB
+fjardim/zookeeper                               latest        6fe5551964f5   5 years ago     451MB
+
+
+
+########################################### INICIALIZANDO O CLUSTER
+
+
+PS E:\projetos\docker-spark\spark> docker-compose -f docker-compose-parcial.yml up -d
+Starting namenode ...
+Starting zookeeper ...
+Starting namenode      ... done
+Starting zookeeper     ... done
+Starting database      ... done
+Starting hbase-master  ...
+Starting kafka                     ... done
+Starting hbase-master  ... done
+Starting datanode      ... done
+Starting hive-metastore-postgresql ... done
+Starting kafkamanager              ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+
+
+PS E:\projetos\docker-spark\spark> docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED       STATUS                   PORTS                                                                                                                NAMES
+8f281f8d9836   fjardim/hive             "entrypoint.sh /bin/…"   3 hours ago   Up 4 minutes             0.0.0.0:10000->10000/tcp, :::10000->10000/tcp, 10002/tcp                                                             hive-server
+a759d779abb6   fjardim/hive-metastore   "/docker-entrypoint.…"   3 hours ago   Up 5 minutes             5432/tcp
+                                                                         hive-metastore-postgresql
+84957a6b284e   fjardim/datanode         "/entrypoint.sh /run…"   3 hours ago   Up 5 minutes (healthy)   0.0.0.0:50075->50075/tcp, :::50075->50075/tcp                                                                        datanode
+823d09814f14   fjardim/hbase-master     "/entrypoint.sh /run…"   3 hours ago   Up 6 minutes             16000/tcp, 0.0.0.0:16010->16010/tcp, :::16010->16010/tcp                                                             hbase-master
+4da91f9220d5   fjardim/namenode_sqoop   "/entrypoint.sh /run…"   3 hours ago   Up 6 minutes (healthy)   0.0.0.0:50070->50070/tcp, :::50070->50070/tcp                                                                        namenode
+0ab3a39d6bef   fjardim/mysql            "docker-entrypoint.s…"   3 hours ago   Up 6 minutes             33060/tcp, 0.0.0.0:33061->3306/tcp, :::33061->3306/tcp                                                               database
+009159cef189   fjardim/mongo            "docker-entrypoint.s…"   3 hours ago   Up 53 minutes            0.0.0.0:27017->27017/tcp, :::27017->27017/tcp                                                                        mongo
+77813c4fb96e   fjardim/jupyter-spark    "/opt/docker/bin/ent…"   3 hours ago   Up 6 minutes             0.0.0.0:4040-4043->4040-4043/tcp, :::4040-4043->4040-4043/tcp, 0.0.0.0:8889->8889/tcp, :::8889->8889/tcp, 8899/tcp   jupyter-spark
+97250b9c393a   fjardim/kafka            "start-kafka.sh"         3 hours ago   Up 5 minutes             0.0.0.0:9092->9092/tcp, :::9092->9092/tcp                                                                            kafka
+647919623f8d   fjardim/zookeeper        "/bin/sh -c '/usr/sb…"   3 hours ago   Up 6 minutes             22/tcp, 2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp                                                zookeeper
+d30b4bc329d3   fjardim/mongo-express    "tini -- /docker-ent…"   3 hours ago   Up 53 minutes            0.0.0.0:8081->8081/tcp, :::8081->8081/tcp                                                                            mongo_express
+
+
+PS E:\projetos\docker-spark\spark>docker-compose logs  ##################### mostrará os logs dos 
+
+PS E:\projetos\docker-spark\spark> docker logs jupyter-spark
+/opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+/opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+/opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+/opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+/opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+/opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+/opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+/opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+[W 13:53:36.561 NotebookApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 13:53:37.066 NotebookApp] JupyterLab beta preview extension loaded from /opt/anaconda3/lib/python3.6/site-packages/jupyterlab
+[I 13:53:37.066 NotebookApp] JupyterLab application directory is /opt/anaconda3/share/jupyter/lab
+[I 13:53:37.349 NotebookApp] Serving notebooks from local directory: /mnt/notebooks
+[I 13:53:37.349 NotebookApp] 0 active kernels
+[I 13:53:37.349 NotebookApp] The Jupyter Notebook is running at:
+[I 13:53:37.349 NotebookApp] http://jupyter-spark:8889/
+[I 13:53:37.349 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+/opt/docker/conf/hadoop/capacity-scheduler.xml => /etc/hadoop/capacity-scheduler.xml
+/opt/docker/conf/hadoop/core-site.xml => /etc/hadoop/core-site.xml
+/opt/docker/conf/hadoop/hadoop-env.sh => /etc/hadoop/hadoop-env.sh
+/opt/docker/conf/hadoop/hdfs-site.xml => /etc/hadoop/hdfs-site.xml
+/opt/docker/conf/hadoop/mapred-site.xml => /etc/hadoop/mapred-site.xml
+/opt/docker/conf/hadoop/yarn-site.xml => /etc/hadoop/yarn-site.xml
+/opt/docker/conf/spark/spark-defaults.conf => /etc/spark/spark-defaults.conf
+/opt/docker/conf/jupyter-kernels/PySpark/kernel.json => /opt/anaconda3/share/jupyter/kernels/PySpark/kernel.json
+[W 16:53:16.087 NotebookApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 16:53:18.739 NotebookApp] JupyterLab beta preview extension loaded from /opt/anaconda3/lib/python3.6/site-packages/jupyterlab
+[I 16:53:18.740 NotebookApp] JupyterLab application directory is /opt/anaconda3/share/jupyter/lab
+[I 16:53:19.160 NotebookApp] Serving notebooks from local directory: /mnt/notebooks
+[I 16:53:19.160 NotebookApp] 0 active kernels
+[I 16:53:19.160 NotebookApp] The Jupyter Notebook is running at:
+[I 16:53:19.161 NotebookApp] http://jupyter-spark:8889/
+[I 16:53:19.161 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+
+
+Abrir o Jupyter Notebook
+#########################
+http://localhost:8889/tree?
+
+
+
+
