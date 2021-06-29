@@ -1,0 +1,242 @@
+
+Exercício executado com linguagem Scala
+#######################################
+
+
+PS E:\projetos\docker-spark\spark> wsl -l -v
+  NAME                   STATE           VERSION
+* docker-desktop-data    Running         2
+  docker-desktop         Running         2
+  Ubuntu-20.04           Running         2
+
+
+PS E:\projetos\docker-spark\spark> docker-compose -f docker-compose-parcial.yml up -d
+mongo is up-to-date
+mongo_express is up-to-date
+Starting jupyter-spark ... done
+Starting namenode      ... done
+Starting zookeeper     ... done
+Starting database      ... done
+Starting kafka                     ... done
+Starting datanode      ... done
+Starting hbase-master              ... done
+Starting hive-metastore-postgresql ... done
+Starting kafkamanager              ... done
+Starting hive_metastore            ... done
+Starting hive-server               ... done
+
+
+PS E:\projetos\docker-spark\spark> docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED      STATUS                     PORTS
+                                                                          NAMES
+19f7ee96e6c0   fjardim/hive             "entrypoint.sh /bin/…"   3 days ago   Up 54 seconds              0.0.0.0:10000->10000/tcp, :::10000->10000/tcp, 10002/tcp                                                             hive-server
+0a65e24c91c5   fjardim/hive             "entrypoint.sh /opt/…"   3 days ago   Up About a minute          10000/tcp, 0.0.0.0:9083->9083/tcp, :::9083->9083/tcp, 10002/tcp                                                      hive_metastore
+a6fdbdbdd774   fjardim/kafkamanager     "kafka-manager-2.0.0…"   3 days ago   Up About a minute          0.0.0.0:9000->9000/tcp, :::9000->9000/tcp                                                                            kafkamanager
+ed31a17ddb80   fjardim/hive-metastore   "/docker-entrypoint.…"   3 days ago   Up About a minute          5432/tcp
+                                                                          hive-metastore-postgresql
+ac49b8bd407e   fjardim/kafka            "start-kafka.sh"         3 days ago   Up 2 minutes               0.0.0.0:9092->9092/tcp, :::9092->9092/tcp                                                                            kafka
+4bf42953ae9f   fjardim/datanode         "/entrypoint.sh /run…"   3 days ago   Up 2 minutes (unhealthy)   0.0.0.0:50075->50075/tcp, :::50075->50075/tcp                                                                        datanode
+7f8cd3687b9d   fjardim/hbase-master     "/entrypoint.sh /run…"   3 days ago   Up 2 minutes               16000/tcp, 0.0.0.0:16010->16010/tcp, :::16010->16010/tcp                                                             hbase-master
+3bf9491a6481   fjardim/jupyter-spark    "/opt/docker/bin/ent…"   3 days ago   Up 2 minutes               0.0.0.0:4040-4043->4040-4043/tcp, :::4040-4043->4040-4043/tcp, 0.0.0.0:8889->8889/tcp, :::8889->8889/tcp, 8899/tcp   jupyter-spark
+66ce4deb4dbe   fjardim/namenode_sqoop   "/entrypoint.sh /run…"   3 days ago   Up 2 minutes (unhealthy)   0.0.0.0:50070->50070/tcp, :::50070->50070/tcp                                                                        namenode
+11894007bfbc   fjardim/mysql            "docker-entrypoint.s…"   3 days ago   Up 2 minutes               33060/tcp, 0.0.0.0:33061->3306/tcp, :::33061->3306/tcp                                                               database
+a94d1229d97d   fjardim/mongo            "docker-entrypoint.s…"   3 days ago   Up 8 minutes               0.0.0.0:27017->27017/tcp, :::27017->27017/tcp                                                                        mongo
+290ec593531a   fjardim/zookeeper        "/bin/sh -c '/usr/sb…"   3 days ago   Up 2 minutes               22/tcp, 2888/tcp, 3888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp                                                zookeeper
+084215021ff6   fjardim/mongo-express    "tini -- /docker-ent…"   3 days ago   Up 7 minutes               0.0.0.0:8081->8081/tcp, :::8081->8081/tcp                       
+                                                     mongo_express
+
+#################################################################################################################
+#
+# 1. Criar o DataFrame names_us para ler os arquivos no HDFS “/user/<nome>/data/names”
+#
+#################################################################################################################
+
+
+PS E:\projetos\docker-spark\spark> docker exec -it jupyter-spark bash
+
+root@jupyter-spark:/# spark-shell
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/06/29 13:40:43 WARN spark.SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Spark context Web UI available at http://jupyter-spark:4040
+Spark context available as 'sc' (master = local[*], app id = local-1624974090017).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 2.4.1
+      /_/
+
+Using Scala version 2.11.12 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_201)
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+
+scala> val names_us = spark.read.csv("hdfs://namenode:8020/user/feliciani/data/names") ############### poderia ter colocado apenas "/user/feliciani/data/names"
+names_us: org.apache.spark.sql.DataFrame = [_c0: string, _c1: string ... 1 more field]
+
+
+#################################################################################################################
+#
+# 2. Visualizar o Schema do names_us
+#
+#################################################################################################################
+
+scala> names_us.printSchema
+root
+ |-- _c0: string (nullable = true)
+ |-- _c1: string (nullable = true)
+ |-- _c2: string (nullable = true)
+
+
+#################################################################################################################
+#
+# 3. Mostras os 5 primeiros registros do names_us
+#
+#################################################################################################################
+
+scala> names_us.show(5)
++--------+---+-----+
+|     _c0|_c1|  _c2|
++--------+---+-----+
+|    Emma|  F|18809|
+|Isabella|  F|18612|
+|   Emily|  F|17429|
+|  Olivia|  F|17078|
+|     Ava|  F|17035|
++--------+---+-----+
+only showing top 5 rows
+
+
+#################################################################################################################
+#
+# 4. Criar um case class Nascimento para os dados do names_us
+#
+#################################################################################################################
+
+scala> names_us.show()
++---------+---+-----+
+|      _c0|_c1|  _c2|
++---------+---+-----+
+|     Emma|  F|18809|
+| Isabella|  F|18612|
+|    Emily|  F|17429|
+|   Olivia|  F|17078|
+|      Ava|  F|17035|
+|  Madison|  F|17027|
+|   Sophia|  F|16081|
+|  Abigail|  F|15081|
+|Elizabeth|  F|12002|
+|    Chloe|  F|11824|
+| Samantha|  F|11178|
+|  Addison|  F|10759|
+|  Natalie|  F|10199|
+|      Mia|  F|10168|
+|   Alexis|  F| 9721|
+|   Alyssa|  F| 9635|
+|   Hannah|  F| 9560|
+|   Ashley|  F| 9403|
+|     Ella|  F| 9349|
+|    Sarah|  F| 9042|
++---------+---+-----+
+only showing top 20 rows
+
+
+############### Dados das Colunas: Nome, Sexo, Qtd de Nascimentos
+
+scala> case class Nascimento(nome: String, sexo: String, quantidade: Int)
+defined class Nascimento
+
+
+#####################################################################################################################
+#
+# 5. Criar o Dataset names_ds para ler os dados do HDFS “/user/<nome>/data/names”, com uso do case class Nascimento
+#
+#####################################################################################################################
+
+scala> import org.apache.spark.sql. #################################################################### PODEMOS DAR UM TAB A CADA PONTO PARA VER AS OPÇÕES
+AnalysisException        DataFrameWriter       KeyValueGroupedDataset     SQLImplicits             api           internal    types
+Column                   Dataset               LowPrioritySQLImplicits    SaveMode                 catalog       jdbc        util
+ColumnName               DatasetHolder         RelationalGroupedDataset   SparkSession             catalyst      kafka010    vectorized
+DataFrame                Encoder               Row                        SparkSessionExtensions   execution     package
+DataFrameNaFunctions     Encoders              RowFactory                 Strategy                 expressions   sources
+DataFrameReader          ExperimentalMethods   RuntimeConfig              TypedColumn              functions     streaming
+DataFrameStatFunctions   ForeachWriter         SQLContext                 UDFRegistration          hive          test
+
+scala> import org.apache.spark.sql.Encoders
+import org.apache.spark.sql.Encoders
+
+scala> val schema_names = Encoders.product[Nascimento].schema
+schema_names: org.apache.spark.sql.types.StructType = StructType(StructField(nome,StringType,true), StructField(sexo,StringType,true), StructField(quantidade,IntegerType,false))
+
+########### automaticamente foi criada a estrutura do StrucType contendo o StructField para nome, sexo e quantidade com base no case class Nascimento
+
+scala> val names_ds = spark.read.schema(schema_names).csv("hdfs://namenode:8020/user/feliciani/data/names") 
+names_ds: org.apache.spark.sql.DataFrame = [nome: string, sexo: string ... 1 more field] ############################# CRIADO O DATAFRAME names_ds
+
+
+######## DA FORMA ABAIXO CRIAREI UM DASET
+
+scala> val names_ds = spark.read.schema(schema_names).csv("hdfs://namenode:8020/user/feliciani/data/names").as[Nascimento]
+names_ds: org.apache.spark.sql.Dataset[Nascimento] = [nome: string, sexo: string ... 1 more field]
+
+
+
+#####################################################################################################################
+#
+# 6. Visualizar o Schema do names_ds
+#
+#####################################################################################################################
+
+scala> names_us.printSchema()
+root
+ |-- _c0: string (nullable = true)
+ |-- _c1: string (nullable = true)
+ |-- _c2: string (nullable = true)
+
+
+
+#####################################################################################################################
+#
+# 7. Mostras os 5 primeiros registros do names_ds
+#
+#####################################################################################################################
+
+scala> names_ds.show(5)
++--------+----+----------+
+|    nome|sexo|quantidade|
++--------+----+----------+
+|    Emma|   F|     18809|
+|Isabella|   F|     18612|
+|   Emily|   F|     17429|
+|  Olivia|   F|     17078|
+|     Ava|   F|     17035|
++--------+----+----------+
+only showing top 5 rows
+
+
+#####################################################################################################################
+#
+# 8. Salvar o Dataset names_ds no hdfs “/user/<nome>/ names_us_parquet” no formato parquet com compressão snappy
+#
+#####################################################################################################################
+
+scala> names_ds.write.save("/user/feliciani/names_us_parquet") ################ CRIADO O HDFS COM FORMATO PARQUET E COMPRESSÃO SNAPPY, POR PADRÃO
+
+scala> spark.read.
+csv   format   jdbc   json   load   option   options   orc   parquet   schema   table   text   textFile
+
+scala> spark.read.parquet("/user/feliciani/names_us_parquet").printSchema
+root
+ |-- nome: string (nullable = true)
+ |-- sexo: string (nullable = true)
+ |-- quantidade: integer (nullable = true)
+
+
+scala> :quit ############################### CTRL + D
+
+root@jupyter-spark:/# exit ############################### CTRL + D
+
+PS E:\projetos\docker-spark\spark>docker-compose -f docker-compose-parcial.yml stop
+
