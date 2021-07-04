@@ -1,0 +1,99 @@
+
+Utilizando PYSPARK
+##################
+
+################## 1. Criar uma aplicação em scala usando o spark para ler os dados da porta 9999 e exibir no console
+
+
+feliciani@LAPTOP-V176DRSL:/mnt/e/projetos/docker-spark/spark$ docker exec -it jupyter-spark bash
+root@jupyter-spark:/# pyspark
+Python 3.5.3 (default, Sep 27 2018, 17:25:39)
+[GCC 6.3.0 20170516] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+21/07/04 19:09:09 WARN spark.SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /__ / .__/\_,_/_/ /_/\_\   version 2.4.1
+      /_/
+
+Using Python version 3.5.3 (default, Sep 27 2018 17:25:39)
+SparkSession available as 'spark'.
+
+
+>>> porta_leitura = spark.readStream.format("socket").option("host","localhost").option("port",9999).load()
+21/07/04 19:13:26 WARN sources.TextSocketSourceProvider: The socket source should not be used for production applications! It does not support recovery.
+
+###########################################################################################################################
+
+ABRIR OUTRO TERMINAL COM O docker exec -it jupyter-spark bash     e habilitar o  nc -lp 9999 e digitar os dados que
+o PYSPARK estará recebendo.
+
+root@jupyter-spark:/# nc -lp 9999
+Marcelo
+Feliciani
+Domingo de estudos Spark Streaming
+Kafka
+Struct Streaming
+Funcionando perfeitamente
+Show de bola
+
+###########################################################################################################################
+
+Dados Recebidos no Pyspark
+##########################
+
+>>> porta_saida = porta_leitura.writeStream.format("console").start()
+>>> 21/07/04 19:43:26 WARN sources.TextSocketSourceProvider: The socket source should not be used for production applications! It does not support recovery.
+-------------------------------------------
+Batch: 0
+-------------------------------------------
++-----+
+|value|
++-----+
++-----+
+
+-------------------------------------------
+Batch: 1
+-------------------------------------------
++--------------------+
+|               value|
++--------------------+
+|             Marcelo|
+|    Struct Streaming|
+|           Feliciani|
+|Domingo de estudo...|
+|               Kafka|
++--------------------+
+
+-------------------------------------------
+Batch: 2
+-------------------------------------------
++--------------------+
+|               value|
++--------------------+
+|Funcionando perfe...|
++--------------------+
+
+-------------------------------------------
+Batch: 3
+-------------------------------------------
++------------+
+|       value|
++------------+
+|Show de bola|
++------------+
+
+21/07/04 19:44:51 WARN sources.TextSocketMicroBatchReader: Stream closed by localhost:9999
+
+
+Traceback (most recent call last):
+  File "/opt/spark/python/pyspark/context.py", line 270, in signal_handler
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+>>>
+
+DEI UM CTRL + C para parar o processo.
