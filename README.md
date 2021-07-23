@@ -1,4 +1,4 @@
-## BIG DATA ENGINEER
+## BIG DATA ENGINEER  (Concluído em 12/07/2021)
 Estudos para Engenharia de Dados no Treinamento Big Data Engineer da SEMANTIX
 
 Informações Sobre o treinamento:
